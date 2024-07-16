@@ -33,74 +33,76 @@ const AllInvestments = ({ setShowComp }) => {
       {!showDetails && (
         <>
           <div className="w-full flex flex-col gap-3 items-start mt-4">
-            <div className="flex gap-4 w-1/2 justify-start">
-              <Button
-                onClick={() => setFiltered("all")}
-                sx={{
-                  background: filtered === "all" ? "#FAFAFA" : "#fff",
-                  borderRadius: "8px",
-                  width: "100%",
-                  px: "15px",
-                  border:
-                    filtered === "all"
-                      ? "1px solid #02981D"
-                      : "1px solid #5E5E5E",
-                  color: filtered === "all" ? "#02981D" : "#5E5E5E",
-                  "&:hover": {
-                    backgroundColor: filtered === "all" ? "#FAFAFA" : "#fff",
-                  },
-                  textTransform: "capitalize",
-                  fontWeight: "400",
-                }}
-              >
-                All Investment Plans
-              </Button>
-              <Button
-                onClick={() => setFiltered("av")}
-                sx={{
-                  background: filtered === "av" ? "#FAFAFA" : "#fff",
-                  borderRadius: "8px",
-                  width: "50%",
-                  px: "15px",
-                  border:
-                    filtered === "av"
-                      ? "1px solid #02981D"
-                      : "1px solid #5E5E5E",
-                  color: filtered === "av" ? "#02981D" : "#5E5E5E",
-                  "&:hover": {
-                    backgroundColor: filtered === "av" ? "#FAFAFA" : "#fff",
-                  },
-                  textTransform: "capitalize",
-                  fontWeight: "400",
-                }}
-              >
-                Available
-              </Button>
-              <Button
-                onClick={() => setFiltered("sold")}
-                sx={{
-                  background: filtered === "sold" ? "#FAFAFA" : "#fff",
-                  borderRadius: "8px",
-                  width: "50%",
-                  px: "15px",
-                  border:
-                    filtered === "sold"
-                      ? "1px solid #02981D"
-                      : "1px solid #5E5E5E",
-                  color: filtered === "sold" ? "#02981D" : "#5E5E5E",
-                  "&:hover": {
-                    backgroundColor: filtered === "sold" ? "#FAFAFA" : "#fff",
-                  },
-                  textTransform: "capitalize",
-                  fontWeight: "400",
-                }}
-              >
-                Sold Out
-              </Button>
+            <div className=" w-[90%] mx-auto ">
+              <div className="flex gap-4 w-1/2  justify-start">
+                <Button
+                  onClick={() => setFiltered("all")}
+                  sx={{
+                    background: filtered === "all" ? "#FAFAFA" : "#fff",
+                    borderRadius: "8px",
+                    width: "100%",
+                    px: "15px",
+                    border:
+                      filtered === "all"
+                        ? "1px solid #02981D"
+                        : "1px solid #5E5E5E",
+                    color: filtered === "all" ? "#02981D" : "#5E5E5E",
+                    "&:hover": {
+                      backgroundColor: filtered === "all" ? "#FAFAFA" : "#fff",
+                    },
+                    textTransform: "capitalize",
+                    fontWeight: "400",
+                  }}
+                >
+                  All Investment Plans
+                </Button>
+                <Button
+                  onClick={() => setFiltered("av")}
+                  sx={{
+                    background: filtered === "av" ? "#FAFAFA" : "#fff",
+                    borderRadius: "8px",
+                    width: "50%",
+                    px: "15px",
+                    border:
+                      filtered === "av"
+                        ? "1px solid #02981D"
+                        : "1px solid #5E5E5E",
+                    color: filtered === "av" ? "#02981D" : "#5E5E5E",
+                    "&:hover": {
+                      backgroundColor: filtered === "av" ? "#FAFAFA" : "#fff",
+                    },
+                    textTransform: "capitalize",
+                    fontWeight: "400",
+                  }}
+                >
+                  Available
+                </Button>
+                <Button
+                  onClick={() => setFiltered("sold")}
+                  sx={{
+                    background: filtered === "sold" ? "#FAFAFA" : "#fff",
+                    borderRadius: "8px",
+                    width: "50%",
+                    px: "15px",
+                    border:
+                      filtered === "sold"
+                        ? "1px solid #02981D"
+                        : "1px solid #5E5E5E",
+                    color: filtered === "sold" ? "#02981D" : "#5E5E5E",
+                    "&:hover": {
+                      backgroundColor: filtered === "sold" ? "#FAFAFA" : "#fff",
+                    },
+                    textTransform: "capitalize",
+                    fontWeight: "400",
+                  }}
+                >
+                  Sold Out
+                </Button>
+              </div>
             </div>
 
             {/*  */}
-            <div className=" w-1/2">
+            <div className=" w-[90%] mx-auto ">
               <Button
                 id="basic-button"
                 aria-controls={open ? "basic-menu" : undefined}
@@ -179,7 +181,7 @@ const AllInvestments = ({ setShowComp }) => {
 
             {/*  */}
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4  w-[90%] mx-auto ">
               <CustomInvestmentCard status="sold" title="Sold" />
               <CustomInvestmentCard status="available" title="Available" />
               <CustomInvestmentCard status="available" title="Available" />

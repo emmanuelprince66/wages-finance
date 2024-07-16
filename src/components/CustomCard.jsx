@@ -2,9 +2,14 @@
 import React from "react";
 import { Card, CardContent } from "@mui/material";
 
-const CustomCard = ({ children, style }) => {
+const CustomCard = ({ children, style, color }) => {
   return (
-    <Card className={`p-2 ${style}`}>
+    <Card
+      sx={{
+        background: color,
+      }}
+      className={`p-2 ${style}`}
+    >
       <CardContent>{children}</CardContent>
     </Card>
   );

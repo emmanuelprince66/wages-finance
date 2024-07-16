@@ -10,6 +10,7 @@ import Sfive from "../assets/sidebar/Sfive";
 import Ssix from "../assets/sidebar/Ssix";
 import Sseven from "../assets/sidebar/Sseven";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import Seight from "../assets/sidebar/Seight";
 const SideBar = () => {
   const navigate = useNavigate();
   const location = window.location.pathname;
@@ -65,6 +66,15 @@ const SideBar = () => {
         </span>
       ),
       link: "loans",
+    },
+    {
+      name: "Transactions",
+      component: (
+        <span isRightLink={location === "/transactions"}>
+          <Seight color={location === "/transactions" ? "white" : "#5E5E5E"} />
+        </span>
+      ),
+      link: "transactions",
     },
     {
       name: "Notifications",

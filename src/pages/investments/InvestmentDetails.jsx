@@ -225,7 +225,7 @@ const InvestmentDetails = () => {
                         {subscriptionOptions?.map((label) => (
                           <div
                             key={label}
-                            className={`rounded-md border-2 p-1 mr-2 ${
+                            className={`rounded-md border-2  px-2 mr-1 ${
                               selectedSubscription === label
                                 ? "border-[#02981D]"
                                 : "border-[#E6F5E8]"

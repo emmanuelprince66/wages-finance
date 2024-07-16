@@ -66,7 +66,6 @@ const LoginCom = ({ setComponent }) => {
       }
     },
     onSuccess: (data) => {
-      console.log("Login successful:", data);
       setButtonDisabled(false);
       navigate("/overview");
       Cookies.set("authToken", data?.tokens?.access);
