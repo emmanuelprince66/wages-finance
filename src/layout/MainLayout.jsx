@@ -17,7 +17,7 @@ const MainLayout = ({ component }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+        <div className="flex-1 overflow-y-auto p-4 bg-gray-100 bg-[#fafafa]">
           {component}
         </div>
       </div>

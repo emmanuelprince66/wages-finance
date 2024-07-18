@@ -3,8 +3,8 @@ import { Modal } from "@mui/material";
 import { useState } from "react";
 import { Padding } from "@mui/icons-material";
 
-const CustomModal = ({ children, open, closeModal }) => {
-  const style = {
+const CustomModal = ({ children, open, closeModal, style }) => {
+  const customStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -12,7 +12,7 @@ const CustomModal = ({ children, open, closeModal }) => {
     maxHeight: "95%",
     padding: "1rem",
     overflowY: "auto",
-    width: "50%",
+
     transform: "translate(-50%, -50%)",
     borderRadius: "12px",
     bgcolor: "background.paper",
@@ -31,7 +31,9 @@ const CustomModal = ({ children, open, closeModal }) => {
           },
         }}
       >
-        <div style={style}>{children}</div>
+        <div className={`${style ? style : "w-1/2"}`} style={customStyle}>
+          {children}
+        </div>
       </Modal>
     </>
   );

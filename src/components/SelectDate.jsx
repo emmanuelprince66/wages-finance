@@ -7,7 +7,7 @@ import { parse } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-const SelectDate = () => {
+const SelectDate = ({ style }) => {
   const { selectedDates, setSelectedDates } = useDateContext();
 
   const formatString = "MM/dd/yyyy";
@@ -86,7 +86,9 @@ const SelectDate = () => {
           </Button>
         </div>
         {dateVisible && (
-          <div className="absolute flex flex-col bg-white z-[2] shadow-lg p-2 rounded-[8px] top-[140px]">
+          <div
+            className={`absolute  flex flex-col ${style} bg-white z-[2] shadow-lg p-2 rounded-[8px] top-[140px]`}
+          >
             <DateRangePicker ranges={[selectedRange]} onChange={handleSelect} />
             <button
               onClick={handleDateChange}
