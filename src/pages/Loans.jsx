@@ -59,7 +59,7 @@ const Loans = () => {
             }}
           >
             <Lfour color={!showOverview ? "#02981D" : "#5E5E5E"} />
-            Overdue Repayments
+            Loan Requests
           </Button>
         </div>
         {showOverview && <SelectDate />}
