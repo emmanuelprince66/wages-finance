@@ -5,6 +5,10 @@ import { useDateContext } from "../../utils/DateContext";
 import CustomCard from "../../components/CustomCard";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from "../../utils/cookieAuth";
+import { AuthAxios } from "../../helpers/axiosInstance";
+import { CircularProgress } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { IconButton } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -12,15 +16,47 @@ import { Button } from "@mui/material";
 import AllInvestments from "./AllInvestments";
 import InvestmentDetails from "./InvestmentDetails";
 import AddInvestment from "./AddInvestment";
+import FormattedPrice from "../../utils/FormattedPrice";
 const Investment = () => {
   const [showComp, setShowComp] = useState("all");
   const { selectedDates } = useDateContext();
-
+  const token = getCookie("authToken");
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
   const handleMouseDownCash = (event) => {
     event.preventDefault();
   };
+
+  const apiUrl = `/admin/investment_stats/`;
+  // fetch investment data for card
+
+  const fetchInvestmentListData = async (url) => {
+    try {
+      const response = await AuthAxios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response?.data;
+    } catch (error) {
+      throw new Error("Failed to fetch corporative data");
+    }
+  };
+
+  const {
+    data: investmentListData,
+    error: investmentListError,
+    isLoading: investmentListLoading,
+  } = useQuery({
+    queryKey: ["fetchInvestmentListData", apiUrl],
+    queryFn: () => fetchInvestmentListData(apiUrl),
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  console.log(investmentListData);
+
+  //
 
   return (
     <>
@@ -86,13 +122,47 @@ const Investment = () => {
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">All - Time:</p>
                     <p className="text-general text-[16px]">
-                      {showCash ? <p> &#8358;17,000</p> : "***********"}
+                      {showCash ? (
+                        <p>
+                          {investmentListLoading || !investmentListData ? (
+                            <CircularProgress
+                              sx={{
+                                color: "#02981D",
+                              }}
+                              size="1rem"
+                            />
+                          ) : (
+                            <FormattedPrice
+                              amount={investmentListData?.total_investments}
+                            />
+                          )}
+                        </p>
+                      ) : (
+                        "***********"
+                      )}
                     </p>
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">By Filter:</p>
                     <p className="text-general text-[16px]">
-                      {showCash ? <p> &#8358;17,000</p> : "***********"}
+                      {showCash ? (
+                        <p>
+                          {investmentListLoading || !investmentListData ? (
+                            <CircularProgress
+                              sx={{
+                                color: "#02981D",
+                              }}
+                              size="1rem"
+                            />
+                          ) : (
+                            <FormattedPrice
+                              amount={investmentListData?.count_by_filter}
+                            />
+                          )}
+                        </p>
+                      ) : (
+                        "***********"
+                      )}
                     </p>
                   </div>
                 </div>
@@ -107,12 +177,34 @@ const Investment = () => {
 
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">All - Time:</p>
-                    <p className="text-general text-[16px]">5555</p>
+                    <p className="text-general text-[16px]">
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        investmentListData?.count_of_investors
+                      )}
+                    </p>
                   </div>
 
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">By Filter:</p>
-                    <p className="text-general text-[16px]">5555</p>
+                    <p className="text-general text-[16px]">
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        investmentListData?.total_by_filter
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>

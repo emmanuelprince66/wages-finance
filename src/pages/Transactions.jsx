@@ -643,7 +643,8 @@ const Transactions = () => {
           btnText="Update Status"
         />
       </CustomModal>
-      {/* success request modal */}s{/* success modal */}
+      {/* success request modal */}
+      {/* success modal */}
       <CustomModal open={openSuccessModal}>
         <CustomSuccessModal
           close={closeSuccessModal}

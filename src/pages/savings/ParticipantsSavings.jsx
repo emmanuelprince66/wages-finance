@@ -158,7 +158,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
 
       <div className="w-full">
         <Box className="w-full">
-          <TableContainer>
+          <TableContainer sx={{ background: "white" }}>
             <Table sx={{ minWidth: 100, padding: "8px" }}>
               <TableHead
                 sx={{
