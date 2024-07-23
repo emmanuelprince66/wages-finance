@@ -9,6 +9,7 @@ import { getCookie } from "../../utils/cookieAuth";
 
 const Members = () => {
   const [showComp, setShowComp] = useState("members");
+  const [memberId, setMemberId] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -57,12 +58,15 @@ const Members = () => {
           currentPage={currentPage}
           setShowComp={setShowComp}
           setFilterValue={setFilterValue}
+          setMemberId={setMemberId}
           filterValue={filterValue}
           totalPages={totalPages}
           data={data || []}
         />
       )}
-      {showComp === "profile" && <MemberProfile setShowComp={setShowComp} />}
+      {showComp === "profile" && (
+        <MemberProfile memberId={memberId} setShowComp={setShowComp} />
+      )}
       {showComp === "all" && (
         <MemberFullTransaction setShowComp={setShowComp} />
       )}

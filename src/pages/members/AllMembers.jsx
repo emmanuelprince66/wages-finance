@@ -28,6 +28,7 @@ import CustomPagination from "../../components/CustomPagination";
 const AllMembers = ({
   setShowComp,
   currentPage,
+  setMemberId,
   filterValue,
   handlePageChange,
   totalPages,
@@ -39,8 +40,8 @@ const AllMembers = ({
   const navigate = useNavigate();
 
   const handleNavigateMember = (id) => {
-    navigate(`/members/${id}`);
     setShowComp("profile");
+    setMemberId(id);
   };
   return (
     <>

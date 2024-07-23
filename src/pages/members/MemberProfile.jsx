@@ -41,14 +41,13 @@ import { getCookie } from "../../utils/cookieAuth";
 import FormattedPrice from "../../utils/FormattedPrice";
 import formattedDate from "../../utils/formattedDate";
 
-const MemberProfile = ({ setShowComp }) => {
+const MemberProfile = ({ setShowComp, memberId }) => {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const token = getCookie("authToken");
 
-  const { id } = useParams();
-  const apiUrl = `/admin/user/${id}`;
+  const apiUrl = `/admin/user/${memberId}`;
 
   const fetchMembersProfile = async (url) => {
     try {
@@ -58,7 +57,6 @@ const MemberProfile = ({ setShowComp }) => {
         },
       });
 
-      console.log(response);
       return response.data;
     } catch (error) {
       throw new Error("Failed to fetch customer data");
