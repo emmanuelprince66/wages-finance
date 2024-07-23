@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import CustomCard from "../../components/CustomCard";
 import DoughnutChart from "../../components/DoughnutChart";
@@ -8,8 +8,40 @@ import sThree from "../../assets/savings/s-33.svg";
 import sFour from "../../assets/savings/s-4.svg";
 import sFive from "../../assets/savings/s-5.svg";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
+import { AuthAxios } from "../../helpers/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from "../../utils/cookieAuth";
+import { Skeleton } from "@mui/material";
+import FormattedPrice from "../../utils/FormattedPrice";
 
 const TargetSavings = ({ handleShowParticipants }) => {
+  const token = getCookie("authToken");
+  const apiUrl = "/admin/savings_stats";
+
+  const fetchTargetData = async (url) => {
+    try {
+      const response = await AuthAxios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch target data");
+    }
+  };
+
+  const {
+    data: targetData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["fetchTargetData", apiUrl],
+    queryFn: () => fetchTargetData(apiUrl),
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
   const FirstCard = ({ titleOne, textOne, textTwo, img, color, link }) => {
     return (
       <>
@@ -31,7 +63,9 @@ const TargetSavings = ({ handleShowParticipants }) => {
               <p className="text-[14px] text-primary_grey_2">
                 Total Savings By Partcipants:
               </p>
-              <p className="text-[20px] text-general">{textTwo}</p>
+              <p className="text-[20px] text-general">
+                <FormattedPrice amount={textTwo} />
+              </p>
             </div>
             <div
               className="flex  items-center gap-2 mb-4 cursor-pointer"
@@ -50,10 +84,14 @@ const TargetSavings = ({ handleShowParticipants }) => {
     );
   };
   const data = [
-    { name: "Group A", value: 400 },
-    { name: "Group B", value: 300 },
-    { name: "Group C", value: 300 },
-    { name: "Group D", value: 200 },
+    { name: "Group A", value: 4 },
+    { name: "Group B", value: 1 },
+    { name: "Group C", value: targetData?.title_data?.VACATION?.savings_count },
+    { name: "Group D", value: 5 },
+    {
+      name: "Group E",
+      value: targetData?.title_data?.MISCELLANEOUS?.savings_count,
+    },
   ];
 
   // // Dummy data
@@ -71,84 +109,94 @@ const TargetSavings = ({ handleShowParticipants }) => {
     <div className="w-full">
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <CustomCard style="w-full h-full">
-            <div className="w-full bg-text_white flex-col items-start ">
-              <p className="text-general text-[16px] font-[500] mb-3">
-                Summary
-              </p>
+          {isLoading || !targetData ? (
+            <Skeleton variant="rounded" width="100%" height={280} />
+          ) : (
+            <CustomCard style="w-full h-full">
+              <div className="w-full bg-text_white flex-col items-start ">
+                <p className="text-general text-[16px] font-[500] mb-3">
+                  Summary
+                </p>
 
-              <div className="flex flex-col items-start gap-2 mb-3 ">
-                <p className="text-primary_grey_2 text-[14px] ">
-                  Total Members on Target Savings:
-                </p>
-                <p className="text-general font-[600] text-[20px]">550</p>
+                <div className="flex flex-col items-start gap-2 mb-3 ">
+                  <p className="text-primary_grey_2 text-[14px] ">
+                    Total Members on Target Savings:
+                  </p>
+                  <p className="text-general font-[600] text-[20px]">
+                    {targetData?.unique_users_active_savings}
+                  </p>
+                </div>
+                <div className="flex flex-col items-start mb-3 gap-2 ">
+                  <p className="text-primary_grey_2 text-[14px] ">
+                    All-Time Total Amount Saved by Users on Target Savings:
+                  </p>
+                  <p className="text-general font-[600] text-[20px]">
+                    <FormattedPrice amount={targetData?.total_saved_active} />
+                  </p>
+                </div>
+                <div className="flex flex-col items-start gap-2 ">
+                  <p className="text-primary_grey_2 text-[14px] ">
+                    Current Total Amount Saved by Users on Target Savings:
+                  </p>
+                  <p className="text-general font-[600] text-[20px]">
+                    <FormattedPrice amount={targetData?.total_saved_all} />
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col items-start mb-3 gap-2 ">
-                <p className="text-primary_grey_2 text-[14px] ">
-                  All-Time Total Amount Saved by Users on Target Savings:
-                </p>
-                <p className="text-general font-[600] text-[20px]">
-                  ₦104,000,550
-                </p>
-              </div>
-              <div className="flex flex-col items-start gap-2 ">
-                <p className="text-primary_grey_2 text-[14px] ">
-                  Current Total Amount Saved by Users on Target Savings:
-                </p>
-                <p className="text-general font-[600] text-[20px]">
-                  ₦104,000,550
-                </p>
-              </div>
-            </div>
-          </CustomCard>
+            </CustomCard>
+          )}
         </Grid>
         <Grid item xs={6}>
-          <CustomCard style="w-full h-full">
-            <div className="w-full flex justify-between">
-              <DoughnutChart
-                title={title}
-                data={data}
-                cx={100}
-                cy={90}
-                height={200}
-                width={200}
-                colors={colors}
-              />
+          {isLoading || !targetData ? (
+            <Skeleton variant="rounded" width="100%" height={280} />
+          ) : (
+            <CustomCard style="w-full h-full">
+              <div className="w-full flex justify-between">
+                <DoughnutChart
+                  title={title}
+                  data={data}
+                  cx={100}
+                  cy={90}
+                  height={200}
+                  width={200}
+                  colors={colors}
+                />
 
-              <div className="flex flex-col items-start gap-5 mt-2">
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-[#59EDBB] w-[20px] h-[20px]" />
-                  <p className="text-[14px] text-primary_grey_2">
-                    Savings for Birthdays
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-[#FECC6A] w-[20px] h-[20px]" />
-                  <p className="text-[14px] text-primary_grey_2">
-                    Savings for Car Purchase
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-[#54B3FC] w-[20px] h-[20px]" />
-                  <p className="text-[14px] text-primary_grey_2">
-                    Savings for Vacation
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-[#FF8396] w-[20px] h-[20px]" />
-                  <p className="text-[14px] text-primary_grey_2">
-                    Savings for Gadget Purchase
-                  </p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="rounded-full bg-[#A291DE] w-[20px] h-[20px]" />
-                  <p className="text-[14px] text-primary_grey_2">
-                    Savings for Miscellaneous
-                  </p>
+                <div className="flex flex-col items-start gap-5 mt-2">
+                  <div className="flex gap-2 items-center">
+                    <div className="rounded-full bg-[#59EDBB] w-[20px] h-[20px]" />
+                    <p className="text-[14px] text-primary_grey_2">
+                      Savings for Birthdays
+                    </p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="rounded-full bg-[#FECC6A] w-[20px] h-[20px]" />
+                    <p className="text-[14px] text-primary_grey_2">
+                      Savings for Car Purchase
+                    </p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="rounded-full bg-[#54B3FC] w-[20px] h-[20px]" />
+                    <p className="text-[14px] text-primary_grey_2">
+                      Savings for Vacation
+                    </p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="rounded-full bg-[#FF8396] w-[20px] h-[20px]" />
+                    <p className="text-[14px] text-primary_grey_2">
+                      Savings for Gadget Purchase
+                    </p>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="rounded-full bg-[#A291DE] w-[20px] h-[20px]" />
+                    <p className="text-[14px] text-primary_grey_2">
+                      Savings for Miscellaneous
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CustomCard>
+            </CustomCard>
+          )}
         </Grid>
 
         <Grid item xs={12}>
@@ -157,7 +205,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
               img={sOne}
               titleOne="Savings Towards Birthdays"
               textOne="233"
-              textTwo="₦17,800,550"
+              textTwo={500}
               color="text-[#00A26B]"
               link={{ title: "Savings Towards Birthdays", val: "birth" }}
             />
@@ -165,18 +213,26 @@ const TargetSavings = ({ handleShowParticipants }) => {
               img={sTwo}
               titleOne="Savings for Car Purchase"
               textOne="233"
-              textTwo="₦17,800,550"
+              textTwo={200}
               color="text-[#E29600]"
               link={{ title: "Savings for car Purchase", val: "car" }}
             />
-            <FirstCard
-              img={sThree}
-              titleOne="Savings for Vacation"
-              textOne="233"
-              textTwo="₦17,800,550"
-              color="text-[#0090FF]"
-              link={{ title: "Savings for Vacation", val: "vacation" }}
-            />
+            {isLoading || !targetData ? (
+              <Skeleton variant="rounded" width="100%" height={280} />
+            ) : (
+              <FirstCard
+                img={sThree}
+                titleOne="Savings for Vacation"
+                textOne={targetData?.title_data?.VACATION?.unique_users || 0}
+                textTwo={targetData?.title_data?.VACATION?.total_saved || 0}
+                color="text-[#0090FF]"
+                link={{
+                  title: "Savings for Vacation",
+                  val: "vacation",
+                  id: "VACATION",
+                }}
+              />
+            )}
           </div>
         </Grid>
 
@@ -186,18 +242,32 @@ const TargetSavings = ({ handleShowParticipants }) => {
               img={sFour}
               titleOne="Savings for Gadget purcase"
               textOne="233"
-              textTwo="₦17,800,550"
+              textTwo={200}
               color="text-[#FF6D84]"
               link={{ title: "Savings for Gadget purchase", val: "Gadget" }}
             />
-            <FirstCard
-              img={sFive}
-              titleOne="Savings For  Miscellaneous"
-              textOne="233"
-              textTwo="₦17,800,550"
-              color="text-[#A291DE]"
-              link={{ title: "Savings for Miscellaneous", val: "mis" }}
-            />
+
+            {isLoading || !targetData ? (
+              <Skeleton variant="rounded" width="100%" height={280} />
+            ) : (
+              <FirstCard
+                img={sFive}
+                titleOne="Savings For  Miscellaneous"
+                textOne={
+                  targetData?.title_data?.MISCELLANEOUS?.unique_users || 0
+                }
+                textTwo={
+                  targetData?.title_data?.MISCELLANEOUS?.total_saved || 0
+                }
+                color="text-[#A291DE]"
+                link={{
+                  title: "Savings for Miscellaneous",
+                  val: "mis",
+                  id: "MISCELLANEOUS",
+                  img: sFive,
+                }}
+              />
+            )}
           </div>
         </Grid>
       </Grid>

@@ -109,7 +109,6 @@ const Transactions = () => {
 
         <SelectDate />
       </div>
-
       <CustomCard style="w-full">
         <div className="flex items-start gap-4 flex-col">
           <div className="w-full flex items-center justify-between">
@@ -352,7 +351,6 @@ const Transactions = () => {
           {/* table end */}
         </div>
       </CustomCard>
-
       {/* All transactions modal */}
       <CustomModal open={openTrxModal} closeModal={closeTrxModal}>
         <div className="w-full flex flex-col items-start gap-2">
@@ -636,9 +634,7 @@ const Transactions = () => {
         </div>
       </CustomModal>
       {/* update transactios modal */}
-
       {/* success request modal */}
-
       <CustomModal open={openRequestModal}>
         <CustomSuccessRequestModal
           close={closeOpenRequestModal}
@@ -647,14 +643,11 @@ const Transactions = () => {
           btnText="Update Status"
         />
       </CustomModal>
-      {/* success request modal */}
-
-      {/* success modal */}
-
+      {/* success request modal */}s{/* success modal */}
       <CustomModal open={openSuccessModal}>
         <CustomSuccessModal
           close={closeSuccessModal}
-          titleOne="Transaction status has been updated."
+          textOne="Transaction status has been updated."
         />
       </CustomModal>
       {/* success modal */}

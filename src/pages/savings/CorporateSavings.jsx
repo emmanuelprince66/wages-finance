@@ -25,8 +25,21 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
+import FormattedPrice from "../../utils/FormattedPrice";
+import CustomPagination from "../../components/CustomPagination";
 
-const CorporateSavings = ({ setShowComp, showComp }) => {
+const CorporateSavings = ({
+  setShowComp,
+  showComp,
+  corporativeData,
+  currentPage,
+  handlePageChange,
+  isLoadingMembers,
+  setSearchValue,
+  corporativeMembers,
+  isLoading,
+  cop,
+}) => {
   const dummy = [
     {
       id: 1,
@@ -105,7 +118,22 @@ const CorporateSavings = ({ setShowComp, showComp }) => {
               </IconButton>
             </div>
             <p className="text-general text-[16px]">
-              {showCash ? <p> &#8358;17,000</p> : "***********"}
+              {showCash ? (
+                <p>
+                  {isLoading ? (
+                    <CircularProgress
+                      size="1rem"
+                      sx={{
+                        color: "#02981D",
+                      }}
+                    />
+                  ) : (
+                    <FormattedPrice amount={corporativeData?.total || 0} />
+                  )}
+                </p>
+              ) : (
+                "***********"
+              )}
             </p>
           </div>
           <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
@@ -116,7 +144,18 @@ const CorporateSavings = ({ setShowComp, showComp }) => {
                 Active Cooperative Members:
               </p>
             </div>
-            <p className="text-general text-[16px]">771</p>
+            <p className="text-general text-[16px]">
+              {isLoading ? (
+                <CircularProgress
+                  size="1rem"
+                  sx={{
+                    color: "#02981D",
+                  }}
+                />
+              ) : (
+                corporativeData?.count || 0
+              )}
+            </p>
           </div>
         </div>
       </CustomCard>
@@ -156,17 +195,19 @@ const CorporateSavings = ({ setShowComp, showComp }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {!dummy ? (
+                  {!corporativeMembers?.results || isLoadingMembers ? (
                     <CircularProgress
                       size="4.2rem"
                       sx={{
-                        color: "#DC0019",
+                        color: "#02981D",
                         marginLeft: "auto",
                         padding: "1em",
                       }}
                     />
-                  ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                    dummy.map((item, i) => (
+                  ) : corporativeMembers?.results &&
+                    Array.isArray(corporativeMembers?.results) &&
+                    corporativeMembers?.results?.length > 0 ? (
+                    corporativeMembers?.results?.map((item, i) => (
                       <TableRow key={item.id}>
                         <TableCell>{page * rowsPerPage + i + 1}</TableCell>
                         <TableCell>
@@ -182,7 +223,7 @@ const CorporateSavings = ({ setShowComp, showComp }) => {
                         </TableCell>
                         <TableCell>{item?.phone}</TableCell>
                         <TableCell>{item?.email}</TableCell>
-                        <TableCell>{item?.wallet}</TableCell>
+                        <TableCell>{item?.coporative_balance}</TableCell>
 
                         <TableCell>
                           <Button
@@ -218,14 +259,13 @@ const CorporateSavings = ({ setShowComp, showComp }) => {
               </Table>
             </TableContainer>
 
-            <TablePagination
-              rowsPerPageOptions={[]}
-              component="div"
-              count={dummy?.totalCount || 0}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              // onRowsPerPageChange is removed as the number of rows per page is fixed
+            <CustomPagination
+              currentPage={currentPage}
+              s
+              totalPages={corporativeMembers?.pages}
+              onPageChange={handlePageChange}
+              nextPageLink={corporativeMembers?.links?.next}
+              prevPageLink={corporativeMembers?.links?.previous}
             />
           </Box>
         </div>

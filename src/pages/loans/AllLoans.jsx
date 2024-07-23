@@ -79,6 +79,7 @@ const AllLoans = () => {
   const [requestFilter, setRequestFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+
   return (
     <>
       <div className="w-full mt-4 flex flex-col gap-4 bg-text_white border-[#E3E3E3] rounded-md p-3 items-start">

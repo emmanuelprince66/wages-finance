@@ -35,7 +35,7 @@ const SuccessCom = ({ setComponent }) => {
               },
             }}
           >
-            Take me Login
+            Take me to Login
           </Button>
         </div>
       </CustomCard>

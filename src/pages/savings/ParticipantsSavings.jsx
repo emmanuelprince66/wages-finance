@@ -1,6 +1,7 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
+import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import {
   Table,
   Button,
@@ -8,8 +9,10 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  CircularProgress,
   TableHead,
   TableRow,
+  Divider,
   Paper,
   Grid,
   Container,
@@ -20,56 +23,98 @@ import {
   Card,
   Typography,
   Modal,
+  Skeleton,
 } from "@mui/material";
-const ParticipantsSavings = ({ event , setShowComp }) => {
-  const { title, link } = event;
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+import { AuthAxios } from "../../helpers/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from "../../utils/cookieAuth";
+import FormattedPrice from "../../utils/FormattedPrice";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "react-toastify";
+import CustomModal from "../../components/CustomModal";
+import CustomLinearProgress from "../../components/CustomLinearProgress";
+const ParticipantsSavings = ({ event, setShowComp }) => {
+  const { title, link, id, img } = event;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterValue, setFilterValue] = useState("");
 
-  const dummy = [
-    {
-      id: 1,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-    {
-      id: 2,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-    {
-      id: 3,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-    {
-      id: 4,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-    {
-      id: 5,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-    {
-      id: 6,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-      amt: "270,000000",
-    },
-  ];
+  const [participantId, setParticipantId] = useState("");
+
+  const navigate = useNavigate();
+  const [showParticipantModal, setShowParticipantModal] = useState(false);
+  const closeParticipantModal = () => setShowParticipantModal(false);
+
+  const token = getCookie("authToken");
+
+  const apiUrl = `/admin/savings/${id}/`;
+  const getParticipantModalUrl = `/admin/single_savings/${participantId}/`;
+
+  const handleShowParticipantModal = (id) => {
+    setShowParticipantModal(true);
+    setParticipantId(id);
+  };
+
+  //
+
+  const fetchParticipantModalData = async (url) => {
+    try {
+      const response = await AuthAxios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data");
+    }
+  };
+
+  const {
+    data: participantModalData,
+    error: modalError,
+    isLoading: modalLoading,
+  } = useQuery({
+    queryKey: ["fetchParticipantModalData", getParticipantModalUrl],
+    queryFn: () => fetchParticipantModalData(getParticipantModalUrl),
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  useEffect(() => {
+    fetchParticipantModalData();
+  }, [participantId]);
+
+  const fetchSavingsParticipants = async (url) => {
+    try {
+      const response = await AuthAxios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch customer data");
+    }
+  };
+  const {
+    data: participantsData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["fetchSavingsParticipants", apiUrl],
+    queryFn: () => fetchSavingsParticipants(apiUrl),
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  console.log(participantModalData);
+
+  // useEffect(() => {
+
+  // }, [id]);
+
   return (
     <div className="flex w-full flex-col items-start gap-4">
       <div className="flex gap-3 items-center mb-3">
@@ -130,19 +175,21 @@ const ParticipantsSavings = ({ event , setShowComp }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!dummy ? (
+                {!participantsData || isLoading ? (
                   <CircularProgress
                     size="4.2rem"
                     sx={{
-                      color: "#DC0019",
+                      color: "#02981D",
                       marginLeft: "auto",
                       padding: "1em",
                     }}
                   />
-                ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                  dummy.map((item, i) => (
+                ) : participantsData &&
+                  Array.isArray(participantsData?.results) &&
+                  participantsData?.results?.length > 0 ? (
+                  participantsData?.results?.map((item, i) => (
                     <TableRow key={item.id}>
-                      <TableCell>{page * rowsPerPage + i + 1}</TableCell>
+                      <TableCell>{i + 1}</TableCell>
                       <TableCell>
                         <Typography
                           sx={{
@@ -166,9 +213,12 @@ const ParticipantsSavings = ({ event , setShowComp }) => {
                         </Typography>
                       </TableCell>
                       <TableCell>{item?.email}</TableCell>
-                      <TableCell>{item?.amt}</TableCell>
+                      <TableCell>
+                        <FormattedPrice amount={item?.saved} />
+                      </TableCell>
                       <TableCell>
                         <Button
+                          onClick={() => handleShowParticipantModal(item?.id)}
                           variant="outlined"
                           sx={{
                             textTransform: "capitalize",
@@ -200,18 +250,108 @@ const ParticipantsSavings = ({ event , setShowComp }) => {
               </TableBody>
             </Table>
           </TableContainer>
-
-          <TablePagination
-            rowsPerPageOptions={[]}
-            component="div"
-            count={dummy?.totalCount || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            // onRowsPerPageChange is removed as the number of rows per page is fixed
-          />
         </Box>
       </div>
+
+      {/* partucipant modal start */}
+      <CustomModal open={showParticipantModal}>
+        <div className="flex flex-col items-start gap-3 w-full">
+          <div className="flex items-center justify-between w-full mb-3">
+            <p className="text-general font-[500] text-[20px] ">
+              Personal Savings Details
+            </p>
+
+            <ClearRoundedIcon
+              onClick={closeParticipantModal}
+              sx={{ color: "#1E1E1  E", cursor: "pointer" }}
+            />
+          </div>
+
+          <div className="flex gap-2 items-center">
+            <p className="text-primary_green font-[500] text-[18px]">{title}</p>
+          </div>
+
+          {modalLoading || !participantModalData ? (
+            <Skeleton variant="rounded" width="100%" height={220} />
+          ) : (
+            <div className="flex flex-col items-start gap-2 w-full mt-3">
+              <div className="rounded-md w-full border-[1px] bg-[#F9F8FF] border-[#E3E3E3] p-2 flex flex-col items-start">
+                <div className="w-full flex justify-between mt-1">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Description:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    Savings Plans
+                  </p>
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">User:</p>
+                  <p className="text-[14px] text-general font-[500]">
+                    {participantModalData?.user}
+                  </p>
+                </div>
+
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Target Amount:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={participantModalData?.amount} />
+                  </p>
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Amount Saved:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={participantModalData?.saved} />
+                  </p>
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Frequency of Savings:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    {participantModalData?.frequency}
+                  </p>
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Expected Amount Per Saving:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice
+                      amount={participantModalData?.amount_per_savings}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex w-full items-center justify-between">
+            {modalLoading || !participantModalData ? (
+              <Skeleton variant="rounded" width="100%" height={30} />
+            ) : (
+              <CustomLinearProgress
+                startDate={participantModalData?.start_date}
+                endDate={participantModalData?.end_date}
+              />
+            )}
+          </div>
+        </div>
+      </CustomModal>
+      {/* partucipant modal end */}
     </div>
   );
 };

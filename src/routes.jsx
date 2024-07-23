@@ -28,7 +28,7 @@ const RoutesContainer = () => {
   const myRoutes = [
     { component: <Login />, path: "/", name: "Login Page" },
     { component: <Overview />, path: "/overview", name: "Overview" },
-    { component: <Members />, path: "/members", name: "Members" },
+    { component: <Members />, path: "/members/:id?", name: "Members" },
     { component: <Savings />, path: "/savings", name: "Savings" },
     { component: <Investment />, path: "/investments", name: "Investments" },
     { component: <Transactions />, path: "/transactions", name: "Transaction" },

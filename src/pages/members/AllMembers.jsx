@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  CircularProgress,
   Paper,
   Grid,
   Container,
@@ -22,49 +23,25 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
-const AllMembers = ({ setShowComp }) => {
-  const [filter, setFilter] = useState("all");
+import { useNavigate } from "react-router-dom";
+import CustomPagination from "../../components/CustomPagination";
+const AllMembers = ({
+  setShowComp,
+  currentPage,
+  filterValue,
+  handlePageChange,
+  totalPages,
+  setFilterValue,
+  data,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const navigate = useNavigate();
 
-  const dummy = [
-    {
-      id: 1,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-    {
-      id: 2,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-    {
-      id: 3,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-    {
-      id: 4,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-    {
-      id: 5,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-    {
-      id: 6,
-      name: "Arlene McCoy",
-      phone: "(SOS)555-554",
-      email: "michael.mitc@example.com",
-    },
-  ];
+  const handleNavigateMember = (id) => {
+    navigate(`/members/${id}`);
+    setShowComp("profile");
+  };
   return (
     <>
       <div className="w-full flex items-start gap-3 flex-col justify-center">
@@ -90,7 +67,7 @@ const AllMembers = ({ setShowComp }) => {
 
         {/* card */}
         <CustomCard style="w-full">
-          <div className="w-full flex items-start gap-4 flex-col gap-2">
+          <div className="w-full flex items-start gap-4 flex-col ">
             {/* search */}
 
             <div className="bg-white border-[#E3E3E3] border-[1px] w-[40%] py-2 px-2 flex items-center gap-2 rounded-md">
@@ -107,19 +84,19 @@ const AllMembers = ({ setShowComp }) => {
 
             <div className="flex items-center gap-5 w-1/2">
               <Button
-                onClick={() => setFilter("all")}
+                onClick={() => setFilterValue("")}
                 sx={{
-                  background: filter === "all" ? "#FAFAFA" : "#fff",
+                  background: filterValue === "" ? "#FAFAFA" : "#fff",
                   borderRadius: "8px",
                   width: "100%",
                   px: "15px",
                   border:
-                    filter === "all"
+                    filterValue === ""
                       ? "1px solid #02981D"
                       : "1px solid #5E5E5E",
-                  color: filter === "all" ? "#02981D" : "#5E5E5E",
+                  color: filterValue === "" ? "#02981D" : "#5E5E5E",
                   "&:hover": {
-                    backgroundColor: filter === "all" ? "#FAFAFA" : "#fff",
+                    backgroundColor: filterValue === "" ? "#FAFAFA" : "#fff",
                   },
                   textTransform: "capitalize",
                   fontWeight: "400",
@@ -128,19 +105,20 @@ const AllMembers = ({ setShowComp }) => {
                 All Members
               </Button>
               <Button
-                onClick={() => setFilter("active")}
+                onClick={() => setFilterValue("active")}
                 sx={{
-                  background: filter === "active" ? "#FAFAFA" : "#fff",
+                  background: filterValue === "active" ? "#FAFAFA" : "#fff",
                   borderRadius: "8px",
                   width: "100%",
                   px: "15px",
                   border:
-                    filter === "active"
+                    filterValue === "active"
                       ? "1px solid #02981D"
                       : "1px solid #5E5E5E",
-                  color: filter === "active" ? "#02981D" : "#5E5E5E",
+                  color: filterValue === "active" ? "#02981D" : "#5E5E5E",
                   "&:hover": {
-                    backgroundColor: filter === "active" ? "#FAFAFA" : "#fff",
+                    backgroundColor:
+                      filterValue === "active" ? "#FAFAFA" : "#fff",
                   },
                   textTransform: "capitalize",
                   fontWeight: "400",
@@ -149,19 +127,20 @@ const AllMembers = ({ setShowComp }) => {
                 Active
               </Button>
               <Button
-                onClick={() => setFilter("inactive")}
+                onClick={() => setFilterValue("inactive")}
                 sx={{
-                  background: filter === "inactive" ? "#FAFAFA" : "#fff",
+                  background: filterValue === "inactive" ? "#FAFAFA" : "#fff",
                   borderRadius: "8px",
                   width: "100%",
                   px: "15px",
                   border:
-                    filter === "inactive"
+                    filterValue === "inactive"
                       ? "1px solid #02981D"
                       : "1px solid #5E5E5E",
-                  color: filter === "inactive" ? "#02981D" : "#5E5E5E",
+                  color: filterValue === "inactive" ? "#02981D" : "#5E5E5E",
                   "&:hover": {
-                    backgroundColor: filter === "inactive" ? "#FAFAFA" : "#fff",
+                    backgroundColor:
+                      filterValue === "inactive" ? "#FAFAFA" : "#fff",
                   },
                   textTransform: "capitalize",
                   fontWeight: "400",
@@ -170,7 +149,7 @@ const AllMembers = ({ setShowComp }) => {
                 Inactive
               </Button>
             </div>
-            {/* filter */}
+            {/* filterValue */}
 
             {/* Table */}
 
@@ -192,17 +171,19 @@ const AllMembers = ({ setShowComp }) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {!dummy ? (
+                    {!data?.results ? (
                       <CircularProgress
                         size="4.2rem"
                         sx={{
-                          color: "#DC0019",
+                          color: "#02981D",
                           marginLeft: "auto",
                           padding: "1em",
                         }}
                       />
-                    ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                      dummy.map((item, i) => (
+                    ) : data?.results &&
+                      Array.isArray(data?.results) &&
+                      data?.results?.length > 0 ? (
+                      data?.results?.map((item, i) => (
                         <TableRow key={item.id}>
                           <TableCell>{page * rowsPerPage + i + 1}</TableCell>
                           <TableCell>
@@ -213,7 +194,7 @@ const AllMembers = ({ setShowComp }) => {
                                 color: "#828282",
                               }}
                             >
-                              {item?.name}
+                              {item?.lastname} {item?.firstname}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -231,12 +212,19 @@ const AllMembers = ({ setShowComp }) => {
                           <TableCell>
                             <Typography
                               sx={{
-                                color: "#1E1E1E",
+                                color:
+                                  item?.membership_status?.toLowerCase() ===
+                                  "active"
+                                    ? "#208637"
+                                    : "#E52929",
                                 fontWeight: "500",
                                 fontSize: "12px",
-                                background: "#EBFFF3",
+                                background:
+                                  item?.membership_status?.toLowerCase() ===
+                                  "active"
+                                    ? "#EBFFF3"
+                                    : "#FBEBEC",
                                 py: "5px",
-                                color: "#1E854A",
                                 borderRadius: "10px",
                                 display: "flex",
                                 alignItems: "center",
@@ -245,13 +233,18 @@ const AllMembers = ({ setShowComp }) => {
                                 width: "80px",
                               }}
                             >
-                              <span className="w-[10px] h-[10px] rounded-full  bg-primary_green" />
-                              Active
+                              {item?.membership_status?.toLowerCase() ===
+                              "active" ? (
+                                <span className="w-[10px] h-[10px] rounded-full  bg-primary_green" />
+                              ) : (
+                                <span className="w-[10px] h-[10px] rounded-full  bg-[#E52929]" />
+                              )}
+                              {item?.membership_status?.toLowerCase()}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Button
-                              onClick={() => setShowComp("profile")}
+                              onClick={() => handleNavigateMember(item?.id)}
                               variant="outlined"
                               sx={{
                                 textTransform: "capitalize",
@@ -283,18 +276,16 @@ const AllMembers = ({ setShowComp }) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-
-              <TablePagination
-                rowsPerPageOptions={[]}
-                component="div"
-                count={dummy?.totalCount || 0}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={(event, newPage) => setPage(newPage)}
-                // onRowsPerPageChange is removed as the number of rows per page is fixed
-              />
             </Box>
             {/* Table */}
+
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              nextPageLink={data?.links?.next}
+              prevPageLink={data?.links?.previous}
+            />
           </div>
         </CustomCard>
         {/* card */}
