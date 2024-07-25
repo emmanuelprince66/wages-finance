@@ -34,56 +34,13 @@ const CorporateSavings = ({
   corporativeData,
   currentPage,
   handlePageChange,
+  searchValue,
   isLoadingMembers,
   setSearchValue,
   corporativeMembers,
   isLoading,
   cop,
 }) => {
-  const dummy = [
-    {
-      id: 1,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-    {
-      id: 2,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-    {
-      id: 3,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-    {
-      id: 4,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-    {
-      id: 5,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-    {
-      id: 6,
-      name: "Emmanuel Ochigbo",
-      phone: "081667766552",
-      email: "michael.mitc@example.com",
-      wallet: "270,00000",
-    },
-  ];
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
   const handleMouseDownCash = (event) => {
@@ -172,6 +129,8 @@ const CorporateSavings = ({
             <SearchOutlinedIcon sx={{ color: "#757575" }} />
             <input
               type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search member , ID"
               className="bg-transparent border-none focus:outline-none outline-none  w-full"
             />

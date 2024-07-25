@@ -21,8 +21,11 @@ import {
   RadioGroup,
   FormControl,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { AuthAxios } from "../../helpers/axiosInstance";
+import { getCookie } from "../../utils/cookieAuth";
 
-const AddInvestment = () => {
+const AddInvestment = ({ setShowComp }) => {
   const [preview, setPreview] = useState("");
   const {
     handleSubmit,
@@ -33,12 +36,67 @@ const AddInvestment = () => {
   } = useForm({ mode: "all" });
   const selectedSubscription = watch("subscription", "3 months");
   const subscriptionOptions = ["3 months", "6 months", "9 months", "12 months"];
+  const token = getCookie("authToken");
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.substr(0, 5) === "image") {
+      setPreview(URL.createObjectURL(file));
+      const formData = new FormData();
+      formData.append("file", file); // Append the file directly as a Blob
+      console.log(formData);
+    } else {
+      setPreview(null);
+    }
+  };
+
+  // mutation
+  const uploadNewInvestment = useMutation({
+    mutationFn: async (formData) => {
+      console.log(formData);
+      try {
+        const response = await AuthAxios({
+          url: "/admin/new_investment",
+          method: "POST",
+          data: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (response.status !== 201) {
+          throw new Error(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        console.log(error);
+
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      // Handle success, update state, or perform further actions
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  // submit form
+
+  const onFormSubmit = (data) => {
+    console.log(data);
+  };
 
   return (
     <div className="flex items-start flex-col gap-3">
       {/*  */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 cursor-pointer hover:underline">
+        <div
+          className="flex items-center gap-1 cursor-pointer hover:underline"
+          onClick={() => setShowComp("all")}
+        >
           <img src={iOne} alt="i-one" />
 
           <p className="text-[14px]  text-[#17171]">Investments</p>
@@ -53,7 +111,10 @@ const AddInvestment = () => {
       {/*  */}
 
       <div className="flex gap-2 items-center">
-        <WestOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
+        <WestOutlinedIcon
+          onClick={() => setShowComp("all")}
+          sx={{ color: "#919191", pt: "2px", cursor: "pointer" }}
+        />
         <p className="text-[#171717] text-[20px] font-[600]">
           Create New Investment Plan
         </p>
@@ -64,7 +125,7 @@ const AddInvestment = () => {
       {/* form */}
 
       <div className="w-[60%] mx-auto p-2">
-        <form action="" className="w-full">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="w-full">
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <div className="w-full flex flex-col items-start gap-1">
@@ -78,7 +139,7 @@ const AddInvestment = () => {
                     <div className="w-full min-h-[13rem] rounded-md bg-[#f1f1f1]"></div>
                   ) : (
                     <img
-                      src=""
+                      src={preview}
                       alt="banner"
                       className="object-fill w-full h-full"
                     />
@@ -90,7 +151,7 @@ const AddInvestment = () => {
                     Upload an Image to uniquely identify this investment plan.
                   </p>
                   <TextField
-                    // onChange={handleImageChange}
+                    onChange={handleImageChange}
                     type="file"
                     accept="image/*"
                     style={{ marginBottom: "20px", width: "100%", my: "10px" }}
@@ -144,11 +205,10 @@ const AddInvestment = () => {
                           },
                         },
                       }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
+                      error={!!errors.sampleName}
+                      helperText={
+                        errors.sampleName && errors.sampleName.message
+                      }
                     />
                   )}
                 />
@@ -296,11 +356,8 @@ const AddInvestment = () => {
                           },
                         },
                       }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
+                      error={!!errors.np}
+                      helperText={errors.np && errors.np.message}
                     />
                   )}
                 />
@@ -337,11 +394,10 @@ const AddInvestment = () => {
                           },
                         },
                       }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
+                      error={!!errors.interestRate}
+                      helperText={
+                        errors.interestRate && errors.interestRate.message
+                      }
                     />
                   )}
                 />
@@ -378,18 +434,15 @@ const AddInvestment = () => {
                           },
                         },
                       }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
+                      error={!!errors.amt}
+                      helperText={errors.amt && errors.amt.message}
                     />
                   )}
                 />
               </div>
             </Grid>
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <div className="flex items-center justify-between">
                 <p className="text-general text-[16px] ">
                   Set this plan as sold out
@@ -414,11 +467,12 @@ const AddInvestment = () => {
                   color="default"
                 />
               </div>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
+              s
               <div className="flex items-center gap-4 w-full justify-end mt-4">
                 <Button
-                  disabled
+                  type="submit"
                   variant="contained"
                   sx={{
                     color: "#fff",

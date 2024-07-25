@@ -11,6 +11,7 @@ import Repayments from "./loans/Repayments";
 
 const Loans = () => {
   const [showOverview, setShowOverview] = useState(true);
+
   return (
     <div className="flex w-full items-start flex-col gap-3">
       <div className="flex justify-between items-center w-full">

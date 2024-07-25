@@ -54,8 +54,6 @@ const Investment = () => {
     staleTime: 5000, // Cache data for 5 seconds
   });
 
-  console.log(investmentListData);
-
   //
 
   return (
@@ -213,10 +211,14 @@ const Investment = () => {
         )}
 
         {showComp === "all" || showComp === "details" ? (
-          <AllInvestments setShowComp={setShowComp} />
+          <AllInvestments
+            investmentPlans={investmentListData?.plans || []}
+            setShowComp={setShowComp}
+            investmentListLoading={investmentListLoading}
+          />
         ) : null}
 
-        {showComp === "add" && <AddInvestment />}
+        {showComp === "add" && <AddInvestment setShowComp={setShowComp} />}
       </div>
     </>
   );

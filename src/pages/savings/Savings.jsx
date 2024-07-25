@@ -18,7 +18,7 @@ const Savings = () => {
 
   // fetch card details
   const apiUrl = `/admin/coporative_stats`;
-  const getCorporateMembersUrl = `/admin/active_coporative_members`;
+  const getCorporateMembersUrl = `/admin/active_coporative_members/?search=${searchValue}`;
 
   const fetchCorporativeData = async (url) => {
     try {
@@ -149,6 +149,7 @@ const Savings = () => {
           isLoadingMembers={isLoadingMembers}
           setSearchValue={setSearchValue}
           handlePageChange={handlePageChange}
+          searchValue={searchValue}
           currentPage={currentPage}
         />
       )}

@@ -14,10 +14,11 @@ const Members = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterValue, setFilterValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
   const token = getCookie("authToken");
 
-  const apiUrl = `/admin/users/?page=${currentPage}&limit=${rowsPerPage}&status=${filterValue}`;
+  const apiUrl = `/admin/users/?page=${currentPage}&limit=${rowsPerPage}&status=${filterValue}&search=${searchValue}`;
 
   const fetchMembers = async (url) => {
     try {
@@ -59,6 +60,8 @@ const Members = () => {
           setShowComp={setShowComp}
           setFilterValue={setFilterValue}
           setMemberId={setMemberId}
+          setSearchValue={setSearchValue}
+          searchValue={searchValue}
           filterValue={filterValue}
           totalPages={totalPages}
           data={data || []}

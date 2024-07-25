@@ -3,7 +3,7 @@ import AllLoans from "./AllLoans";
 import LoanProfile from "./LoanProfile";
 
 const Repayments = () => {
-  const [showLoans, setShowLoans] = useState(false);
+  const [showLoans, setShowLoans] = useState(true);
   return (
     <>
       {showLoans && <AllLoans />}

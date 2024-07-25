@@ -26,10 +26,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import CustomPagination from "../../components/CustomPagination";
 const AllMembers = ({
+  searchValue,
   setShowComp,
   currentPage,
   setMemberId,
   filterValue,
+  setSearchValue,
   handlePageChange,
   totalPages,
   setFilterValue,
@@ -42,6 +44,11 @@ const AllMembers = ({
   const handleNavigateMember = (id) => {
     setShowComp("profile");
     setMemberId(id);
+  };
+
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchValue(val);
   };
   return (
     <>
@@ -74,6 +81,8 @@ const AllMembers = ({
             <div className="bg-white border-[#E3E3E3] border-[1px] w-[40%] py-2 px-2 flex items-center gap-2 rounded-md">
               <SearchOutlinedIcon sx={{ color: "#757575" }} />
               <input
+                value={searchValue}
+                onChange={(e) => handleSearchChange(e)}
                 type="text"
                 placeholder="Search member , ID"
                 className="bg-transparent border-none focus:outline-none outline-none  w-full"

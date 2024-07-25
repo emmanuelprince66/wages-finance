@@ -9,10 +9,10 @@ const LoanCustomCardContent = ({
   status,
 }) => {
   return (
-    <div className="w-full flex flex-col items-start gap-3">
+    <div className="w-full flex flex-col items-start gap-3 p-0">
       <div className="flex gap-2 items-center">
         <img src={icon} alt="icon" />
-        <p className="font-[500] text-[14px] text-general">{textOne}</p>
+        <p className="font-[500] text-[11px] text-general ">{textOne}</p>
       </div>
 
       <div className="flex flex-col items-start gap-2">

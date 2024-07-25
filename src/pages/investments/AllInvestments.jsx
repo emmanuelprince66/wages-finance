@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Skeleton } from "@mui/material";
 import React from "react";
 import { useState } from "react";
 import Menu from "@mui/material/Menu";
@@ -11,7 +11,11 @@ import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 import InvestmentDetails from "./InvestmentDetails";
 <CustomInvestmentCard status="available" title="Available" />;
-const AllInvestments = ({ setShowComp }) => {
+const AllInvestments = ({
+  setShowComp,
+  investmentPlans,
+  investmentListLoading,
+}) => {
   const [filtered, setFiltered] = useState("all");
   const [showDetails, setShowDetails] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -23,9 +27,10 @@ const AllInvestments = ({ setShowComp }) => {
     setAnchorEl(null);
   };
 
-  const handleShowDetails = () => {
-    setShowDetails(true);
-    setShowComp("details");
+  const handleShowDetails = (id) => {
+    console.log(id);
+    // setShowDetails(true);
+    // setShowComp("details");
   };
 
   return (
@@ -182,15 +187,21 @@ const AllInvestments = ({ setShowComp }) => {
             {/*  */}
 
             <div className="flex flex-wrap gap-4  w-[90%] mx-auto ">
-              <CustomInvestmentCard status="sold" title="Sold" />
-              <CustomInvestmentCard status="available" title="Available" />
-              <CustomInvestmentCard status="available" title="Available" />
-              <CustomInvestmentCard status="available" title="Available" />
-              <CustomInvestmentCard status="available" title="Available" />
+              {investmentListLoading ? (
+                <Skeleton variant="rounded" width="35%" height={250} />
+              ) : (
+                investmentPlans &&
+                Array.isArray(investmentPlans) &&
+                investmentPlans?.map((item) => (
+                  <CustomInvestmentCard
+                    handleShowDetails={handleShowDetails}
+                    item={item}
+                    key={item?.id}
+                  />
+                ))
+              )}
 
-              <div className="cursor-pointer" onClick={handleShowDetails}>
-                <CustomInvestmentCard status="available" title="Available" />
-              </div>
+              <div className="cursor-pointer"></div>
             </div>
 
             <div className="w-[70%] mx-auto items-center justify-between mt-5 flex">
