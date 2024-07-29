@@ -17,6 +17,9 @@ import AllInvestments from "./AllInvestments";
 import InvestmentDetails from "./InvestmentDetails";
 import AddInvestment from "./AddInvestment";
 import FormattedPrice from "../../utils/FormattedPrice";
+import { investmentListDataUrl } from "../../api/endpoint";
+import useFetchData from "../../hooks/useFetchData";
+
 const Investment = () => {
   const [showComp, setShowComp] = useState("all");
   const { selectedDates } = useDateContext();
@@ -27,32 +30,16 @@ const Investment = () => {
     event.preventDefault();
   };
 
-  const apiUrl = `/admin/investment_stats/`;
-  // fetch investment data for card
+  const apiUrl = investmentListDataUrl();
+  const queryKey = ["fetchInvestmentListData", apiUrl];
 
-  const fetchInvestmentListData = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response?.data;
-    } catch (error) {
-      throw new Error("Failed to fetch corporative data");
-    }
-  };
+  // fetch investment data for card
 
   const {
     data: investmentListData,
     error: investmentListError,
     isLoading: investmentListLoading,
-  } = useQuery({
-    queryKey: ["fetchInvestmentListData", apiUrl],
-    queryFn: () => fetchInvestmentListData(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
+  } = useFetchData(queryKey, apiUrl);
 
   //
 

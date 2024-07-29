@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { Button } from "@mui/material";
+import { Button, FormControl, radioGroupClasses } from "@mui/material";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import { useForm, Controller } from "react-hook-form";
@@ -16,6 +16,7 @@ import {
   Paper,
   CircularProgress,
   Grid,
+  FormHelperText,
   Container,
   TextField,
   TablePagination,
@@ -27,55 +28,80 @@ import {
 } from "@mui/material";
 import CustomModal from "../components/CustomModal";
 import CustomSuccessModal from "../components/CustomSuccessModal";
-const Administrators = () => {
-  const {
-    handleSubmit,
-    control,
-    watch,
-    register,
-    formState: { isValid, errors },
-  } = useForm({ mode: "all" });
-  const dummyAdmins = [
-    {
-      id: 1,
-      name: "Kathryn Murphy",
-    },
-    {
-      id: 2,
-      name: "Floyd Miles",
-    },
-    {
-      id: 3,
-      name: "Kathryn Murphy",
-    },
-    {
-      id: 4,
-      name: "Theresa Webb",
-    },
-    {
-      id: 5,
-      name: "Kathryn Murphy",
-    },
-    {
-      id: 6,
-      name: "Kathryn Murphy",
-    },
-    {
-      id: 7,
-      name: "Kathryn Murphy",
-    },
-  ];
-  const [filterValue, setFilterValue] = useState("all");
+import { AuthAxios } from "../helpers/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { getCookie } from "../utils/cookieAuth";
+import EditAdministrator from "./adminstrator/EditAdministrator";
+import AddAdministrator from "./adminstrator/AddAdministrator";
+import { ToastContainer } from "react-toastify";
 
+const Administrators = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [openAddAdminModal, setOpenAddAdminModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [openAdminInfo, setOpenAdminInfo] = useState(false);
+  const [reFetchTeam, setRefetchTeam] = useState(false);
+  const [filterValue, setFilterValue] = useState("all");
 
+  const token = getCookie("authToken");
+  const apiUrl = `/admin/team/`;
   const handleCloseAdminInfo = () => setOpenAdminInfo(false);
   const handleCloseSuccessModal = () => setSuccessModal(false);
   const handleCloseAddAdminModal = () => setOpenAddAdminModal(false);
+  const [teamMemberModalData, setTeamMemberModalData] = useState(null);
+  const [teamFilteredResult, setTeamFilteredResult] = useState(null);
+
+  const fetchTeam = async (url) => {
+    try {
+      const response = await AuthAxios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response?.data;
+    } catch (error) {
+      throw new Error("error fetching...");
+    }
+  };
+
+  const {
+    isLoading,
+    data: teamData,
+    refetch,
+  } = useQuery({
+    queryKey: ["fetchTeam", apiUrl],
+    queryFn: () => fetchTeam(apiUrl),
+    keepPreviousData: true,
+    staleTime: 5000, // Cache data for 5 seconds
+  });
+
+  const handleShowTeamModal = (id) => {
+    const teamMemberById = teamData?.find((item) => item?.id === id);
+    setTeamMemberModalData(teamMemberById);
+    setOpenAdminInfo(true);
+  };
+
+  useEffect(() => {
+    if (teamData && Array.isArray(teamData)) {
+      let filteredResult = teamData;
+      if (filterValue !== "all") {
+        filteredResult = filteredResult.filter((item) => {
+          if (filterValue === "active") {
+            return item.is_active;
+          } else {
+            return !item.is_active;
+          }
+        });
+      }
+      setTeamFilteredResult(filteredResult);
+    }
+  }, [filterValue, teamData, refetch]);
+
+  useEffect(() => {
+    refetch();
+  }, [reFetchTeam, refetch]);
 
   return (
     <div className="w-full flex items-start gap-3 flex-col justify-center">
@@ -83,7 +109,7 @@ const Administrators = () => {
 
       <div className="flex w-full justify-end ">
         <Button
-          // onClick={() => setShowComp("add")}
+          onClick={() => setOpenAddAdminModal(true)}
           variant="contained"
           sx={{
             color: "#fff",
@@ -193,19 +219,19 @@ const Administrators = () => {
                 }}
               >
                 <TableBody>
-                  {!dummyAdmins || dummyAdmins?.length === 0 ? (
+                  {!teamFilteredResult ? (
                     <CircularProgress
                       size="4.2rem"
                       sx={{
-                        color: "#f78105",
+                        color: "#02981D",
                         marginLeft: "auto",
                         padding: "1em",
                       }}
                     />
-                  ) : dummyAdmins &&
-                    Array.isArray(dummyAdmins) &&
-                    dummyAdmins?.length > 0 ? (
-                    dummyAdmins?.map((item, i) => (
+                  ) : teamFilteredResult &&
+                    Array.isArray(teamFilteredResult) &&
+                    teamFilteredResult?.length > 0 ? (
+                    teamFilteredResult?.map((item, i) => (
                       <TableRow
                         key={item.id}
                         className="cursor-pointer"
@@ -215,18 +241,30 @@ const Administrators = () => {
                           {page * rowsPerPage + i + 1}
                         </TableCell>
                         <TableCell>
-                          <Typography
-                            sx={{
-                              fomtWeight: "400",
-                              fontSize: "16px",
-                              color: "#828282",
-                            }}
-                          >
-                            {item?.name}
-                          </Typography>
+                          <div className="w-full gap-1 flex items-center">
+                            <Typography
+                              sx={{
+                                fontWeight: "400",
+                                fontSize: "16px",
+                                color: "#828282",
+                              }}
+                            >
+                              {item?.lastname} {item?.firstname}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontWeight: "400",
+                                fontSize: "14px",
+                                color: "#5E5E5E",
+                              }}
+                            >
+                              ({item?.role})
+                            </Typography>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Box
+                            onClick={() => handleShowTeamModal(item?.id)}
                             sx={{
                               cursor: "pointer",
                               width: "100%",
@@ -247,15 +285,6 @@ const Administrators = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[]}
-              component="div"
-              count={0}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              // onRowsPerPageChange is removed as the number of rows per page is fixed
-            />
           </Box>
           {/* customers end */}
         </div>
@@ -275,173 +304,10 @@ const Administrators = () => {
             />
           </div>
 
-          <div className="w-full">
-            <form action="">
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        FIRST NAME
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="firstName"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter First Name"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderRadius: "10px",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "#015B11",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#015B11",
-                              },
-                            },
-                          }}
-
-                          // error={!!errors.venturesName}
-                          // helperText={
-                          //   errors.venturesName && errors.venturesName.message
-                          // }
-                        />
-                      )}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        LAST NAME/SURNAME
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="lastName"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter Last name/Surname"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderRadius: "10px",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "#015B11",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#015B11",
-                              },
-                            },
-                          }}
-
-                          // error={!!errors.venturesName}
-                          // helperText={
-                          //   errors.venturesName && errors.venturesName.message
-                          // }
-                        />
-                      )}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={12}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        EMAIL ADDRESS
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="email"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="example@domain.com"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& fieldset": {
-                                borderRadius: "10px",
-                              },
-                              "&:hover fieldset": {
-                                borderColor: "#015B11",
-                              },
-                              "&.Mui-focused fieldset": {
-                                borderColor: "#015B11",
-                              },
-                            },
-                          }}
-
-                          // error={!!errors.venturesName}
-                          // helperText={
-                          //   errors.venturesName && errors.venturesName.message
-                          // }
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="flex justify-end  w-[70%] gap-5 ml-auto mt-6 items-center">
-                    <Button
-                      onClick={handleCloseAddAdminModal}
-                      variant="outlined"
-                      sx={{
-                        textTransform: "capitalize",
-                        display: "flex",
-                        gap: "4px",
-                        width: "100%",
-                        alignItems: "center",
-                        color: "#02981D",
-                        padding: ".6em",
-                        border: "1px solid #02981D",
-                        "&:hover": {
-                          border: "1px solid #02981D",
-                        },
-                        // lineHeight: "26.4px",
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      sx={{
-                        color: "#fff",
-                        width: "100%",
-                        background: "#02981D",
-                        padding: ".6em",
-                        boxShadow: "none",
-                        "&:hover": {
-                          background: "#02981d",
-                        },
-                      }}
-                    >
-                      Add New Admin
-                    </Button>
-                  </div>
-                </Grid>
-              </Grid>
-            </form>
-          </div>
+          <AddAdministrator
+            handleCloseAddAdminModal={handleCloseAddAdminModal}
+            setRefetchTeam={setRefetchTeam}
+          />
         </div>
       </CustomModal>
       {/* Add new admin modal ends */}
@@ -456,196 +322,40 @@ const Administrators = () => {
       {/* add admin success modal ends */}
 
       {/* admin information modal */}
-      <CustomModal open={openAdminInfo}>
-        <div className="flex flex-col items-start gap-3">
-          <div className="flex items-center justify-between w-full mb-3">
-            <p className="text-general font-[500] text-[20px] ">
-              Admin Information
-            </p>
+      {openAdminInfo && (
+        <CustomModal open={openAdminInfo}>
+          <div className="flex flex-col items-start gap-3">
+            <div className="flex items-center justify-between w-full mb-3">
+              <p className="text-general font-[500] text-[20px] ">
+                Admin Information
+              </p>
 
-            <ClearRoundedIcon
-              onClick={handleCloseAddAdminModal}
-              sx={{ color: "#1E1E1E", cursor: "pointer" }}
+              <ClearRoundedIcon
+                onClick={handleCloseAdminInfo}
+                sx={{ color: "#1E1E1E", cursor: "pointer" }}
+              />
+            </div>
+
+            <EditAdministrator
+              handleCloseAdminInfo={handleCloseAdminInfo}
+              teamMemberModalData={teamMemberModalData}
+              setRefetchTeam={setRefetchTeam}
             />
           </div>
-
-          <div className="w-full">
-            <form action="">
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        FIRST NAME
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="firstName"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter First Name"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& input": {
-                                backgroundColor: "#E3E3E3", // Background color of the input
-                                color: "#ACACAC", // Font color of the input
-                                borderRadius: "10px", // Border radius of the input
-                              },
-                              "& fieldset": {
-                                borderRadius: "10px",
-                                border: "none",
-                              },
-                              "&:hover fieldset": {},
-                              "&.Mui-focused fieldset": {
-                                border: "none",
-                              },
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        LAST NAME/SURNAME
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="lastName"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter Last name/Surname"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& input": {
-                                backgroundColor: "#E3E3E3", // Background color of the input
-                                color: "#ACACAC", // Font color of the input
-                                borderRadius: "10px", // Border radius of the input
-                              },
-                              "& fieldset": {
-                                borderRadius: "10px",
-                                border: "none",
-                              },
-                              "&:hover fieldset": {},
-                              "&.Mui-focused fieldset": {
-                                border: "none",
-                              },
-                            },
-                          }}
-
-                          // error={!!errors.venturesName}
-                          // helperText={
-                          //   errors.venturesName && errors.venturesName.message
-                          // }
-                        />
-                      )}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={12}>
-                  <div className="w-full flex flex-col items-start gap-1 my-2">
-                    <span className="flex items-center mb-1  justify-between w-full">
-                      <p className="text-[#001533] font-[500] text-[16px]">
-                        EMAIL ADDRESS
-                        <sup className="text-[#DC3545]">*</sup>
-                      </p>
-                    </span>
-
-                    <Controller
-                      name="email"
-                      control={control}
-                      defaultValue=""
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="example@domain.com"
-                          sx={{
-                            width: "100%",
-                            "& .MuiOutlinedInput-root": {
-                              "& input": {
-                                backgroundColor: "#E3E3E3", // Background color of the input
-                                color: "#ACACAC", // Font color of the input
-                                borderRadius: "10px", // Border radius of the input
-                              },
-                              "& fieldset": {
-                                borderRadius: "10px",
-                                border: "none",
-                              },
-                              "&:hover fieldset": {},
-                              "&.Mui-focused fieldset": {
-                                border: "none",
-                              },
-                            },
-                          }}
-
-                          // error={!!errors.venturesName}
-                          // helperText={
-                          //   errors.venturesName && errors.venturesName.message
-                          // }
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="flex justify-end  w-[70%] gap-5 ml-auto mt-6 items-center">
-                    <Button
-                      onClick={handleCloseAdminInfo}
-                      variant="outlined"
-                      sx={{
-                        textTransform: "capitalize",
-                        display: "flex",
-                        gap: "4px",
-                        width: "100%",
-                        alignItems: "center",
-                        color: "#02981D",
-                        padding: ".6em",
-                        border: "1px solid #02981D",
-                        "&:hover": {
-                          border: "1px solid #02981D",
-                        },
-                        // lineHeight: "26.4px",
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      sx={{
-                        color: "#fff",
-                        width: "100%",
-                        background: "#02981D",
-                        padding: ".6em",
-                        boxShadow: "none",
-                        "&:hover": {
-                          background: "#02981d",
-                        },
-                      }}
-                    >
-                      Done
-                    </Button>
-                  </div>
-                </Grid>
-              </Grid>
-            </form>
-          </div>
-        </div>
-      </CustomModal>
+        </CustomModal>
+      )}
       {/* admin information modal ends */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

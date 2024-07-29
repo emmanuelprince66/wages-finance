@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import AllMembers from "./AllMembers";
 import MemberProfile from "./MemberProfile";
 import MemberFullTransaction from "./MemberFullTransaction";
-import { AuthAxios } from "../../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { getCookie } from "../../utils/cookieAuth";
+import { allMembersUrl } from "../../api/endpoint";
+import useFetchData from "../../hooks/useFetchData";
 
 const Members = () => {
   const [showComp, setShowComp] = useState("members");
@@ -16,29 +14,14 @@ const Members = () => {
   const [filterValue, setFilterValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  const token = getCookie("authToken");
-
-  const apiUrl = `/admin/users/?page=${currentPage}&limit=${rowsPerPage}&status=${filterValue}&search=${searchValue}`;
-
-  const fetchMembers = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to fetch customer data");
-    }
-  };
-
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["fetchMembers", apiUrl],
-    queryFn: () => fetchMembers(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
+  const apiUrl = allMembersUrl(
+    currentPage,
+    rowsPerPage,
+    filterValue,
+    searchValue
+  );
+  const queryKey = ["fetchMembers", apiUrl];
+  const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   const totalPages = data?.pages;
 

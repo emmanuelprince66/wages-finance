@@ -193,7 +193,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
                       <TableCell>
                         <Typography
                           sx={{
-                            fomtWeight: "400",
+                            fontWeight: "400",
                             fontSize: "16px",
                             color: "#828282",
                           }}
@@ -204,7 +204,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
                       <TableCell>
                         <Typography
                           sx={{
-                            fomtWeight: "400",
+                            fontWeight: "400",
                             fontSize: "16px",
                             color: "#828282",
                           }}

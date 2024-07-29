@@ -172,7 +172,7 @@ const CorporateSavings = ({
                         <TableCell>
                           <Typography
                             sx={{
-                              fomtWeight: "400",
+                              fontWeight: "400",
                               fontSize: "16px",
                               color: "#5E5E5E",
                             }}

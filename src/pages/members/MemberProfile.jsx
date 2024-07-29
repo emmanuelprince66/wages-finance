@@ -15,8 +15,7 @@ import avatar from "../../assets/member-profile/avatar.png";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { Skeleton } from "@mui/material";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
-import { AuthAxios } from "../../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+
 import CustomCard from "../../components/CustomCard";
 import { Grid, Typography, Switch, CircularProgress } from "@mui/material";
 import {
@@ -37,39 +36,20 @@ import {
   Modal,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { getCookie } from "../../utils/cookieAuth";
 import FormattedPrice from "../../utils/FormattedPrice";
 import formattedDate from "../../utils/formattedDate";
+import useFetchData from "../../hooks/useFetchData";
+import { membersProfileUrl } from "../../api/endpoint";
 
 const MemberProfile = ({ setShowComp, memberId }) => {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
-  const token = getCookie("authToken");
 
-  const apiUrl = `/admin/user/${memberId}`;
+  const apiUrl = membersProfileUrl(memberId);
+  const queryKey = ["fetchMembersProfile", apiUrl];
 
-  const fetchMembersProfile = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to fetch customer data");
-    }
-  };
-
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["fetchMembersProfile", apiUrl],
-    queryFn: () => fetchMembersProfile(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000,
-  });
-
+  const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
   return (
     <div className="flex items-start flex-col gap-3">
       {/*  */}
@@ -490,7 +470,7 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                                 <TableCell>
                                   <Typography
                                     sx={{
-                                      fomtWeight: "400",
+                                      fontWeight: "400",
                                       fontSize: "16px",
                                       color: "#828282",
                                     }}

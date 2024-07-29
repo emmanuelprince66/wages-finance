@@ -1,68 +1,55 @@
 import React, { useState } from "react";
 import { CalendarMonthOutlined } from "@mui/icons-material";
 import { DateRangePicker } from "react-date-range";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useDateContext } from "../utils/DateContext";
-import { parse } from "date-fns";
+import { format, parse } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
 const SelectDate = ({ style }) => {
   const { selectedDates, setSelectedDates } = useDateContext();
 
-  const formatString = "MM/dd/yyyy";
-
-  const convertToLocaleDateString = (date) => {
+  const formatDate = (date) => {
     if (typeof date === "string") {
       return date;
     }
-    return date.toLocaleDateString();
+    return format(date, "yyyy-MM-dd");
   };
 
-  const convertedStartDate = parse(
-    convertToLocaleDateString(selectedDates.startDate),
-    formatString,
-    new Date()
-  );
-  const convertedEndDate = parse(
-    convertToLocaleDateString(selectedDates.endDate),
-    formatString,
-    new Date()
-  );
+  const parseDate = (dateStr) => {
+    return parse(dateStr, "yyyy-MM-dd", new Date());
+  };
 
   const [dateVisible, setDateVisible] = useState(false);
   const [selectedRange, setSelectedRange] = useState({
-    startDate: convertedStartDate,
-    endDate: convertedEndDate,
+    startDate: parseDate(selectedDates.startDate),
+    endDate: parseDate(selectedDates.endDate),
     key: "selection",
     color: "#02981D",
   });
 
-  function handleSelect(ranges) {
-    const dateRange = {
-      startDate: ranges.selection.startDate,
-      endDate: ranges.selection.endDate,
+  const handleSelect = (ranges) => {
+    const { startDate, endDate } = ranges.selection;
+    setSelectedRange({
+      startDate,
+      endDate,
       key: "selection",
       color: "#02981D",
-    };
-    setSelectedRange(dateRange);
-    console.log("Selected Date Range:", ranges);
-  }
+    });
+  };
 
-  const modStartDate = convertToLocaleDateString(selectedDates.startDate);
-  const modEndDate = convertToLocaleDateString(selectedDates.endDate);
-
-  function openDateRange() {
+  const openDateRange = () => {
     setDateVisible(!dateVisible);
-  }
+  };
 
-  function handleDateChange() {
+  const handleDateChange = () => {
     setSelectedDates({
-      startDate: selectedRange.startDate.toLocaleDateString(),
-      endDate: selectedRange.endDate.toLocaleDateString(),
+      startDate: formatDate(selectedRange.startDate),
+      endDate: formatDate(selectedRange.endDate),
     });
     setDateVisible(false);
-  }
+  };
 
   return (
     <div>
@@ -82,12 +69,13 @@ const SelectDate = ({ style }) => {
             startIcon={<CalendarMonthOutlined />}
             onClick={openDateRange}
           >
-            {modStartDate} - {modEndDate}
+            {formatDate(selectedDates.startDate)} -{" "}
+            {formatDate(selectedDates.endDate)}
           </Button>
         </div>
         {dateVisible && (
           <div
-            className={`absolute  flex flex-col ${style} bg-white z-[2] shadow-lg p-2 rounded-[8px] top-[140px]`}
+            className={`absolute flex flex-col ${style} bg-white z-[2] shadow-lg p-2 rounded-[8px] top-[140px]`}
           >
             <DateRangePicker ranges={[selectedRange]} onChange={handleSelect} />
             <button

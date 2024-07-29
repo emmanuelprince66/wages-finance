@@ -8,39 +8,16 @@ import sThree from "../../assets/savings/s-33.svg";
 import sFour from "../../assets/savings/s-4.svg";
 import sFive from "../../assets/savings/s-5.svg";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
-import { AuthAxios } from "../../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { getCookie } from "../../utils/cookieAuth";
+import { targetSavingsUrl } from "../../api/endpoint";
+import useFetchData from "../../hooks/useFetchData";
 import { Skeleton } from "@mui/material";
 import FormattedPrice from "../../utils/FormattedPrice";
 
 const TargetSavings = ({ handleShowParticipants }) => {
-  const token = getCookie("authToken");
-  const apiUrl = "/admin/savings_stats";
+  const apiUrl = targetSavingsUrl();
+  const queryKey = ["fetchTargetData", apiUrl];
 
-  const fetchTargetData = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error("Failed to fetch target data");
-    }
-  };
-
-  const {
-    data: targetData,
-    error,
-    isLoading,
-  } = useQuery({
-    queryKey: ["fetchTargetData", apiUrl],
-    queryFn: () => fetchTargetData(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
+  const { data: targetData, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   const FirstCard = ({ titleOne, textOne, textTwo, img, color, link }) => {
     return (

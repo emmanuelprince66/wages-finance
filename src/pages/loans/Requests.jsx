@@ -35,15 +35,26 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
+import useFetchData from "../../hooks/useFetchData";
+import { loanRequestsDataUrl } from "../../api/endpoint";
 
 const Requests = ({ statTitle }) => {
   const [openExportModal, setOpenExportModal] = useState(true);
   const handleCloseExportModal = () => setOpenExportModal(false);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchValue, setSearchValue] = useState("");
   const [exportFilter, setExportFilter] = useState("Current Page"); // Default value
 
   const exportFilterValue = ["Current Page", "Date Range"];
+
+  // fetch data
+  const apiUrl = loanRequestsDataUrl(currentPage, rowsPerPage, searchValue);
+  const queryKey = ["fetchLoanRequestData", apiUrl];
+  const { data, isLoading } = useFetchData(queryKey, apiUrl);
+
+  console.log(data);
+
   const handleChange = (event) => {
     setExportFilter(event.target.value);
   };
@@ -179,7 +190,7 @@ const Requests = ({ statTitle }) => {
                       <TableCell>
                         <Typography
                           sx={{
-                            fomtWeight: "400",
+                            fontWeight: "400",
                             fontSize: "16px",
                             color: "#828282",
                           }}
@@ -190,7 +201,7 @@ const Requests = ({ statTitle }) => {
                       <TableCell>
                         <Typography
                           sx={{
-                            fomtWeight: "400",
+                            fontWeight: "400",
                             fontSize: "16px",
                             color: "#828282",
                           }}

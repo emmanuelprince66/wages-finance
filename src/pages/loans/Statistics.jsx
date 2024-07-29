@@ -10,39 +10,16 @@ import bankNotes from "../../assets/loan/banknotes.svg";
 import user from "../../assets/loan/user.svg";
 import CustomCard from "../../components/CustomCard";
 import Lfour from "../../assets/loan/Lfour";
-import { AuthAxios } from "../../helpers/axiosInstance";
-import { getCookie } from "../../utils/cookieAuth";
-import { useQuery } from "@tanstack/react-query";
+import useFetchData from "../../hooks/useFetchData";
+import { loanStatisticsDataUrl } from "../../api/endpoint";
 import { Skeleton } from "@mui/material";
 
 const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
-  const token = getCookie("authToken");
-  const apiUrl = "/admin/loan_dashboard/";
-
+  const apiUrl = loanStatisticsDataUrl();
+  const queryKey = ["fetchLoanStatistics", apiUrl];
   // fetch loan statistics
 
-  const fetchLoanStatistics = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response?.data;
-    } catch (error) {
-      throw new Error("Error fetching investment loans");
-    }
-  };
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["fetchLoanStatistics"],
-    queryFn: () => fetchLoanStatistics(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+  const { data, isLoading } = useFetchData(queryKey, apiUrl);
 
   const handleOpenRequest = (text) => {
     setStatTitle(text);

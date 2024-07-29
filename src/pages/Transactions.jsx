@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SelectDate from "../components/SelectDate";
 import CustomCard from "../components/CustomCard";
 import { useForm, Controller } from "react-hook-form";
@@ -20,22 +20,19 @@ import {
   Button,
   TableHead,
   TableRow,
-  Paper,
-  Grid,
-  Container,
-  TextField,
-  TablePagination,
-  ToggleButtonGroup,
-  ToggleButton,
-  Card,
   Typography,
-  Modal,
   Divider,
 } from "@mui/material";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import CircularProgress from "@mui/material/CircularProgress";
+import ReportOutlinedIcon from "@mui/icons-material/ReportOutlined";
+import HourglassBottomOutlinedIcon from "@mui/icons-material/HourglassBottomOutlined";
 import CustomModal from "../components/CustomModal";
 import CustomSuccessRequestModal from "../components/CustomSuccessRequestModal";
 import CustomSuccessModal from "../components/CustomSuccessModal";
-
+import CustomPagination from "../components/CustomPagination";
+import { transactionsDataUrl } from "../api/endpoint";
+import useFetchData from "../hooks/useFetchData";
 const Transactions = () => {
   const {
     handleSubmit,
@@ -46,50 +43,6 @@ const Transactions = () => {
   } = useForm({ mode: "all" });
   const status = watch("status", "Pending");
   const statusOptions = ["Pending", "Successfull", "Failed"];
-  const dummy = [
-    {
-      id: 1,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-    {
-      id: 2,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-    {
-      id: 3,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-    {
-      id: 4,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-    {
-      id: 5,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-    {
-      id: 6,
-      name: "Emmanuel Ochigbo",
-      des: "wallet credit",
-      amt: "2000",
-      status: "successfull",
-    },
-  ];
   const [trxFilter, setTrxFilter] = useState("all");
   const [openTrxModal, setOpenTrxModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -100,8 +53,56 @@ const Transactions = () => {
   const closeTrxModal = () => setOpenTrxModal(false);
   const closeSuccessModal = () => setOpenSuccessModal(false);
   const closeWTrxModal = () => setWOpenTrxModal(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [page, setPage] = useState(0);
+
+  const [filteredTrxData, setFilteredTrxData] = useState(null);
+
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [filterValue, setFilterValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+
+  const apiUrl = transactionsDataUrl(currentPage, rowsPerPage, searchValue);
+  const queryKey = ["fetchTransactionData", apiUrl];
+  // fetch transaction data
+
+  const { isLoading, data: transactionsData } = useFetchData(queryKey, apiUrl);
+
+  const totalPages = transactionsData?.pages;
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // filter functionality
+
+  useEffect(() => {
+    const res = transactionsData?.results;
+
+    if (res && Array.isArray(res)) {
+      let filteredResult = res;
+
+      // Filter by transaction type
+      if (trxFilter !== "all") {
+        filteredResult = filteredResult.filter(
+          (item) => item?.type?.toLowerCase() === trxFilter
+        );
+      }
+
+      // Filter by search value
+      if (searchValue !== "") {
+        filteredResult = filteredResult.filter(
+          (item) =>
+            item?.lastname
+              ?.toLowerCase()
+              .includes(searchValue?.toLowerCase()) ||
+            item?.firstname?.toLowerCase().includes(searchValue?.toLowerCase())
+        );
+      }
+
+      setFilteredTrxData(filteredResult);
+    }
+  }, [transactionsData, trxFilter, searchValue]);
+
   return (
     <div className="w-full flex flex-col items-start  gap-3">
       <div className="w-full flex items-center justify-between mb-3">
@@ -115,6 +116,8 @@ const Transactions = () => {
             <div className="bg-white border-[#E3E3E3] border-[1px] w-[50%] py-2 px-2 flex items-center gap-2 rounded-md">
               <SearchOutlinedIcon sx={{ color: "#757575" }} />
               <input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
                 type="text"
                 placeholder="Search member , ID"
                 className="bg-transparent border-none focus:outline-none outline-none  w-full"
@@ -168,19 +171,20 @@ const Transactions = () => {
               All Transactions
             </Button>
             <Button
-              onClick={() => setTrxFilter("wallet")}
+              onClick={() => setTrxFilter("wallet-credit")}
               sx={{
-                background: trxFilter === "wallet" ? "#FAFAFA" : "#fff",
+                background: trxFilter === "wallet-credit" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
                 width: "100%",
                 px: "15px",
                 border:
-                  trxFilter === "wallet"
+                  trxFilter === "wallet-credit"
                     ? "1px solid #02981D"
                     : "1px solid #5E5E5E",
-                color: trxFilter === "wallet" ? "#02981D" : "#5E5E5E",
+                color: trxFilter === "wallet-credit" ? "#02981D" : "#5E5E5E",
                 "&:hover": {
-                  backgroundColor: trxFilter === "wallet" ? "#FAFAFA" : "#fff",
+                  backgroundColor:
+                    trxFilter === "wallet-credit" ? "#FAFAFA" : "#fff",
                 },
                 textTransform: "capitalize",
                 fontWeight: "400",
@@ -253,55 +257,92 @@ const Transactions = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {!dummy ? (
+                  {!transactionsData?.results ||
+                  isLoading ||
+                  !filteredTrxData ? (
                     <CircularProgress
                       size="4.2rem"
                       sx={{
-                        color: "#DC0019",
+                        color: "#02981D",
                         marginLeft: "auto",
                         padding: "1em",
                       }}
                     />
-                  ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                    dummy.map((item, i) => (
+                  ) : filteredTrxData &&
+                    Array.isArray(filteredTrxData) &&
+                    filteredTrxData?.length > 0 ? (
+                    filteredTrxData?.map((item, i) => (
                       <TableRow key={item.id}>
                         <TableCell>{page * rowsPerPage + i + 1}</TableCell>
                         <TableCell>
                           <Typography
                             sx={{
-                              fomtWeight: "400",
+                              fontWeight: "400",
                               fontSize: "16px",
                               color: "#5E5E5E",
                             }}
                           >
-                            {item?.name}
+                            {item?.lastname} {item?.firstname}
                           </Typography>
                         </TableCell>
-                        <TableCell>{item?.des}</TableCell>
-                        <TableCell>{item?.amt}</TableCell>
+                        <TableCell>{item?.description}</TableCell>
+                        <TableCell>{item?.amount}</TableCell>
                         <TableCell>
-                          <Typography
+                          <Box
                             sx={{
-                              color: "#1E1E1E",
+                              textTransform: "capitalize",
+                              background:
+                                item?.status.toLowerCase() === "failed"
+                                  ? "#FFF0F0"
+                                  : item?.status.toLowerCase() === "success"
+                                  ? "#EBFFF3"
+                                  : item?.status.toLowerCase() === "pending"
+                                  ? "#FFF0F0"
+                                  : item?.status.toLowerCase() === "processing"
+                                  ? "#F4F1FE"
+                                  : "",
+                              color:
+                                item?.status.toLowerCase() === "failed"
+                                  ? "#E52929"
+                                  : item?.status.toLowerCase() === "success"
+                                  ? "#1E854A"
+                                  : item?.status.toLowerCase() === "pending"
+                                  ? "#CDA11E"
+                                  : item?.status.toLowerCase() === "processing"
+                                  ? "#391E85"
+                                  : "",
                               fontWeight: "500",
-                              width: "200px",
                               fontSize: "12px",
-                              background: "#EBFFF3",
-                              py: "5px",
-                              color: "#1E854A",
-                              borderRadius: "10px",
+                              padding: "4px 8px",
+                              borderRadius: "8px",
                               display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
                               justifyContent: "center",
-                              width: "80px",
+                              alignItems: "center",
+                              gap: "5px",
+                              border: "1px solid #E0E0E0",
                             }}
                           >
-                            <CheckCircleOutlineOutlinedIcon
-                              sx={{ color: "#02981D", fontSize: "15px" }}
-                            />
-                            {item.status}
-                          </Typography>
+                            {item?.status.toLowerCase() === "failed" && (
+                              <ReportOutlinedIcon sx={{ fontSize: "12px" }} />
+                            )}
+                            {item?.status.toLowerCase() === "success" && (
+                              <CheckCircleOutlineRoundedIcon
+                                sx={{ fontSize: "12px" }}
+                              />
+                            )}
+                            {item?.status.toLowerCase() === "processing" && (
+                              <CheckCircleOutlineRoundedIcon
+                                sx={{ fontSize: "12px" }}
+                              />
+                            )}
+                            {item?.status.toLowerCase() === "pending" && (
+                              <HourglassBottomOutlinedIcon
+                                sx={{ fontSize: "12px" }}
+                              />
+                            )}
+
+                            {item?.status.toLowerCase()}
+                          </Box>
                         </TableCell>
 
                         <TableCell>
@@ -337,18 +378,15 @@ const Transactions = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-
-            <TablePagination
-              rowsPerPageOptions={[]}
-              component="div"
-              count={dummy?.totalCount || 0}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              // onRowsPerPageChange is removed as the number of rows per page is fixed
-            />
           </Box>
           {/* table end */}
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            nextPageLink={transactionsData?.links?.next}
+            prevPageLink={transactionsData?.links?.previous}
+          />
         </div>
       </CustomCard>
       {/* All transactions modal */}
@@ -652,6 +690,8 @@ const Transactions = () => {
         />
       </CustomModal>
       {/* success modal */}
+
+      {/*  */}
     </div>
   );
 };

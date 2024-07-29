@@ -4,9 +4,8 @@ import ParticipantsSavings from "./ParticipantsSavings";
 import TargetSavings from "./TargetSavings";
 import CorporateSavings from "./CorporateSavings";
 import { Button } from "@mui/material";
-import { AuthAxios } from "../../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { getCookie } from "../../utils/cookieAuth";
+import useFetchData from "../../hooks/useFetchData";
+import { corporativeDataUrl, corporativeMembersUrl } from "../../api/endpoint";
 
 const Savings = () => {
   const [showComp, setShowComp] = useState("corporate");
@@ -14,57 +13,26 @@ const Savings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
-  const token = getCookie("authToken");
 
   // fetch card details
-  const apiUrl = `/admin/coporative_stats`;
-  const getCorporateMembersUrl = `/admin/active_coporative_members/?search=${searchValue}`;
+  const apiUrl = corporativeDataUrl();
 
-  const fetchCorporativeData = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response?.data;
-    } catch (error) {
-      throw new Error("Failed to fetch corporative data");
-    }
-  };
-  const fetchCorporativeMembers = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response?.data;
-    } catch (error) {
-      throw new Error("Failed to fetch corporative members data");
-    }
-  };
+  const getCorporateMembersUrl = corporativeMembersUrl(searchValue);
+
+  const queryKey = ["fetchCorporativeData", apiUrl];
+  const queryKeyTwo = ["fetchCorporativeMembers", getCorporateMembersUrl];
 
   const {
     data: corporativeData,
     error,
     isLoading,
-  } = useQuery({
-    queryKey: ["fetchCorporativeData", apiUrl],
-    queryFn: () => fetchCorporativeData(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
+  } = useFetchData(queryKey, apiUrl);
+
   const {
     data: corporativeMembers,
     error: membersError,
     isLoading: isLoadingMembers,
-  } = useQuery({
-    queryKey: ["fetchCorporativeMembers", getCorporateMembersUrl],
-    queryFn: () => fetchCorporativeMembers(getCorporateMembersUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
+  } = useFetchData(queryKeyTwo, getCorporateMembersUrl);
 
   // fetch card details end
 
