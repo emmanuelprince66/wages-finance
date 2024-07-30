@@ -21,6 +21,7 @@ const CustomInvestmentCard = ({
     is_active,
     quota,
   } = item;
+
   return (
     <>
       <Card sx={{ maxWidth: "300px", cursor: "pointer" }}>

@@ -28,12 +28,12 @@ import {
 } from "@mui/material";
 import CustomModal from "../components/CustomModal";
 import CustomSuccessModal from "../components/CustomSuccessModal";
-import { AuthAxios } from "../helpers/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { getCookie } from "../utils/cookieAuth";
+
 import EditAdministrator from "./adminstrator/EditAdministrator";
 import AddAdministrator from "./adminstrator/AddAdministrator";
 import { ToastContainer } from "react-toastify";
+import { administratorDataUrl } from "../api/endpoint";
+import useFetchData from "../hooks/useFetchData";
 
 const Administrators = () => {
   const [page, setPage] = useState(0);
@@ -44,39 +44,17 @@ const Administrators = () => {
   const [reFetchTeam, setRefetchTeam] = useState(false);
   const [filterValue, setFilterValue] = useState("all");
 
-  const token = getCookie("authToken");
-  const apiUrl = `/admin/team/`;
   const handleCloseAdminInfo = () => setOpenAdminInfo(false);
   const handleCloseSuccessModal = () => setSuccessModal(false);
   const handleCloseAddAdminModal = () => setOpenAddAdminModal(false);
   const [teamMemberModalData, setTeamMemberModalData] = useState(null);
   const [teamFilteredResult, setTeamFilteredResult] = useState(null);
 
-  const fetchTeam = async (url) => {
-    try {
-      const response = await AuthAxios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // fetch
+  const apiUrl = administratorDataUrl();
+  const queryKey = ["fetchTeam", apiUrl];
 
-      return response?.data;
-    } catch (error) {
-      throw new Error("error fetching...");
-    }
-  };
-
-  const {
-    isLoading,
-    data: teamData,
-    refetch,
-  } = useQuery({
-    queryKey: ["fetchTeam", apiUrl],
-    queryFn: () => fetchTeam(apiUrl),
-    keepPreviousData: true,
-    staleTime: 5000, // Cache data for 5 seconds
-  });
-
+  const { isLoading, data: teamData, refetch } = useFetchData(queryKey, apiUrl);
   const handleShowTeamModal = (id) => {
     const teamMemberById = teamData?.find((item) => item?.id === id);
     setTeamMemberModalData(teamMemberById);

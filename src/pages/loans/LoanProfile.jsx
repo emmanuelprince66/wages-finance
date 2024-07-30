@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import tTwo from "../../assets/transactions/t-2.svg";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
@@ -29,8 +29,15 @@ import avatar from "../../assets/member-profile/avatar.png";
 import CustomModal from "../../components/CustomModal";
 import CustomSuccessModal from "../../components/CustomSuccessModal";
 import CustomSuccessRequestModal from "../../components/CustomSuccessRequestModal";
+import FormattedPrice from "../../utils/FormattedPrice";
+import formattedDate from "../../utils/formattedDate";
 
-const LoanProfile = () => {
+const LoanProfile = ({
+  memberLoanDetails,
+  setShowLoans,
+  showLoans,
+  setShowStatistics,
+}) => {
   const {
     handleSubmit,
     control,
@@ -38,12 +45,29 @@ const LoanProfile = () => {
     register,
     formState: { isValid, errors },
   } = useForm({ mode: "all" });
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return "";
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
+  const [selectedStatus, setSelectedStatus] = useState(
+    capitalizeFirstLetter(memberLoanDetails?.status) || ""
+  );
+
   const status = watch("status", "Pending");
   const statusOptions = ["Pending", "Approved", "Declined"];
   const [openLoanSuccessModal, setOpenLoanSuccessModal] = useState(false);
   const closeLoanSuccessModal = () => setOpenLoanSuccessModal(false);
   const handleChange = (event) => {
     setStatusValue(event.target.value);
+  };
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+  const handleBack = () => {
+    showLoans === undefined
+      ? setShowStatistics("request")
+      : setShowLoans((prev) => !prev);
   };
 
   return (
@@ -52,7 +76,7 @@ const LoanProfile = () => {
       <div className="flex items-center gap-3">
         <div
           className="flex items-center gap-1 cursor-pointer hover:underline"
-          onClick={() => setShowComp("members")}
+          onClick={handleBack}
         >
           <img src={mSeven} alt="" />
           <p className="text-[14px]  text-[#17171]">Loan Requests</p>
@@ -66,7 +90,10 @@ const LoanProfile = () => {
       {/*  */}
 
       <div className="flex gap-2 items-center">
-        <WestOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
+        <WestOutlinedIcon
+          onClick={handleBack}
+          sx={{ color: "#919191", pt: "2px", cursor: "pointer" }}
+        />
         <p className="text-[#171717] text-[20px] font-[600]">
           Loan Request Details
         </p>
@@ -92,14 +119,18 @@ const LoanProfile = () => {
                   <p className="text-primary_grey_2 text-[12px] ">
                     Surname / Lastname
                   </p>
-                  <p className="text-general text-[16px] ">Richards</p>
+                  <p className="text-general text-[16px] ">
+                    {memberLoanDetails?.lastname}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
                 <img src={mOne} alt="" />
                 <div className="flex flex-col items-start gap-1">
                   <p className="text-primary_grey_2 text-[12px]">First Name</p>
-                  <sp className="text-general text-[16px] ">Ronald</sp>
+                  <sp className="text-general text-[16px] ">
+                    {memberLoanDetails?.firstname}
+                  </sp>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
@@ -108,7 +139,9 @@ const LoanProfile = () => {
                   <p className="text-primary_grey_2 text-[12px] ">
                     Phone Number
                   </p>
-                  <p className="text-general text-[16px] ">Richards</p>
+                  <p className="text-general text-[16px] ">
+                    {memberLoanDetails?.phone}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-3 items-center">
@@ -116,7 +149,7 @@ const LoanProfile = () => {
                 <div className="flex flex-col items-start gap-1">
                   <p className="text-primary_grey_2 text-[12px] ">Email</p>
                   <p className="text-general text-[16px] ">
-                    ronaldrichards@gmail.com
+                    {memberLoanDetails?.email}
                   </p>
                 </div>
               </div>
@@ -142,7 +175,9 @@ const LoanProfile = () => {
               <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
                 <div className="w-full flex justify-between mt-1">
                   <p className="text-[14px] text-primary_grey_2">Amount:</p>
-                  <p className="text-[14px] text-general font-[500]">N500,00</p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={memberLoanDetails?.amount} />
+                  </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
 
@@ -151,7 +186,7 @@ const LoanProfile = () => {
                     Loan Period:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    6 Months
+                    {memberLoanDetails?.duration_in_months} Month
                   </p>
                 </div>
 
@@ -160,7 +195,7 @@ const LoanProfile = () => {
                 <div className="w-full flex justify-between">
                   <p className="text-[14px] text-primary_grey_2">Interest:</p>
                   <p className="text-[14px] text-general font-[500]">
-                    12% per month
+                    {memberLoanDetails?.interest_rate} per month
                   </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -168,9 +203,7 @@ const LoanProfile = () => {
                   <p className="text-[14px] text-primary_grey_2">
                     Total Repayment:
                   </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    12% per month
-                  </p>
+                  <p className="text-[14px] text-general font-[500]">null</p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
                 <div className="w-full flex justify-between">
@@ -178,7 +211,7 @@ const LoanProfile = () => {
                     Date of Repayment:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    30th June, 2024 • 9:43 AM
+                    {formattedDate(memberLoanDetails?.date_requested)}
                   </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -187,7 +220,9 @@ const LoanProfile = () => {
                   <p className="text-[14px] text-primary_grey_2">
                     Date of Approved/Declined:
                   </p>
-                  <p className="text-[14px] text-general font-[500]">-</p>
+                  <p className="text-[14px] text-general font-[500]">
+                    {formattedDate(memberLoanDetails?.date_approved)}
+                  </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
 
@@ -195,7 +230,7 @@ const LoanProfile = () => {
                   <p className="text-[14px] text-primary_grey_2">
                     Date Due for Repayment:
                   </p>
-                  <p className="text-[14px] text-general font-[500]">- </p>
+                  <p className="text-[14px] text-general font-[500]">null </p>
                 </div>
               </div>
 
@@ -204,46 +239,39 @@ const LoanProfile = () => {
                 <p className="text-general font-[500] text-[16px]">Status</p>
 
                 <div>
-                  <Controller
-                    name="status"
-                    control={control}
-                    defaultValue="Pending"
-                    render={({ field }) => (
-                      <FormControl component="fieldset">
-                        <RadioGroup
-                          row
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.value)}
+                  <FormControl component="fieldset">
+                    <RadioGroup
+                      row
+                      value={selectedStatus}
+                      onChange={handleStatusChange}
+                    >
+                      {statusOptions?.map((label) => (
+                        <div
+                          key={label}
+                          className={`rounded-md border-2 p-1 px-2 mr-3 ${
+                            selectedStatus === label
+                              ? "border-[#02981D]"
+                              : "border-[#E6F5E8]"
+                          }`}
                         >
-                          {statusOptions?.map((label) => (
-                            <div
-                              key={label}
-                              className={`rounded-md border-2 p-1 px-2 mr-3 ${
-                                statusOptions === label
-                                  ? "border-[#02981D]"
-                                  : "border-[#E6F5E8]"
-                              }`}
-                            >
-                              <FormControlLabel
-                                value={label}
-                                control={
-                                  <Radio
-                                    sx={{
-                                      color: "#02981D",
-                                      "&.Mui-checked": {
-                                        color: "#02981D",
-                                      },
-                                    }}
-                                  />
-                                }
-                                label={label}
+                          <FormControlLabel
+                            value={label}
+                            control={
+                              <Radio
+                                sx={{
+                                  color: "#02981D",
+                                  "&.Mui-checked": {
+                                    color: "#02981D",
+                                  },
+                                }}
                               />
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    )}
-                  />
+                            }
+                            label={label}
+                          />
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
                 </div>
               </div>
               {/* radio */}
@@ -277,6 +305,7 @@ const LoanProfile = () => {
             </div>
           </CustomCard>
         </Grid>
+
         <Grid item xs={6}>
           <CustomCard>
             <div className="w-full flex-col items-start gap-3 flex">
@@ -284,92 +313,62 @@ const LoanProfile = () => {
                 Guarantor's Detail
               </p>
 
-              <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
-                <div className="flex w-full items-center justify-between mt-2 mb-4">
-                  <div className=" items-center flex  gap-2">
-                    <p className="text-general   font-[500] text-[16px]">
-                      Guarantor 1
-                    </p>
-                    <div className=" bg-[#FFF9E6] flex  gap-1 items-center rounded-md border-[1px] border-[#FFE69C] py-1 px-2">
-                      <Lfour color="#CC9A06" />
-                      <p className="text-[14px] text-[#CC9A06] ">
-                        Pending Approval
+              {memberLoanDetails?.guarantors?.map((item, i) => {
+                return (
+                  <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
+                    <div className="flex w-full items-center justify-between mt-2 mb-4">
+                      <div className=" items-center flex  gap-2">
+                        <p className="text-general   font-[500] text-[16px]">
+                          {` Guarantor ${i + 1}`}
+                        </p>
+
+                        {!item?.status ? (
+                          <div className=" bg-[#FFF9E6] flex  gap-1 items-center rounded-md border-[1px] border-[#FFE69C] py-1 px-2">
+                            <Lfour color="#CC9A06" />
+                            <p className="text-[14px] text-[#CC9A06] ">
+                              Pending Approval
+                            </p>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+
+                      <span className="flex gap-2 cursor-pointer items-center text-primary_green font-[500] text-[16px]">
+                        view more{" "}
+                        <ChevronRightOutlinedIcon sx={{ fontSize: "16px" }} />
+                      </span>
+                    </div>
+
+                    <div className="w-full flex justify-between ">
+                      <p className="text-[14px] text-primary_grey_2">Name:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                        {item?.name}
+                      </p>
+                    </div>
+                    <Divider
+                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                    />
+
+                    <div className="w-full flex justify-between">
+                      <p className="text-[14px] text-primary_grey_2">Email:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                        {item?.email}
+                      </p>
+                    </div>
+                    <Divider
+                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                    />
+
+                    <div className="w-full flex justify-between">
+                      <p className="text-[14px] text-primary_grey_2">Phone:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                        {item?.phone}
                       </p>
                     </div>
                   </div>
-
-                  <span className="flex gap-2 cursor-pointer items-center text-primary_green font-[500] text-[16px]">
-                    view more{" "}
-                    <ChevronRightOutlinedIcon sx={{ fontSize: "16px" }} />
-                  </span>
-                </div>
-
-                <div className="w-full flex justify-between ">
-                  <p className="text-[14px] text-primary_grey_2">Name:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    Oluwatobiloba Olosunde
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">Email:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    example@domain.com
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">Phone:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    081663553663
-                  </p>
-                </div>
-              </div>
-              <div className="rounded-md w-full border-[1px] mt-4 bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
-                <div className="flex w-full items-center justify-between mt-2 mb-4">
-                  <div className=" items-center flex  gap-2">
-                    <p className="text-general   font-[500] text-[16px]">
-                      Guarantor 2
-                    </p>
-                    <div className=" bg-[#E9F6EC] flex  gap-1 items-center rounded-md border-[1px] border-[#E9F6EC] py-1 px-2">
-                      <Lfour color="#CC9A06" />
-                      <p className="text-[14px] text-[#208637] ">
-                        Pending Approval
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="flex gap-2 cursor-pointer items-center text-primary_green font-[500] text-[16px]">
-                    view more{" "}
-                    <ChevronRightOutlinedIcon sx={{ fontSize: "16px" }} />
-                  </span>
-                </div>
-
-                <div className="w-full flex justify-between ">
-                  <p className="text-[14px] text-primary_grey_2">Name:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    Oluwatobiloba Olosunde
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">Email:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    example@domain.com
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">Phone:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    081663553663
-                  </p>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </CustomCard>
         </Grid>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import iOne from "../../assets/investment/i-1.svg";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -10,6 +10,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 import CustomCard from "../../components/CustomCard";
+import { useMutation } from "@tanstack/react-query";
+import { getCookie } from "../../utils/cookieAuth";
+import { notiError, notiSuccess } from "../../utils/noti";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import {
   Grid,
@@ -24,34 +27,176 @@ import {
   RadioGroup,
   FormControl,
 } from "@mui/material";
-
-const InvestmentDetails = () => {
+import { parseISO } from "date-fns";
+import { convertDate } from "../../utils/timeConvert";
+const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
   const {
+    register,
     handleSubmit,
     control,
     watch,
-    register,
-    formState: { isValid, errors },
-  } = useForm({ mode: "all" });
+    formState: { errors, isDirty },
+  } = useForm();
+  const token = getCookie("authToken");
+  const [name, setName] = useState("");
+  const [interest, setInterest] = useState("");
+  const [investId, setInvestId] = useState("");
+  const [quota, setQuota] = useState(null);
+  const [image, setImage] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [unitShare, setUnitShare] = useState(null);
+  const [userInvest, setUserInvest] = useState(null);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const [nameErr, setNameErr] = useState(false);
+  const [interestErr, setInterestErr] = useState(false);
+  const [quotaErr, setQuotaErr] = useState(false);
+  const [unitShareErr, setUnitShareErr] = useState(false);
+  const [userInvestErr, setUserInvestErr] = useState(false);
+
   const selectedSubscription = watch("subscription", "3 months");
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
+  const subscriptionOptions = ["3 months", "6 months", "9 months", "12 months"];
+  const validateName = (name) => {
+    const regex = /^[a-zA-Z]+$/;
+    return regex.test(name);
+  };
+  const validateNumber = (input) => {
+    const regex = /^[0-9]+$/;
+    return regex.test(input);
+  };
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+    setNameErr(!validateName(value));
+  };
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
+  const handleQuotaChange = (event) => {
+    setQuota(event.target.value);
+    setQuotaErr(!validateNumber(value));
+  };
+  const handleUnitShareChange = (event) => {
+    setUnitShare(event.target.value);
+    setUnitShareErr(!validateNumber(value));
+  };
+  const handleUserInvestmentChange = (event) => {
+    setUserInvest(event.target.value);
+    setUserInvestErr(!validateNumber(value));
+  };
+
   const handleMouseDownCash = (event) => {
     event.preventDefault();
   };
-  const subscriptionOptions = ["3 months", "6 months", "9 months", "12 months"];
+
+  const handleBack = () => {
+    setShowDetails(false);
+    setShowComp("all");
+  };
+
+  // mutation
+  const updateInvestmentData = useMutation({
+    mutationFn: async (formData) => {
+      console.log(formData);
+      try {
+        const response = await AuthAxios({
+          url: `/admin/update_investment/${investId}`,
+          method: "POST",
+          data: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (response.status !== 201) {
+          setButtonDisabled(false);
+
+          throw new Error(response.data.message);
+        }
+
+        return response;
+      } catch (error) {
+        setButtonDisabled(false);
+
+        console.log(error);
+        notiError("An error occured! try again.");
+
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      notiSuccess("Investment successfully created.");
+
+      setButtonDisabled(false);
+
+      // Handle success, update state, or perform further actions
+    },
+    onError: (error) => {
+      setButtonDisabled(false);
+
+      console.log(error);
+    },
+  });
+
+  const handleFormSubmit = () => {
+    if (
+      name !== "" ||
+      quota !== null ||
+      unitShare !== null ||
+      userInvest !== null ||
+      startDate !== null ||
+      endDate !== null
+    ) {
+      const formData = new FormData();
+      // formData.append("image", imgFile);
+      formData.append("title", name);
+      formData.append("start_date", convertDate(startDate));
+      formData.append("end_date", convertDate(endDate));
+      formData.append("quota", quota);
+      formData.append("interest_rate", userInvest);
+      formData.append("unit_share", unitShare);
+
+      // updateInvestmentData.mutate(formData);
+      // setButtonDisabled(true);
+    } else {
+      notiError("Please fill all fields.");
+    }
+  };
+  console.log(investById);
+  useEffect(() => {
+    setName(investById?.name || "");
+    setQuota(investById?.quota || 0);
+    setImage(investById?.image || "");
+    setStartDate(
+      investById?.start_date ? parseISO(investById.start_date) : null
+    );
+    setEndDate(investById?.end_date ? parseISO(investById.end_date) : null);
+    setUnitShare(investById?.unit_share || 0);
+    setUserInvest(investById?.user_investments_count || 0);
+    setInvestId(investById?.id || "");
+  }, [investById]);
+
   return (
     <div className="flex items-start flex-col gap-3">
       {/*  */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1 cursor-pointer hover:underline">
+        <div
+          className="flex items-center gap-1 cursor-pointer hover:underline"
+          onClick={handleBack}
+        >
           <img src={iOne} alt="i-one" />
 
           <p className="text-[14px]  text-[#17171]">Investments</p>
         </div>
         <ChevronRightOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
         <div className="flex items-center gap-1">
-          <p className="text-[14px]  text-[#17171]">Stable Returns Portfolio</p>
+          <p className="text-[14px]  text-[#17171]">{investById?.name}</p>
         </div>
       </div>
       {/*  */}
@@ -59,7 +204,7 @@ const InvestmentDetails = () => {
       <div className="flex gap-2 items-center">
         <WestOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
         <p className="text-[#171717] text-[20px] font-[600]">
-          Stable Returns Portfolio
+          {investById?.name}
         </p>
       </div>
 
@@ -172,36 +317,35 @@ const InvestmentDetails = () => {
                   <p className="text-[#001533] font-[500] text-[16px]">0/50</p>
                 </span>
 
-                <Controller
-                  name="sampleName"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      placeholder="Sample Name"
-                      sx={{
-                        width: "100%",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "10px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#015B11",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#015B11",
-                          },
-                        },
-                      }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
-                    />
-                  )}
+                <TextField
+                  value={name}
+                  onChange={handleNameChange}
+                  placeholder="Sample Name"
+                  sx={{
+                    width: "100%",
+                    marginTop: "16px",
+                    "& .MuiOutlinedInput-root": {
+                      "& input": {
+                        backgroundColor: "#E3E3E3", // Background color of the input
+                        color: "#ACACAC", // Font color of the input
+                        borderRadius: "10px", // Border radius of the input
+                      },
+                      "& fieldset": {
+                        borderRadius: "10px",
+                        border: "none",
+                      },
+                      "&:hover fieldset": {},
+                      "&.Mui-focused fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
                 />
+                {nameErr && (
+                  <FormHelperText error>
+                    Sample name can only contain letters
+                  </FormHelperText>
+                )}
               </div>
             </Grid>
             <Grid item xs={12}>
@@ -261,26 +405,19 @@ const InvestmentDetails = () => {
                     <sup className="text-[#DC3545]">*</sup>
                   </p>
                 </span>
-                <Controller
-                  name="startDate"
-                  control={control}
-                  defaultValue={null}
-                  render={({ field }) => (
-                    <div className="w-full flex justify-between items-center p-2 border-[1px] border-primary_grey hover:border-primary_green rounded-md">
-                      <DatePicker
-                        {...field}
-                        selected={field.value}
-                        onChange={(date) => field.onChange(date)}
-                        className="w-full p-2 bg-transparent outline-none border-none  flex-2  rounded-lg text-black"
-                        placeholderText="Select start date"
-                      />
 
-                      <KeyboardArrowDownRoundedIcon
-                        sx={{ color: " E6F5E8", cursor: "pointer" }}
-                      />
-                    </div>
-                  )}
-                />
+                <div className="w-full flex justify-between items-center p-2 border-[1px] border-primary_grey hover:border-primary_green rounded-md">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    className="w-full p-2 bg-transparent outline-none border-none  flex-2  rounded-lg text-black"
+                    placeholderText="Select start date"
+                  />
+
+                  <KeyboardArrowDownRoundedIcon
+                    sx={{ color: " E6F5E8", cursor: "pointer" }}
+                  />
+                </div>
               </div>
             </Grid>
 
@@ -292,26 +429,18 @@ const InvestmentDetails = () => {
                     <sup className="text-[#DC3545]">*</sup>
                   </p>
                 </span>
-                <Controller
-                  name="endDate"
-                  control={control}
-                  defaultValue={null}
-                  render={({ field }) => (
-                    <div className="w-full flex justify-between items-center p-2 border-[1px] border-primary_grey hover:border-primary_green rounded-md">
-                      <DatePicker
-                        {...field}
-                        selected={field.value}
-                        onChange={(date) => field.onChange(date)}
-                        className="w-full p-2 bg-transparent outline-none border-none  flex-2  rounded-lg text-black"
-                        placeholderText="Select end date"
-                      />
+                <div className="w-full flex justify-between items-center p-2 border-[1px] border-primary_grey hover:border-primary_green rounded-md">
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    className="w-full p-2 bg-transparent outline-none border-none  flex-2  rounded-lg text-black"
+                    placeholderText="Select start date"
+                  />
 
-                      <KeyboardArrowDownRoundedIcon
-                        sx={{ color: " E6F5E8", cursor: "pointer" }}
-                      />
-                    </div>
-                  )}
-                />
+                  <KeyboardArrowDownRoundedIcon
+                    sx={{ color: " E6F5E8", cursor: "pointer" }}
+                  />
+                </div>
               </div>
             </Grid>
 
@@ -324,36 +453,35 @@ const InvestmentDetails = () => {
                   </p>
                 </span>
 
-                <Controller
-                  name="np"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      placeholder="300"
-                      sx={{
-                        width: "100%",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "10px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#015B11",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#015B11",
-                          },
-                        },
-                      }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
-                    />
-                  )}
+                <TextField
+                  value={quota}
+                  onChange={handleQuotaChange}
+                  placeholder="300"
+                  sx={{
+                    width: "100%",
+                    marginTop: "16px",
+                    "& .MuiOutlinedInput-root": {
+                      "& input": {
+                        backgroundColor: "#E3E3E3", // Background color of the input
+                        color: "#ACACAC", // Font color of the input
+                        borderRadius: "10px", // Border radius of the input
+                      },
+                      "& fieldset": {
+                        borderRadius: "10px",
+                        border: "none",
+                      },
+                      "&:hover fieldset": {},
+                      "&.Mui-focused fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
                 />
+                {quotaErr && (
+                  <FormHelperText error>
+                    Participant can only contain Numbers
+                  </FormHelperText>
+                )}
               </div>
             </Grid>
             <Grid item xs={4}>
@@ -365,36 +493,35 @@ const InvestmentDetails = () => {
                   </p>
                 </span>
 
-                <Controller
-                  name="interestRate"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      placeholder="300"
-                      sx={{
-                        width: "100%",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "10px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#015B11",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#015B11",
-                          },
-                        },
-                      }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
-                    />
-                  )}
+                <TextField
+                  value={userInvest}
+                  onChange={handleUserInvestmentChange}
+                  placeholder="12"
+                  sx={{
+                    width: "100%",
+                    marginTop: "16px",
+                    "& .MuiOutlinedInput-root": {
+                      "& input": {
+                        backgroundColor: "#E3E3E3", // Background color of the input
+                        color: "#ACACAC", // Font color of the input
+                        borderRadius: "10px", // Border radius of the input
+                      },
+                      "& fieldset": {
+                        borderRadius: "10px",
+                        border: "none",
+                      },
+                      "&:hover fieldset": {},
+                      "&.Mui-focused fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
                 />
+                {userInvestErr && (
+                  <FormHelperText error>
+                    Interest rate can only contain Numbers
+                  </FormHelperText>
+                )}
               </div>
             </Grid>
             <Grid item xs={4}>
@@ -406,40 +533,39 @@ const InvestmentDetails = () => {
                   </p>
                 </span>
 
-                <Controller
-                  name="amt"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      placeholder="3,000"
-                      sx={{
-                        width: "100%",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "10px",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#015B11",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#015B11",
-                          },
-                        },
-                      }}
-
-                      // error={!!errors.venturesName}
-                      // helperText={
-                      //   errors.venturesName && errors.venturesName.message
-                      // }
-                    />
-                  )}
+                <TextField
+                  value={unitShare}
+                  onChange={handleUnitShareChange}
+                  placeholder="12"
+                  sx={{
+                    width: "100%",
+                    marginTop: "16px",
+                    "& .MuiOutlinedInput-root": {
+                      "& input": {
+                        backgroundColor: "#E3E3E3", // Background color of the input
+                        color: "#ACACAC", // Font color of the input
+                        borderRadius: "10px", // Border radius of the input
+                      },
+                      "& fieldset": {
+                        borderRadius: "10px",
+                        border: "none",
+                      },
+                      "&:hover fieldset": {},
+                      "&.Mui-focused fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
                 />
+                {unitShareErr && (
+                  <FormHelperText error>
+                    Interest rate can only contain Numbers
+                  </FormHelperText>
+                )}
               </div>
             </Grid>
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <div className="flex items-center justify-between">
                 <p className="text-general text-[16px] ">
                   Set this plan as sold out
@@ -464,7 +590,7 @@ const InvestmentDetails = () => {
                   color="default"
                 />
               </div>
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
               <div className="flex items-center gap-4 w-full justify-end mt-4">
                 <Button
@@ -484,6 +610,8 @@ const InvestmentDetails = () => {
                   Cancel
                 </Button>
                 <Button
+                  disabled={buttonDisabled}
+                  onClick={handleFormSubmit}
                   variant="contained"
                   sx={{
                     color: "#fff",
@@ -495,7 +623,11 @@ const InvestmentDetails = () => {
                     },
                   }}
                 >
-                  Save Changes
+                  {buttonDisabled ? (
+                    <CircularProgress size="1.2rem" sx={{ color: "white" }} />
+                  ) : (
+                    "Save Changes"
+                  )}
                 </Button>
               </div>
             </Grid>

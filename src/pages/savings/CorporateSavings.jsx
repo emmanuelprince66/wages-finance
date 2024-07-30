@@ -5,7 +5,6 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import { IconButton } from "@mui/material";
 import CustomCard from "../../components/CustomCard";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import {
   Table,
   Box,
@@ -28,6 +27,7 @@ import {
 import FormattedPrice from "../../utils/FormattedPrice";
 import CustomPagination from "../../components/CustomPagination";
 
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 const CorporateSavings = ({
   setShowComp,
   showComp,

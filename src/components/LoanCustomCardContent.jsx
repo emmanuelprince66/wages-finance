@@ -7,6 +7,7 @@ const LoanCustomCardContent = ({
   textThree,
   icon,
   status,
+  handleOpenRequest,
 }) => {
   return (
     <div className="w-full flex flex-col items-start gap-3 p-0">
@@ -25,8 +26,11 @@ const LoanCustomCardContent = ({
       </div>
 
       {status !== undefined && (
-        <p className="flex gap-2 items-center text-[#02981D] text-[12px] font-[500]">
-          View {status} {status === "Overdue" ? "Repayments" : "Requests"}
+        <p
+          className="flex gap-2 items-center text-[#02981D] text-[12px] font-[500] cursor-pointer capitalize"
+          onClick={() => handleOpenRequest(status)}
+        >
+          View {status} {status === "overdue" ? "Repayments" : "Requests"}
           <ChevronRightOutlinedIcon sx={{ fontSize: "16px" }} />
         </p>
       )}

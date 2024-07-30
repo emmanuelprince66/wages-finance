@@ -18,6 +18,7 @@ const AllInvestments = ({
 }) => {
   const [filtered, setFiltered] = useState("all");
   const [showDetails, setShowDetails] = useState(false);
+  const [investmentById, setInvestmentById] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -28,9 +29,10 @@ const AllInvestments = ({
   };
 
   const handleShowDetails = (id) => {
-    console.log(id);
-    // setShowDetails(true);
-    // setShowComp("details");
+    const investById = investmentPlans?.find((item) => item?.id === id);
+    setInvestmentById(investById);
+    setShowDetails(true);
+    setShowComp("details");
   };
 
   return (
@@ -251,7 +253,13 @@ const AllInvestments = ({
           </div>
         </>
       )}
-      {showDetails && <InvestmentDetails />}
+      {showDetails && (
+        <InvestmentDetails
+          setShowDetails={setShowDetails}
+          investById={investmentById}
+          setShowComp={setShowComp}
+        />
+      )}
     </>
   );
 };

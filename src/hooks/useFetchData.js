@@ -20,14 +20,14 @@ const useFetchData = (queryKey, apiUrl) => {
     }
   };
 
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: queryKey,
     queryFn: fetchData,
     keepPreviousData: true,
     staleTime: 5000, // Cache data for 5 seconds
   });
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, refetch };
 };
 
 export default useFetchData;

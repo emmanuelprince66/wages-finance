@@ -23,7 +23,7 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
 
   const handleOpenRequest = (text) => {
     setStatTitle(text);
-    handleCloseShowStatatistics();
+    handleCloseShowStatatistics("request");
   };
   return (
     <div className="flex flex-col items-start gap-4 w-full mt-5">
@@ -97,7 +97,8 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
               icon={lSeven}
               textTwo={data?.approved_request}
               textThree={data?.approved_filter}
-              status="Approved"
+              status="approved"
+              handleOpenRequest={handleOpenRequest}
             />
           </CustomCard>
         )}
@@ -110,7 +111,8 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
               icon={lFour}
               textTwo={data?.pending_request}
               textThree={data?.pending_request_filter}
-              status="Pending"
+              status="pending"
+              handleOpenRequest={handleOpenRequest}
             />
           </CustomCard>
         )}
@@ -124,17 +126,15 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
               icon={lSix}
               textTwo={data?.rejected_request}
               textThree={data?.rejected_request_filter}
-              status="Declined"
+              status="rejected"
+              handleOpenRequest={handleOpenRequest}
             />
           </CustomCard>
         )}
       </div>
       {/*  */}
       {/*  */}
-      <p
-        className="font-[600] text-[16px] text-general mt-3"
-        onClick={() => handleOpenRequest("Overdue Repayments")}
-      >
+      <p className="font-[600] text-[16px] text-general mt-3">
         Repayment Summary{" "}
       </p>
       <div className="flex w-full  gap-4 items-center ">
@@ -160,7 +160,8 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
               icon={lTwo}
               textTwo="22,000"
               textThree="300"
-              status="Overdue"
+              status="overdue"
+              handleOpenRequest={handleOpenRequest}
             />
           </CustomCard>
         )}

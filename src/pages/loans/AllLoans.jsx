@@ -11,83 +11,71 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  CircularProgress,
   TableHead,
   TableRow,
-  Paper,
-  FormControl,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  Grid,
-  Container,
-  TextField,
   TablePagination,
-  ToggleButtonGroup,
-  ToggleButton,
-  Card,
   Typography,
   Modal,
 } from "@mui/material";
 import { useState } from "react";
+import CustomPagination from "../../components/CustomPagination";
+import FormattedPrice from "../../utils/FormattedPrice";
+import formattedDate from "../../utils/formattedDate";
 
-const AllLoans = () => {
-  const dummy = [
-    {
-      id: 1,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Approved",
-    },
-    {
-      id: 2,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Declined",
-    },
-    {
-      id: 4,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Declined",
-    },
-    {
-      id: 5,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Pending",
-    },
-    {
-      id: 6,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      date: "30th June, 2024 • 9:43 AM",
-      status: "Approved",
-    },
-  ];
-
+const AllLoans = ({
+  searchValue,
+  setMemberLoanDetails,
+  rowsPerPage,
+  setFilterValue,
+  setSearchValue,
+  filterValue,
+  setShowLoans,
+  isLoading,
+  totalPages,
+  page,
+  currentPage,
+  handlePageChange,
+  data,
+}) => {
   const [requestFilter, setRequestFilter] = useState("all");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const handleShowLoanProfile = (id) => {
+    setShowLoans(false);
+    const memberLoanData = data?.results?.find((item) => item?.id === id);
+    setMemberLoanDetails(memberLoanData);
+  };
 
+  const handleDataFilter = (str) => {
+    setRequestFilter(str);
+
+    switch (str) {
+      case "all":
+        setFilterValue("");
+        break;
+      case "pending":
+        setFilterValue("pending");
+        break;
+      case "declined":
+        setFilterValue("rejected");
+        break;
+      case "approved":
+        setFilterValue("approved");
+        break;
+      default:
+        setFilterValue("");
+        break;
+    }
+  };
   return (
     <>
       <div className="w-full mt-4 flex flex-col gap-4 bg-text_white border-[#E3E3E3] rounded-md p-3 items-start">
         <div className="bg-white border-[#E3E3E3] border-[1px]  w-[40%] py-2 px-2 flex items-center gap-2 rounded-md">
           <SearchOutlinedIcon sx={{ color: "#757575" }} />
           <input
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             type="text"
-            placeholder="Search member , ID"
+            placeholder="Search User ..."
             className="bg-transparent border-none focus:outline-none outline-none  w-full"
           />
         </div>
@@ -95,7 +83,7 @@ const AllLoans = () => {
         {/* filter start */}
         <div className="flex items-center gap-3 w-[60%]">
           <Button
-            onClick={() => setRequestFilter("all")}
+            onClick={() => handleDataFilter("all")}
             sx={{
               background: requestFilter === "all" ? "#FAFAFA" : "#fff",
               borderRadius: "8px",
@@ -117,7 +105,7 @@ const AllLoans = () => {
             All Requests
           </Button>
           <Button
-            onClick={() => setRequestFilter("pending")}
+            onClick={() => handleDataFilter("pending")}
             sx={{
               background: requestFilter === "pending" ? "#FAFAFA" : "#fff",
               borderRadius: "8px",
@@ -139,7 +127,7 @@ const AllLoans = () => {
             Pending
           </Button>
           <Button
-            onClick={() => setRequestFilter("approved")}
+            onClick={() => handleDataFilter("approved")}
             sx={{
               background: requestFilter === "approved" ? "#FAFAFA" : "#fff",
               borderRadius: "8px",
@@ -161,7 +149,7 @@ const AllLoans = () => {
             Approved
           </Button>
           <Button
-            onClick={() => setRequestFilter("declined")}
+            onClick={() => handleDataFilter("declined")}
             sx={{
               background: requestFilter === "declined" ? "#FAFAFA" : "#fff",
               borderRadius: "8px",
@@ -204,17 +192,19 @@ const AllLoans = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!dummy ? (
+                {isLoading ? (
                   <CircularProgress
                     size="4.2rem"
                     sx={{
-                      color: "#DC0019",
+                      color: "#02981D",
                       marginLeft: "auto",
                       padding: "1em",
                     }}
                   />
-                ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                  dummy.map((item, i) => (
+                ) : data?.results &&
+                  Array.isArray(data?.results) &&
+                  data?.results?.length > 0 ? (
+                  data?.results?.map((item, i) => (
                     <TableRow key={item.id}>
                       <TableCell>{page * rowsPerPage + i + 1}</TableCell>
                       <TableCell>
@@ -225,7 +215,7 @@ const AllLoans = () => {
                             color: "#828282",
                           }}
                         >
-                          {item?.user}
+                          {item?.lastname} {item?.firstname}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -236,10 +226,12 @@ const AllLoans = () => {
                             color: "#828282",
                           }}
                         >
-                          {item?.lAmt}
+                          <FormattedPrice amount={item?.amount} />
                         </Typography>
                       </TableCell>
-                      <TableCell>{item?.date}</TableCell>
+                      <TableCell>
+                        {formattedDate(item?.date_approved)}
+                      </TableCell>
                       <TableCell>
                         {item?.status === "Pending" && (
                           <span className="flex gap-1 items-center  justify-center px-1 py-1 rounded-md bg-[#FFF9E6] text-[14px] text-[#997404]">
@@ -259,8 +251,10 @@ const AllLoans = () => {
                             {item?.status}
                           </span>
                         )}
+                        {item?.status}
                       </TableCell>
                       <TableCell
+                        onClick={() => handleShowLoanProfile(item?.id)}
                         sx={{
                           display: "flex",
                           gap: "5px",
@@ -322,15 +316,12 @@ const AllLoans = () => {
               </TableBody>
             </Table>
           </TableContainer>
-
-          <TablePagination
-            rowsPerPageOptions={[]}
-            component="div"
-            count={dummy?.totalCount || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            // onRowsPerPageChange is removed as the number of rows per page is fixed
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            nextPageLink={data?.links?.next}
+            prevPageLink={data?.links?.previous}
           />
         </Box>
         {/* table end */}

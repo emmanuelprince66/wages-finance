@@ -29,9 +29,17 @@ export const investmentListDataUrl = () => {
 export const loanStatisticsDataUrl = () => {
   return "/admin/loan_dashboard/";
 };
-export const loanRequestsDataUrl = (currentPage, rowsPerPage, searchValue) => {
-  return `/admin/loan_overview/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}`;
+export const loanRequestsDataUrl = (
+  currentPage,
+  rowsPerPage,
+  searchValue,
+  filterValue
+) => {
+  return `/admin/loan_overview/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&status=${filterValue}`;
 };
 export const transactionsDataUrl = (currentPage, rowsPerPage, searchValue) => {
   return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}`;
+};
+export const administratorDataUrl = () => {
+  return "/admin/team/";
 };

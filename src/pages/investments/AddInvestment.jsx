@@ -15,6 +15,7 @@ import {
   Switch,
   Box,
   InputAdornment,
+  CircularProgress,
   Button,
   FormControlLabel,
   Radio,
@@ -24,9 +25,12 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { AuthAxios } from "../../helpers/axiosInstance";
 import { getCookie } from "../../utils/cookieAuth";
-
+import { convertDate } from "../../utils/timeConvert";
+import { notiSuccess, notiError } from "../../utils/noti";
 const AddInvestment = ({ setShowComp }) => {
   const [preview, setPreview] = useState("");
+  const [imgFile, setImgFile] = useState(null);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const {
     handleSubmit,
     control,
@@ -41,21 +45,18 @@ const AddInvestment = ({ setShowComp }) => {
     const file = e.target.files[0];
     if (file && file.type.substr(0, 5) === "image") {
       setPreview(URL.createObjectURL(file));
-      const formData = new FormData();
-      formData.append("file", file); // Append the file directly as a Blob
-      console.log(formData);
+      setImgFile(file);
     } else {
       setPreview(null);
     }
   };
-
   // mutation
   const uploadNewInvestment = useMutation({
     mutationFn: async (formData) => {
       console.log(formData);
       try {
         const response = await AuthAxios({
-          url: "/admin/new_investment",
+          url: "/admin/new_investment/",
           method: "POST",
           data: formData,
           headers: {
@@ -65,20 +66,31 @@ const AddInvestment = ({ setShowComp }) => {
         });
 
         if (response.status !== 201) {
+          setButtonDisabled(false);
+
           throw new Error(response.data.message);
         }
 
         return response;
       } catch (error) {
+        setButtonDisabled(false);
+
         console.log(error);
+        notiError("An error occured! try again.");
 
         throw new Error(error.response.data.message);
       }
     },
     onSuccess: (data) => {
+      notiSuccess("Investment successfully created.");
+
+      setButtonDisabled(false);
+
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {
+      setButtonDisabled(false);
+
       console.log(error);
     },
   });
@@ -86,7 +98,26 @@ const AddInvestment = ({ setShowComp }) => {
   // submit form
 
   const onFormSubmit = (data) => {
-    console.log(data);
+    const {
+      sampleName,
+      subscription,
+      startDate,
+      endDate,
+      np,
+      interestRate,
+      amt,
+    } = data;
+    const formData = new FormData();
+    formData.append("image", imgFile);
+    formData.append("title", sampleName);
+    formData.append("start_date", convertDate(startDate));
+    formData.append("end_date", convertDate(endDate));
+    formData.append("quota", np);
+    formData.append("interest_rate", interestRate);
+    formData.append("unit_share", amt);
+
+    uploadNewInvestment.mutate(formData);
+    setButtonDisabled(true);
   };
 
   return (
@@ -469,13 +500,14 @@ const AddInvestment = ({ setShowComp }) => {
               </div>
             </Grid> */}
             <Grid item xs={12}>
-              s
               <div className="flex items-center gap-4 w-full justify-end mt-4">
                 <Button
+                  disabled={buttonDisabled}
                   type="submit"
                   variant="contained"
                   sx={{
                     color: "#fff",
+                    minWidth: "20rem",
                     background: "#02981D",
                     padding: ".9em",
                     boxShadow: "none",
@@ -484,8 +516,14 @@ const AddInvestment = ({ setShowComp }) => {
                     },
                   }}
                 >
-                  <AddRoundedIcon />
-                  Create New Investment Plan
+                  {buttonDisabled ? (
+                    <CircularProgress size="1.2rem" sx={{ color: "white" }} />
+                  ) : (
+                    <span className="w-full">
+                      <AddRoundedIcon />
+                      Create New Investment Plan
+                    </span>
+                  )}
                 </Button>
               </div>
             </Grid>

@@ -3,7 +3,7 @@ import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 import Lfour from "../../assets/loan/Lfour";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import eWhite from "../../assets/loan/eWhite.svg";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { Button } from "@mui/material";
@@ -20,103 +20,105 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   FormControl,
   FormControlLabel,
+  CircularProgress,
   RadioGroup,
   Radio,
-  Grid,
-  Container,
-  TextField,
-  TablePagination,
-  ToggleButtonGroup,
-  ToggleButton,
-  Card,
   Typography,
-  Modal,
 } from "@mui/material";
 import useFetchData from "../../hooks/useFetchData";
 import { loanRequestsDataUrl } from "../../api/endpoint";
+import CustomPagination from "../../components/CustomPagination";
+import FormattedPrice from "../../utils/FormattedPrice";
+import formattedDate from "../../utils/formattedDate";
 
-const Requests = ({ statTitle }) => {
-  const [openExportModal, setOpenExportModal] = useState(true);
+const Requests = ({ statTitle, setShowStatistics, setMemberLoanDetails }) => {
+  const [openExportModal, setOpenExportModal] = useState(false);
   const handleCloseExportModal = () => setOpenExportModal(false);
+  const [exportFilter, setExportFilter] = useState("Current Page"); // Default value
+  const exportFilterValue = ["Current Page", "Date Range"];
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterValue, setFilterValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  const [exportFilter, setExportFilter] = useState("Current Page"); // Default value
+  const [page, setPage] = useState(0);
 
-  const exportFilterValue = ["Current Page", "Date Range"];
+  const [majorFilteredData, setMajorFilteredData] = useState(null);
 
   // fetch data
-  const apiUrl = loanRequestsDataUrl(currentPage, rowsPerPage, searchValue);
-  const queryKey = ["fetchLoanRequestData", apiUrl];
+  const apiUrl = loanRequestsDataUrl(
+    currentPage,
+    rowsPerPage,
+    searchValue,
+    filterValue
+  );
+  const queryKey = ["fetchLoanRequestFilterData", apiUrl];
   const { data, isLoading } = useFetchData(queryKey, apiUrl);
-
-  console.log(data);
 
   const handleChange = (event) => {
     setExportFilter(event.target.value);
   };
-  const dummy = [
-    {
-      id: 1,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 2,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 3,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 4,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 5,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 6,
-      user: "Arlene McCoy",
-      lAmt: "500,000",
-      rAmt: "200,000",
-      date: "30th June, 2024 • 9:43 AM",
-    },
-  ];
+  const totalPages = data?.pages;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleShowLoanProfile = (id) => {
+    const memberLoanData = data?.results?.find((item) => item?.id === id);
+    setMemberLoanDetails(memberLoanData);
+    setShowStatistics("profile");
+  };
+  useEffect(() => {
+    setFilterValue(statTitle);
+    if (data) {
+      const res = data?.results;
+      setMajorFilteredData(res);
+
+      // switch (statTitle) {
+      //   case "overdue":
+      //     setMajorFilteredData(
+      //       res?.filter((item) => item?.status === "OVER-DUE")
+      //     );
+      //     break;
+      //   case "pending":
+      //     setMajorFilteredData(
+      //       res?.filter((item) => item?.status === "PENDING")
+      //     );
+      //     break;
+      //   case "approved":
+      //     setMajorFilteredData(
+      //       res?.filter((item) => item?.status === "APPROVED")
+      //     );
+      //     break;
+      //   default:
+      //     setMajorFilteredData([]);
+      //     break;
+      // }
+    }
+  }, [data, statTitle]);
+
   return (
     <div className="flex flex-col items-start gap-3 w-full mt-3">
       <div className="flex gap-3 items-center">
-        <p className="flex items-center gap-1">
+        <p
+          className="flex items-center gap-1 cursor-pointer hover:underline"
+          onClick={() => setShowStatistics("statistics")}
+        >
           <Lfour color="#5E5E5E" />
           Overview
         </p>
         <ChevronRightOutlinedIcon sx={{ color: "#5E5E5E" }} />
 
-        <p className="text-[#919191] text-[14px]">{statTitle}</p>
+        <p className="text-[#919191] text-[14px] capitalize">{statTitle}</p>
       </div>
 
       <div className="flex gap-3 items-center">
         <WestOutlinedIcon sx={{ color: "#0F172A" }} />
-        <p className="font-[600] text-general text-[20px]">{statTitle} </p>
+        <p className="font-[600] text-general text-[20px] capitalize">
+          {statTitle}{" "}
+        </p>
       </div>
 
       <div className="bg-text_white w-full border-[#E3E3E3] rounded-md p-3">
@@ -174,17 +176,19 @@ const Requests = ({ statTitle }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!dummy ? (
+                {isLoading ? (
                   <CircularProgress
                     size="4.2rem"
                     sx={{
-                      color: "#DC0019",
+                      color: "#02981D",
                       marginLeft: "auto",
                       padding: "1em",
                     }}
                   />
-                ) : dummy && Array.isArray(dummy) && dummy.length > 0 ? (
-                  dummy.map((item, i) => (
+                ) : majorFilteredData &&
+                  Array.isArray(majorFilteredData) &&
+                  majorFilteredData.length > 0 ? (
+                  majorFilteredData.map((item, i) => (
                     <TableRow key={item.id}>
                       <TableCell>{page * rowsPerPage + i + 1}</TableCell>
                       <TableCell>
@@ -195,22 +199,18 @@ const Requests = ({ statTitle }) => {
                             color: "#828282",
                           }}
                         >
-                          {item?.user}
+                          {item?.lastname} {item?.firstname}
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography
-                          sx={{
-                            fontWeight: "400",
-                            fontSize: "16px",
-                            color: "#828282",
-                          }}
-                        >
-                          {item?.lAmt}
-                        </Typography>
+                        <FormattedPrice amount={item?.amount} />
                       </TableCell>
-                      <TableCell>{item?.rAmt}</TableCell>
-                      <TableCell>{item?.date}</TableCell>
+                      <TableCell>
+                        <FormattedPrice amount={item?.amount} />
+                      </TableCell>
+                      <TableCell>
+                        {formattedDate(item?.date_approved)}
+                      </TableCell>
                       <TableCell
                         sx={{
                           display: "flex",
@@ -218,6 +218,7 @@ const Requests = ({ statTitle }) => {
                         }}
                       >
                         <Button
+                          onClick={() => handleShowLoanProfile(item?.id)}
                           variant="outlined"
                           sx={{
                             textTransform: "capitalize",
@@ -274,14 +275,12 @@ const Requests = ({ statTitle }) => {
             </Table>
           </TableContainer>
 
-          <TablePagination
-            rowsPerPageOptions={[]}
-            component="div"
-            count={dummy?.totalCount || 0}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            // onRowsPerPageChange is removed as the number of rows per page is fixed
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            nextPageLink={data?.links?.next}
+            prevPageLink={data?.links?.previous}
           />
         </Box>
         {/* table ends */}

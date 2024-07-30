@@ -2,23 +2,38 @@ import React from "react";
 import { useState } from "react";
 import Statistics from "./Statistics";
 import Requests from "./Requests";
+import LoanProfile from "./LoanProfile";
 
 const Overview = () => {
-  const [showStatistics, setShowStatistics] = useState(true);
+  const [showStatistics, setShowStatistics] = useState("statistics");
+  const [memberLoanDetails, setMemberLoanDetails] = useState(null);
 
-  const handleCloseShowStatatistics = () => setShowStatistics(false);
+  const handleCloseShowStatatistics = (str) => setShowStatistics(str);
   const [statTitle, setStatTitle] = useState("");
 
   return (
     <>
-      {showStatistics && (
+      {showStatistics === "statistics" && (
         <Statistics
           setStatTitle={setStatTitle}
           handleCloseShowStatatistics={handleCloseShowStatatistics}
         />
       )}
 
-      {!showStatistics && <Requests statTitle={statTitle} />}
+      {showStatistics === "request" && (
+        <Requests
+          statTitle={statTitle}
+          setShowStatistics={setShowStatistics}
+          setMemberLoanDetails={setMemberLoanDetails}
+        />
+      )}
+
+      {showStatistics === "profile" && (
+        <LoanProfile
+          setShowStatistics={setShowStatistics}
+          memberLoanDetails={memberLoanDetails}
+        />
+      )}
     </>
   );
 };

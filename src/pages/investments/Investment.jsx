@@ -19,6 +19,7 @@ import AddInvestment from "./AddInvestment";
 import FormattedPrice from "../../utils/FormattedPrice";
 import { investmentListDataUrl } from "../../api/endpoint";
 import useFetchData from "../../hooks/useFetchData";
+import { ToastContainer } from "react-toastify";
 
 const Investment = () => {
   const [showComp, setShowComp] = useState("all");
@@ -207,6 +208,17 @@ const Investment = () => {
 
         {showComp === "add" && <AddInvestment setShowComp={setShowComp} />}
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };
