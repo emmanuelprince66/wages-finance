@@ -32,8 +32,9 @@ import FormattedPrice from "../../utils/FormattedPrice";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "react-toastify";
 import CustomModal from "../../components/CustomModal";
-import CustomLinearProgress from "../../components/CustomLinearProgress";
+import ParticipantModalData from "./ParticipantModalData";
 const ParticipantsSavings = ({ event, setShowComp }) => {
+  const [apiId, setApiId] =  useState("")
   const { title, link, id, img } = event;
   const [currentPage, setCurrentPage] = useState(1);
   const [page, setPage] = useState(1);
@@ -48,7 +49,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
 
   const token = getCookie("authToken");
 
-  const apiUrl = `/admin/savings/${id}/`;
+  const apiUrl = `/admin/savings/${apiId}/`;
   const getParticipantModalUrl = `/admin/single_savings/${participantId}/`;
 
   const handleShowParticipantModal = (id) => {
@@ -72,7 +73,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
   };
 
   const {
-    data: participantModalData,
+    data: participantModalQuery,
     error: modalError,
     isLoading: modalLoading,
   } = useQuery({
@@ -85,6 +86,10 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
   useEffect(() => {
     fetchParticipantModalData();
   }, [participantId]);
+
+  useEffect(() => {
+    setApiId(id)
+  } , [id])
 
   const fetchSavingsParticipants = async (url) => {
     try {
@@ -109,7 +114,6 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
     staleTime: 5000, // Cache data for 5 seconds
   });
 
-  console.log(participantModalData);
 
   // useEffect(() => {
 
@@ -255,102 +259,8 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
 
       {/* partucipant modal start */}
       <CustomModal open={showParticipantModal}>
-        <div className="flex flex-col items-start gap-3 w-full">
-          <div className="flex items-center justify-between w-full mb-3">
-            <p className="text-general font-[500] text-[20px] ">
-              Personal Savings Details
-            </p>
-
-            <ClearRoundedIcon
-              onClick={closeParticipantModal}
-              sx={{ color: "#1E1E1  E", cursor: "pointer" }}
-            />
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <p className="text-primary_green font-[500] text-[18px]">{title}</p>
-          </div>
-
-          {modalLoading || !participantModalData ? (
-            <Skeleton variant="rounded" width="100%" height={220} />
-          ) : (
-            <div className="flex flex-col items-start gap-2 w-full mt-3">
-              <div className="rounded-md w-full border-[1px] bg-[#F9F8FF] border-[#E3E3E3] p-2 flex flex-col items-start">
-                <div className="w-full flex justify-between mt-1">
-                  <p className="text-[14px] text-primary_grey_2">
-                    Description:
-                  </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    Savings Plans
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">User:</p>
-                  <p className="text-[14px] text-general font-[500]">
-                    {participantModalData?.user}
-                  </p>
-                </div>
-
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">
-                    Target Amount:
-                  </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={participantModalData?.amount} />
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">
-                    Amount Saved:
-                  </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={participantModalData?.saved} />
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">
-                    Frequency of Savings:
-                  </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    {participantModalData?.frequency}
-                  </p>
-                </div>
-                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-                <div className="w-full flex justify-between">
-                  <p className="text-[14px] text-primary_grey_2">
-                    Expected Amount Per Saving:
-                  </p>
-                  <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice
-                      amount={participantModalData?.amount_per_savings}
-                    />
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex w-full items-center justify-between">
-            {modalLoading || !participantModalData ? (
-              <Skeleton variant="rounded" width="100%" height={30} />
-            ) : (
-              <CustomLinearProgress
-                startDate={participantModalData?.start_date}
-                endDate={participantModalData?.end_date}
-              />
-            )}
-          </div>
-        </div>
-      </CustomModal>
+      <ParticipantModalData close={closeParticipantModal} modalLoading={modalLoading} title={title}  participantModalQuery={participantModalQuery} />
+      </CustomModal> 
       {/* partucipant modal end */}
     </div>
   );

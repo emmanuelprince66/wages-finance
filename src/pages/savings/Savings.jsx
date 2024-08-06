@@ -82,7 +82,7 @@ const Savings = () => {
               Cooperative Savings
             </Button>
             <Button
-              onClick={() => setShowComp("target")}
+              onClick={() => setShowComp("personal")}
               sx={{
                 background: showComp === "active" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
@@ -100,7 +100,7 @@ const Savings = () => {
                 fontWeight: "400",
               }}
             >
-              Target Savings
+              Personal Savings
             </Button>
           </div>
 
@@ -124,7 +124,7 @@ const Savings = () => {
       {showComp === "participants" && (
         <ParticipantsSavings event={event} setShowComp={setShowComp} />
       )}
-      {showComp === "target" && (
+      {showComp === "personal" && (
         <TargetSavings handleShowParticipants={handleShowParticipants} />
       )}
     </>

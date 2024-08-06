@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 import CustomCard from "../../components/CustomCard";
+import { AuthAxios } from "../../helpers/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
 import { getCookie } from "../../utils/cookieAuth";
 import { notiError, notiSuccess } from "../../utils/noti";
@@ -20,6 +21,7 @@ import {
   TextField,
   Switch,
   Box,
+  CircularProgress,
   InputAdornment,
   Button,
   FormControlLabel,
@@ -131,7 +133,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
       }
     },
     onSuccess: (data) => {
-      notiSuccess("Investment successfully created.");
+      notiSuccess("Investment successfully updated.");
 
       setButtonDisabled(false);
 
@@ -152,7 +154,8 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
       userInvest !== null ||
       startDate !== null ||
       endDate !== null
-    ) {
+    ) { 
+
       const formData = new FormData();
       // formData.append("image", imgFile);
       formData.append("title", name);
@@ -162,8 +165,8 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
       formData.append("interest_rate", userInvest);
       formData.append("unit_share", unitShare);
 
-      // updateInvestmentData.mutate(formData);
-      // setButtonDisabled(true);
+      updateInvestmentData.mutate(formData);
+      setButtonDisabled(true);
     } else {
       notiError("Please fill all fields.");
     }
@@ -615,6 +618,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
                   variant="contained"
                   sx={{
                     color: "#fff",
+                    minWidth:"9rem",
                     background: "#02981D",
                     padding: ".9em",
                     boxShadow: "none",

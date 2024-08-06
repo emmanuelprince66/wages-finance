@@ -40,11 +40,22 @@ import FormattedPrice from "../../utils/FormattedPrice";
 import formattedDate from "../../utils/formattedDate";
 import useFetchData from "../../hooks/useFetchData";
 import { membersProfileUrl } from "../../api/endpoint";
+import CustomModal from "../../components/CustomModal";
+import CorporativeSavingsModal from "./CorporativeSavingsModal";
+import PersonalSavingsModal from "./PersonalSavingsModal";
+import InvestmentDetailsModal from "./InvestmentDetailsModal";
 
 const MemberProfile = ({ setShowComp, memberId }) => {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [openCorporateSavingsModal , setOpenCorporateSavingsModal] = useState(false)
+  const handleCloseCoModal = () => setOpenCorporateSavingsModal(false)
+  const  [showInvDetailsModal , setShowInvDetailsModal] =  useState(false)
+  const handleCloseInvDetailsModal =  () => setShowInvDetailsModal(false)
+ 
+  const [openPersonalModal , setOpenPersonalModal] = useState(false)
+  const handleClosePersonal = () => setOpenPersonalModal(false)
 
   const apiUrl = membersProfileUrl(memberId);
   const queryKey = ["fetchMembersProfile", apiUrl];
@@ -87,12 +98,13 @@ const MemberProfile = ({ setShowComp, memberId }) => {
           <div className="w-full bg-white">
             <div className="flex gap-4 items-end ">
               <div className="flex flex-col items-start gap-6">
+
                 <p className="text-general font-[500] text-[16px] ">
                   Personal Details
                 </p>
 
                 <div>
-                  <img src={avatar} alt="" />
+                  <img src={data?.profile_picture || ""} alt="" />
                 </div>
               </div>
               <div className="flex flex-col gap-3 items-start">
@@ -297,12 +309,14 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                   <div className="w-full flex justify-between items-center">
                     <div className="flex-col flex items-start gap-1">
                       <p className="text-[14px] text-primary_grey_2">
-                        Total Savings :
+                        Total Corporative Savings :
                       </p>
                       <p className="text-general font-[600] text-[24px] ">
                         <FormattedPrice amount={data?.total_savings} />
                       </p>
-                      <span className="flex gap-3 items-center cursor-pointer">
+                      <span className="flex gap-3 items-center cursor-pointer"
+                      onClick={() =>  setOpenCorporateSavingsModal(true)}
+                      >
                         <p className="text-primary_green text-[12px] font-[500]">
                           View Savings Plans
                         </p>
@@ -313,12 +327,14 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                     <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
                     <div className="flex-col flex items-start gap-1">
                       <p className="text-[14px] text-primary_grey_2">
-                        Total Investment Value :
+                        Total Personal Savings :
                       </p>
                       <p className="text-general font-[600] text-[24px] ">
                         <FormattedPrice amount={data?.total_investment} />
                       </p>
-                      <span className="flex gap-3 items-center cursor-pointer">
+                      <span className="flex gap-3 items-center cursor-pointer"
+                      onClick={() => setOpenPersonalModal(true)}
+                      >
                         <p className="text-primary_green text-[12px] font-[500]">
                           See Details
                         </p>
@@ -327,7 +343,11 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex-col flex items-start gap-1 mt-4">
+
+                   <div className="w-full flex justify-between items-center">
+
+
+                   <div className="flex-col flex items-start gap-1 mt-4">
                     <p className="text-[14px] text-primary_grey_2">
                       Outstanding Loan: :
                     </p>
@@ -342,6 +362,27 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                       <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
                     </span>
                   </div>
+                  <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
+
+                   <div className="flex-col flex items-start gap-1">
+                      <p className="text-[14px] text-primary_grey_2">
+                        Total Investment Value :
+                      </p>
+                      <p className="text-general font-[600] text-[24px] ">
+                        <FormattedPrice amount={data?.total_investment} />
+                      </p>
+                      <span className="flex gap-3 items-center cursor-pointer"
+                      onClick={() => setShowInvDetailsModal(true)}
+                      >
+                        <p className="text-primary_green text-[12px] font-[500]">
+                          See Details
+                        </p>
+
+                        <ChevronRightOutlinedIcon sx={{ color: "#02981D" }} />
+                      </span>
+                    </div>
+                   </div>
+                
                 </div>
               </CustomCard>
             )}
@@ -524,6 +565,27 @@ const MemberProfile = ({ setShowComp, memberId }) => {
       </Grid>
 
       {/* card 2 */}
+
+
+
+      {/* modal for total corporateSavings */}
+      <CustomModal style="w-[55%]" open={openCorporateSavingsModal} closeModal={handleCloseCoModal}>
+                  <CorporativeSavingsModal close={handleCloseCoModal}/>
+      </CustomModal>
+      {/* modal for total corporateSavings end */}
+
+
+      {/* modal for total personal savings */}
+      <CustomModal style="w-[65%]" open={openPersonalModal} closeModal={handleClosePersonal}>
+                  <PersonalSavingsModal close={handleClosePersonal}/>
+      </CustomModal>
+      {/* modal for total personal savings end */}
+
+      {/* modal for investment vallue */}
+      <CustomModal style="w-[90%]" open={showInvDetailsModal} closeModal={handleCloseInvDetailsModal}>
+                  <InvestmentDetailsModal close={handleCloseInvDetailsModal}/>
+      </CustomModal>
+      {/* modal end */}
     </div>
   );
 };
