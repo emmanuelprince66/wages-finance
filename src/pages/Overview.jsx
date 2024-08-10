@@ -16,11 +16,50 @@ const Overview = () => {
 
   // fetch overview data
 
+
+
+  // cooperative card
+  const CustomCorporativeCard = ({text , amt}) => {
+    return (
+      <CustomCard style="w-full">
+        <div className="w-full flex flex-col items-start gap-4">
+          <p className="text-[14px] font-[400] text-primary_grey_2">{text}</p>
+          <p className="text-[20px] font-[600] text-general">{amt}</p>
+        </div>
+      </CustomCard>
+    )
+  }
+  // loan card
+  const CustomLoanCard = ({time,filter ,type , textOne , textTwo}) => {
+    return (
+      <CustomCard style="w-full">
+    {
+      type === "per" ? <div className="w-full flex justify-center items-start flex-col gap-3 min-h-[6.7rem]">
+          <p className="text-[14px] font-[400] text-primary_grey_2">{textOne}</p>
+          <p className="text-[30px] font-[600] text-general">{time}</p>
+      </div> : (
+          <div className="w-full flex flex-col gap-3 items-start">
+        <div className="w-full flex flex-col items-start gap-2">
+          <p className="text-[14px] font-[400] text-primary_grey_2">{textOne}</p>
+          <p className="text-[20px] font-[600] text-general">{time}</p>
+        </div>
+        <div className="w-full flex flex-col items-start gap-2">
+          <p className="text-[14px] font-[400] text-primary_grey_2">{textTwo}</p>
+          <p className="text-[20px] font-[600] text-general">{filter}</p>
+        </div>
+      </div>
+      )
+    } 
+  
+      </CustomCard>
+    )
+  }
+
   const apiUrl = overveiwUrl(selectedDates);
   const queryKey = ["fetchOverveiwData", apiUrl];
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="w-full flex items-center flex-col ">
@@ -114,6 +153,46 @@ const Overview = () => {
           </CustomCard>
         )}
       </div>
+
+      {/* corporative data analytics */}
+
+      <div className="w-full rounded-md border-[1px] border-[#E3E3E3] mt-5 p-3 flex flex-col gap-2">
+       <p className="text-general font-[500] text-[16px]">Cooperative</p>
+        
+     <div className="flex justify-between gap-3 items-center w-full mt-4">
+     <CustomCorporativeCard text="Total Cooperative Members" amt="771"/>
+      <CustomCorporativeCard text="Total Active Members" amt="600"/>
+      <CustomCorporativeCard text="Total Cooperative Savings" amt={<FormattedPrice amount={20000}/>}/>
+     </div>
+      </div>
+
+
+      {/* loan data analytics */}
+  
+      <div className="w-full rounded-md border-[1px] border-[#E3E3E3] mt-5 p-3 flex flex-col gap-2">
+       <p className="text-general font-[500] text-[16px]">Loan</p>
+        
+     <div className="flex justify-between gap-3 items-center w-full mt-4">
+        <CustomLoanCard
+        time={<FormattedPrice amount={2004000}/>}
+        filter={<FormattedPrice amount={3004000}/>}
+        textOne="Total Loan Disbursed(All-time)"
+        textTwo="Total Loan Disbursed(By-Filter)"
+        />
+        <CustomLoanCard
+        time={<FormattedPrice amount={2004000}/>}
+        filter={<FormattedPrice amount={3004000}/>}
+        textOne="Total Repayment for this Month(All-time)"
+        textTwo="Total Amount Paid Till Date(By-Filter)"
+        />
+        <CustomLoanCard
+        type="per"
+        time="39%"
+        textOne="Percentage Loan Repayment"
+        />
+     </div>
+      </div>
+
     </div>
   );
 };

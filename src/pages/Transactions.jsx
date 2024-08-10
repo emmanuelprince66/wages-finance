@@ -3,36 +3,27 @@ import SelectDate from "../components/SelectDate";
 import CustomCard from "../components/CustomCard";
 import { useForm, Controller } from "react-hook-form";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import tOne from "../assets/transactions/t-1.svg";
 import tTwo from "../assets/transactions/t-2.svg";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import {
-  Table,
-  Box,
-  TableBody,
-  TableCell,
-  TableContainer,
   FormControlLabel,
   Radio,
   RadioGroup,
   FormControl,
   Button,
-  TableHead,
-  TableRow,
-  Typography,
   Divider,
 } from "@mui/material";
-import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 import CircularProgress from "@mui/material/CircularProgress";
-import ReportOutlinedIcon from "@mui/icons-material/ReportOutlined";
-import HourglassBottomOutlinedIcon from "@mui/icons-material/HourglassBottomOutlined";
 import CustomModal from "../components/CustomModal";
 import CustomSuccessRequestModal from "../components/CustomSuccessRequestModal";
 import CustomSuccessModal from "../components/CustomSuccessModal";
 import CustomPagination from "../components/CustomPagination";
 import { transactionsDataUrl } from "../api/endpoint";
 import useFetchData from "../hooks/useFetchData";
+import FormattedPrice from "../utils/FormattedPrice";
+import TransactionTable from "./transactions/TransactionTable";
+import Referrals from "./transactions/Referrals";
 const Transactions = () => {
   const {
     handleSubmit,
@@ -44,13 +35,14 @@ const Transactions = () => {
   const status = watch("status", "Pending");
   const statusOptions = ["Pending", "Successfull", "Failed"];
   const [trxFilter, setTrxFilter] = useState("all");
-  const [openTrxModal, setOpenTrxModal] = useState(false);
+  const [openWalletTrxModal, setOpenWalletTrxModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
   const [openRequestModal, setOpenRequestModal] = useState(false);
+  const [walletCreditModalData , setWalletCreditModalData] = useState(null)
 
   const closeOpenRequestModal = () => setOpenRequestModal(false);
-  const closeTrxModal = () => setOpenTrxModal(false);
+  const closeWalletTrxModal = () => setOpenWalletTrxModal(false);
   const closeSuccessModal = () => setOpenSuccessModal(false);
   const closeWTrxModal = () => setWOpenTrxModal(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,6 +65,17 @@ const Transactions = () => {
     setCurrentPage(page);
   };
 
+
+  const handleOpenModal = (item) => {
+    switch (item?.type) {
+      case "WALLET-CREDIT":
+       setWalletCreditModalData(item)
+       setOpenWalletTrxModal(true) 
+        break;
+      default:
+        break;
+    }
+  }
   // filter functionality
 
   useEffect(() => {
@@ -236,166 +239,57 @@ const Transactions = () => {
             >
               Withdrawal
             </Button>
+            <Button
+              onClick={() => setTrxFilter("referral")}
+              sx={{
+                background: trxFilter === "referral" ? "#FAFAFA" : "#fff",
+                borderRadius: "8px",
+                width: "100%",
+                px: "15px",
+                border:
+                  trxFilter === "referral"
+                    ? "1px solid #02981D"
+                    : "1px solid #5E5E5E",
+                color: trxFilter === "referral" ? "#02981D" : "#5E5E5E",
+                "&:hover": {
+                  backgroundColor:
+                    trxFilter === "referral" ? "#FAFAFA" : "#fff",
+                },
+                textTransform: "capitalize",
+                fontWeight: "400",
+              }}
+            >
+              Referral
+            </Button>
           </div>
 
-          {/* table */}
-          <Box className="w-full">
-            <TableContainer>
-              <Table sx={{ minWidth: 100, padding: "8px" }}>
-                <TableHead
-                  sx={{
-                    background: "#F8F8F8",
-                  }}
-                >
-                  <TableRow>
-                    <TableCell>S/N</TableCell>
-                    <TableCell> User</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Amount(N)</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {!transactionsData?.results ||
-                  isLoading ||
-                  !filteredTrxData ? (
-                    <CircularProgress
-                      size="4.2rem"
-                      sx={{
-                        color: "#02981D",
-                        marginLeft: "auto",
-                        padding: "1em",
-                      }}
-                    />
-                  ) : filteredTrxData &&
-                    Array.isArray(filteredTrxData) &&
-                    filteredTrxData?.length > 0 ? (
-                    filteredTrxData?.map((item, i) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{page * rowsPerPage + i + 1}</TableCell>
-                        <TableCell>
-                          <Typography
-                            sx={{
-                              fontWeight: "400",
-                              fontSize: "16px",
-                              color: "#5E5E5E",
-                            }}
-                          >
-                            {item?.lastname} {item?.firstname}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>{item?.description}</TableCell>
-                        <TableCell>{item?.amount}</TableCell>
-                        <TableCell>
-                          <Box
-                            sx={{
-                              textTransform: "capitalize",
-                              background:
-                                item?.status.toLowerCase() === "failed"
-                                  ? "#FFF0F0"
-                                  : item?.status.toLowerCase() === "success"
-                                  ? "#EBFFF3"
-                                  : item?.status.toLowerCase() === "pending"
-                                  ? "#FFF0F0"
-                                  : item?.status.toLowerCase() === "processing"
-                                  ? "#F4F1FE"
-                                  : "",
-                              color:
-                                item?.status.toLowerCase() === "failed"
-                                  ? "#E52929"
-                                  : item?.status.toLowerCase() === "success"
-                                  ? "#1E854A"
-                                  : item?.status.toLowerCase() === "pending"
-                                  ? "#CDA11E"
-                                  : item?.status.toLowerCase() === "processing"
-                                  ? "#391E85"
-                                  : "",
-                              fontWeight: "500",
-                              fontSize: "12px",
-                              padding: "4px 8px",
-                              borderRadius: "8px",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              gap: "5px",
-                              border: "1px solid #E0E0E0",
-                            }}
-                          >
-                            {item?.status.toLowerCase() === "failed" && (
-                              <ReportOutlinedIcon sx={{ fontSize: "12px" }} />
-                            )}
-                            {item?.status.toLowerCase() === "success" && (
-                              <CheckCircleOutlineRoundedIcon
-                                sx={{ fontSize: "12px" }}
-                              />
-                            )}
-                            {item?.status.toLowerCase() === "processing" && (
-                              <CheckCircleOutlineRoundedIcon
-                                sx={{ fontSize: "12px" }}
-                              />
-                            )}
-                            {item?.status.toLowerCase() === "pending" && (
-                              <HourglassBottomOutlinedIcon
-                                sx={{ fontSize: "12px" }}
-                              />
-                            )}
+         {/*  */}
+           {
+            trxFilter !== "referral" && (
+                 <TransactionTable isLoading={isLoading} transactionsData={transactionsData}
+                filteredTrxData={filteredTrxData}
+                page={page}
+                onPageChange={handlePageChange}
+                totalPages={totalPages}
+                rowsPerPage={rowsPerPage}
+                currentPage={currentPage}
+         />
+            )
+           }
 
-                            {item?.status.toLowerCase()}
-                          </Box>
-                        </TableCell>
-
-                        <TableCell>
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              textTransform: "capitalize",
-                              display: "flex",
-                              gap: "4px",
-                              width: "100px",
-                              alignItems: "center",
-                              color: "#3F3767",
-                              fontWeight: "400",
-                              fontSize: "10px",
-                              border: "1px solid #3F3767",
-                              "&:hover": {
-                                backgroundColor: "#fafafa",
-                                border: "1px solid #E0E0E0",
-                              },
-                              // lineHeight: "26.4px",
-                            }}
-                          >
-                            View More
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan="7">No data found</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-          {/* table end */}
-          <CustomPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            nextPageLink={transactionsData?.links?.next}
-            prevPageLink={transactionsData?.links?.previous}
-          />
+           {
+            trxFilter === "referral" && 
+            <Referrals/>
+           }
         </div>
       </CustomCard>
-      {/* All transactions modal */}
-      <CustomModal open={openTrxModal} closeModal={closeTrxModal}>
+      {/* wallet credit transactions modal */}
+      <CustomModal open={openWalletTrxModal} closeModal={closeWalletTrxModal}>
         <div className="w-full flex flex-col items-start gap-2">
           <div className="flex items-center justify-between w-full mb-3">
             <p className="text-general font-[500] text-[20px] ">Transactions</p>
 
-            <ClearRoundedIcon sx={{ color: "#1E1E1E", cursor: "pointer" }} />
+            <ClearRoundedIcon onClick={closeWalletTrxModal} sx={{ color: "#1E1E1E", cursor: "pointer" }} />
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
@@ -424,7 +318,7 @@ const Transactions = () => {
             <div className="w-full flex justify-between mt-1">
               <p className="text-[14px] text-primary_grey_2">User:</p>
               <p className="text-[14px] text-general font-[500]">
-                Ronald Richards
+               {walletCreditModalData?.lastname || ""} {walletCreditModalData?.firstname || ""} 
               </p>
             </div>
             <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -432,7 +326,7 @@ const Transactions = () => {
             <div className="w-full flex justify-between">
               <p className="text-[14px] text-primary_grey_2">Email:</p>
               <p className="text-[14px] text-general font-[500]">
-                Ronald@gmail.com
+                {walletCreditModalData?.email || ""}
               </p>
             </div>
 
@@ -440,7 +334,9 @@ const Transactions = () => {
 
             <div className="w-full flex justify-between">
               <p className="text-[14px] text-primary_grey_2">Phone Number:</p>
-              <p className="text-[14px] text-general font-[500]">08168465081</p>
+              <p className="text-[14px] text-general font-[500]">
+                {walletCreditModalData?.phone || ""}
+              </p>
             </div>
           </div>
 
@@ -460,7 +356,9 @@ const Transactions = () => {
 
               <div className="w-full flex justify-between">
                 <p className="text-[14px] text-primary_grey_2">Amount:</p>
-                <p className="text-[14px] text-general font-[500]">N100,000</p>
+                <p className="text-[14px] text-general font-[500]">
+                  <FormattedPrice amount={walletCreditModalData?.amount}/>
+                </p>
               </div>
 
               <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -468,7 +366,7 @@ const Transactions = () => {
               <div className="w-full flex justify-between">
                 <p className="text-[14px] text-primary_grey_2">Status:</p>
                 <p className="text-[14px] text-general font-[500]">
-                  Successfull
+                  {walletCreditModalData?.status || ""}
                 </p>
               </div>
               <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -476,7 +374,7 @@ const Transactions = () => {
               <div className="w-full flex justify-between">
                 <p className="text-[14px] text-primary_grey_2">Date:</p>
                 <p className="text-[14px] text-general font-[500]">
-                  30th June, 2024 • 9:43 AM
+                 not sending the date
                 </p>
               </div>
             </div>

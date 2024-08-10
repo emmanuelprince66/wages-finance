@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const token = getCookie("authToken");
 
   useEffect(() => {
-    setShowSpinner(true); // Show spinner initially
+    setShowSpinner(true); 
     async function fetchUserDetails() {
       if (!token || token === "undefined" || token === "null") {
         if (
