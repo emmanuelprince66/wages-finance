@@ -12,18 +12,30 @@ import CustomCard from "../../components/CustomCard";
 import Lfour from "../../assets/loan/Lfour";
 
 import {
-  Grid,
-  Typography,
-  Switch,
-  Radio,
-  RadioGroup,
+  Table,
+  Box,
+  TableBody,
+  TableCell,
+  Divider,
   FormControl,
+  RadioGroup,
   FormControlLabel,
-  CircularProgress,
-  CardContent,
   Button,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Radio,
+  Paper,
+  Container,
+  Grid,
+  CircularProgress,
+  TextField,
+  TablePagination,
+  ToggleButtonGroup,
+  ToggleButton,
+  Card,
+  Modal,
 } from "@mui/material";
-import { Divider } from "@mui/material";
 
 import avatar from "../../assets/member-profile/avatar.png";
 import CustomModal from "../../components/CustomModal";
@@ -45,6 +57,35 @@ const LoanProfile = ({
     register,
     formState: { isValid, errors },
   } = useForm({ mode: "all" });
+  const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(100)
+  const dummy = [
+    { 
+      id:1,
+      amt:300000,
+      dd:"30th June, 2024 • 9:43 AM"
+    },
+    { 
+      id:2,
+      amt:300000,
+      dd:"30th June, 2024 • 9:43 AM"
+    },
+    { 
+      id:3,
+      amt:300000,
+      dd:"30th June, 2024 • 9:43 AM"
+    },
+    { 
+      id:4,
+      amt:300000,
+      dd:"30th June, 2024 • 9:43 AM"
+    },
+    { 
+      id:5,
+      amt:300000,
+      dd:"30th June, 2024 • 9:43 AM"
+    },
+  ]
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -371,7 +412,129 @@ const LoanProfile = ({
               })}
             </div>
           </CustomCard>
+
+          <CustomCard style="mt-4">
+            <div className="w-full flex-col items-start gap-3 flex ">
+              <p className="text-general font-[500] text-[16px]">
+                Repayment Details
+              </p>
+
+      
+                  <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
+                    <div className="flex w-full items-center justify-between mt-2 mb-4">
+                      <div className=" items-center flex  gap-2">
+                        <p className="text-general   font-[500] text-[16px]">
+                        </p>
+
+                  
+                      </div>
+
+                   
+                    </div>
+
+                    <div className="w-full flex justify-between ">
+                      <p className="text-[14px] text-primary_grey_2">Total Repayment Amount:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                        <FormattedPrice amount={20000}/>
+                      </p>                    </div>
+                    <Divider
+                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                    />
+
+                    <div className="w-full flex justify-between">
+                      <p className="text-[14px] text-primary_grey_2">Total Amount Repaid:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                      <FormattedPrice amount={20000}/>
+                        
+                      </p>
+                    </div>
+                    <Divider
+                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                    />
+
+                    <div className="w-full flex justify-between">
+                      <p className="text-[14px] text-primary_grey_2">Outstanding Balance:</p>
+                      <p className="text-[14px] text-general font-[500]">
+                      <FormattedPrice amount={20000}/>
+                      
+                      </p>
+                    </div>
+                  </div>
+
+                  
+                  <Box className="w-full mt-3">
+                    <TableContainer>
+                      <Table sx={{ minWidth: 100, padding: "8px" }}>
+                        <TableHead
+                          sx={{
+                            background: "#F8F8F8",
+                          }}
+                        >
+                          <TableRow>
+                            <TableCell>S/N</TableCell>
+                            <TableCell>Amount(N)</TableCell>
+                            <TableCell>Date of Payment</TableCell>
+                            
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {!dummy ? (
+                            <CircularProgress
+                              size="2.2rem"
+                              sx={{
+                                color: "#02981D",
+                                marginLeft: "auto",
+                                padding: "1em",
+                              }}
+                            />
+                          ) : dummy &&
+                            Array.isArray(dummy) &&
+                            dummy?.length > 0 ? (
+                            dummy?.map((item, i) => (
+                              <TableRow key={i + 2}>
+                                <TableCell>
+                                  {page * rowsPerPage + i + 1}
+                                </TableCell>
+                             
+
+                             
+                                <TableCell>
+                                    <FormattedPrice amount={item?.amt}/>
+                                </TableCell>
+                                <TableCell>
+                              
+                              {item?.dd}
+                       
+                          </TableCell>
+                             
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan="7">No data found</TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+
+                    {/* <CustomPagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        nextPageLink={transactionsData?.links?.next}
+                        prevPageLink={transactionsData?.links?.previous}
+                    /> */}
+
+                  </Box>
+             
+            </div>
+          </CustomCard>
         </Grid>
+
+
+        {/*  */}
+  
       </Grid>
       {/* Grid */}
 
