@@ -266,7 +266,9 @@ const Transactions = () => {
          {/*  */}
            {
             trxFilter !== "referral" && (
-                 <TransactionTable isLoading={isLoading} transactionsData={transactionsData}
+                 <TransactionTable isLoading={isLoading} 
+                 handleOpenModal={handleOpenModal}
+                 transactionsData={transactionsData}
                 filteredTrxData={filteredTrxData}
                 page={page}
                 onPageChange={handlePageChange}

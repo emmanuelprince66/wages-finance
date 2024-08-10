@@ -24,6 +24,7 @@ import ReportOutlinedIcon from "@mui/icons-material/ReportOutlined";
 const TransactionTable = ({transactionsData , isLoading , filteredTrxData , currentPage ,
     totalPages ,onPageChange,
     rowsPerPage,
+    handleOpenModal,
     page    
 }) => {
   return (
@@ -172,6 +173,7 @@ const TransactionTable = ({transactionsData , isLoading , filteredTrxData , curr
           </Box>
           {/* table end */}
           <CustomPagination
+
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
