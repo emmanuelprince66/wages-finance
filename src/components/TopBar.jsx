@@ -12,7 +12,7 @@ const TopBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
-  const storedUserString = localStorage.getItem('user');
+  const storedUserString = localStorage.getItem("user");
   const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -25,15 +25,16 @@ const TopBar = () => {
     navigate("/");
     Cookies.remove("authToken");
     Cookies.remove("refreshToken");
+    localStorage.clear();
   }
-
-
 
   return (
     <div className="w-full p-3 ">
       <div className="w-full flex items-center justify-between">
         <div className="flex flex-col items-start gap-2">
-          <p className="font-[500] text-primary_grey_2 text-[15px]">Welcome Back,</p>
+          <p className="font-[500] text-primary_grey_2 text-[15px]">
+            Welcome Back,
+          </p>
           <p className="text-[20x] font-[600] text-general">
             {storedUser?.firstname}
             😎
@@ -59,33 +60,32 @@ const TopBar = () => {
             <div className="flex items-center gap-2">
               <img src={avatar} alt="avatar" />
 
-                <div className="flex flex-col items-start">
-                 <p className="text-[15x] font-[600] text-general">
-            {storedUser?.firstname}
-          </p>
-          <p className="font-[500] text-primary_grey_2 text-[13px]">{storedUser?.role[0]}</p>
-            </div>
+              <div className="flex flex-col items-start">
+                <p className="text-[15x] font-[600] text-general">
+                  {storedUser?.firstname}
+                </p>
+                <p className="font-[500] text-primary_grey_2 text-[13px]">
+                  {storedUser?.role[0]}
+                </p>
+              </div>
               <KeyboardArrowDownRoundedIcon sx={{ color: "#757575" }} />
-
-              
             </div>
           </Button>
-          
+
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
-             PaperProps={{
+            PaperProps={{
               sx: {
-                width: '220px', 
+                width: "220px",
               },
-            }} 
+            }}
             MenuListProps={{
               "aria-labelledby": "basic-button",
             }}
           >
-          
             <MenuItem onClick={handleClose}>Profile</MenuItem>
             <MenuItem onClick={handleClose}>My account</MenuItem>
             <MenuItem onClick={logOut}>Logout</MenuItem>

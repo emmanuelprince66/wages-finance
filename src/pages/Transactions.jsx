@@ -39,7 +39,7 @@ const Transactions = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
   const [openRequestModal, setOpenRequestModal] = useState(false);
-  const [walletCreditModalData , setWalletCreditModalData] = useState(null)
+  const [walletCreditModalData, setWalletCreditModalData] = useState(null);
 
   const closeOpenRequestModal = () => setOpenRequestModal(false);
   const closeWalletTrxModal = () => setOpenWalletTrxModal(false);
@@ -56,7 +56,7 @@ const Transactions = () => {
 
   const apiUrl = transactionsDataUrl(currentPage, rowsPerPage, searchValue);
   const queryKey = ["fetchTransactionData", apiUrl];
-  // fetch transaction data
+  // fetch referral data
 
   const { isLoading, data: transactionsData } = useFetchData(queryKey, apiUrl);
 
@@ -65,17 +65,16 @@ const Transactions = () => {
     setCurrentPage(page);
   };
 
-
   const handleOpenModal = (item) => {
     switch (item?.type) {
       case "WALLET-CREDIT":
-       setWalletCreditModalData(item)
-       setOpenWalletTrxModal(true) 
+        setWalletCreditModalData(item);
+        setOpenWalletTrxModal(true);
         break;
       default:
         break;
     }
-  }
+  };
   // filter functionality
 
   useEffect(() => {
@@ -150,8 +149,7 @@ const Transactions = () => {
               Export
             </Button>
           </div>
-
-          <div className="flex w-[70%] gap-3  items-center">
+          <div className="flex w-[90%] gap-3  items-center">
             <Button
               onClick={() => setTrxFilter("all")}
               sx={{
@@ -263,26 +261,22 @@ const Transactions = () => {
             </Button>
           </div>
 
-         {/*  */}
-           {
-            trxFilter !== "referral" && (
-                 <TransactionTable isLoading={isLoading} 
-                 handleOpenModal={handleOpenModal}
-                 transactionsData={transactionsData}
-                filteredTrxData={filteredTrxData}
-                page={page}
-                onPageChange={handlePageChange}
-                totalPages={totalPages}
-                rowsPerPage={rowsPerPage}
-                currentPage={currentPage}
-         />
-            )
-           }
+          {/*  */}
+          {trxFilter !== "referral" && (
+            <TransactionTable
+              isLoading={isLoading}
+              handleOpenModal={handleOpenModal}
+              transactionsData={transactionsData}
+              filteredTrxData={filteredTrxData}
+              page={page}
+              onPageChange={handlePageChange}
+              totalPages={totalPages}
+              rowsPerPage={rowsPerPage}
+              currentPage={currentPage}
+            />
+          )}
 
-           {
-            trxFilter === "referral" && 
-            <Referrals/>
-           }
+          {trxFilter === "referral" && <Referrals />}
         </div>
       </CustomCard>
       {/* wallet credit transactions modal */}
@@ -291,7 +285,10 @@ const Transactions = () => {
           <div className="flex items-center justify-between w-full mb-3">
             <p className="text-general font-[500] text-[20px] ">Transactions</p>
 
-            <ClearRoundedIcon onClick={closeWalletTrxModal} sx={{ color: "#1E1E1E", cursor: "pointer" }} />
+            <ClearRoundedIcon
+              onClick={closeWalletTrxModal}
+              sx={{ color: "#1E1E1E", cursor: "pointer" }}
+            />
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
@@ -320,7 +317,8 @@ const Transactions = () => {
             <div className="w-full flex justify-between mt-1">
               <p className="text-[14px] text-primary_grey_2">User:</p>
               <p className="text-[14px] text-general font-[500]">
-               {walletCreditModalData?.lastname || ""} {walletCreditModalData?.firstname || ""} 
+                {walletCreditModalData?.lastname || ""}{" "}
+                {walletCreditModalData?.firstname || ""}
               </p>
             </div>
             <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -359,7 +357,7 @@ const Transactions = () => {
               <div className="w-full flex justify-between">
                 <p className="text-[14px] text-primary_grey_2">Amount:</p>
                 <p className="text-[14px] text-general font-[500]">
-                  <FormattedPrice amount={walletCreditModalData?.amount}/>
+                  <FormattedPrice amount={walletCreditModalData?.amount} />
                 </p>
               </div>
 
@@ -376,7 +374,7 @@ const Transactions = () => {
               <div className="w-full flex justify-between">
                 <p className="text-[14px] text-primary_grey_2">Date:</p>
                 <p className="text-[14px] text-general font-[500]">
-                 not sending the date
+                  not sending the date
                 </p>
               </div>
             </div>

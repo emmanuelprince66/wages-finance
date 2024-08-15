@@ -43,3 +43,11 @@ export const transactionsDataUrl = (currentPage, rowsPerPage, searchValue) => {
 export const administratorDataUrl = () => {
   return "/admin/team/";
 };
+export const referralDataUrl = (
+  searchValue,
+  currentPage,
+  rowsPerPage,
+  selectedDates
+) => {
+  return `/admin/referals?searchValue=${searchValue}&page=${currentPage}&limit=${rowsPerPage}&start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
+};
