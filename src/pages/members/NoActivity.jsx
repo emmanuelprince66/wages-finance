@@ -4,7 +4,7 @@ import noInvestment from "../../assets/noInvestment.png"
 
 const NoActivity = () => {
   return (
-    <div className='w-full flex justify-center items-center h-full'>
+    <div className='w-full flex justify-center items-center min-h-[30rem]'>
     <div className='flex flex-col items-center  gap-2'>
          <img src={noInvestment} alt="no-active-investment" /> 
          <p className='font-[600] text-[20px] text-general'>No Active Investment</p>

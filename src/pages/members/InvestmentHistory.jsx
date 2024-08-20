@@ -1,6 +1,6 @@
-import { Button } from '@mui/material'
+import { Button, Skeleton } from '@mui/material'
 import React from 'react'
-import { useState } from 'react'
+import { useState , useEffect} from 'react'
 import FormattedPrice from '../../utils/FormattedPrice'
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import tOne from "../../assets/transactions/t-1.svg";
@@ -23,8 +23,17 @@ import {
   Card,
   Modal,
 } from "@mui/material";
+import { investmentsHistoryUrl } from '../../api/endpoint';
+import useFetchData from '../../hooks/useFetchData';
 
-const InvestmentHistory = () => {
+const InvestmentHistory = ({memberId}) => {
+  const [apiId , setApiId] = useState("") 
+  const apiUrl = investmentsHistoryUrl(apiId);
+  const [investHistoryFilter , setInvestHistoryFilter] =  useState("all") 
+
+  const queryKey = ["fetchInvestmentsHistory", apiUrl];
+
+  const {data , error, isLoading } = useFetchData(queryKey, apiUrl);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
@@ -96,28 +105,45 @@ const InvestmentHistory = () => {
       },
   ]
 
-    const [investHistoryFilter , setInvestHistoryFilter] =  useState("all") 
+
+
+  console.log("sssss" ,data)
+
+
+    useEffect(() => {
+      setApiId(memberId)
+    
+
+    }, [memberId])
   return (
     <div className='flex flex-col items-start gap-3 w-full'>
-         <div className='w-full flex-col items-start gap-2 rounded-md border-[1px] border-[#E3E3E3] p-3'>
-                     <p className='text-general font-[500] text-[15px] '>Summary</p>
 
-                     
-                    <div className='w-full flex justify-between items-center mt-3'>
-                        <div className='items-start flex  gap-2 flex-col'>
-                            <p className='font-[400] text-[14px] text-[#5E5E5E]'>Investment Cycle Count:</p>
-                            <p className='text-general font-[500] text-[20px] '>0</p>
-                        </div>
-                        <div className='items-start flex  gap-2 flex-col'>
-                            <p className='font-[400] text-[14px] text-[#5E5E5E]'>All-Time Total Investment Value:</p>
-                            <p className='text-general font-[500] text-[20px] '><FormattedPrice amount={10}/></p>
-                        </div>
-                        <div className='items-start flex  gap-2 flex-col'>
-                            <p className='font-[400] text-[14px] text-[#5E5E5E]'>All-Time Total Expected ROI:</p>
-                            <p className='text-general font-[500] text-[20px] '><FormattedPrice amount={10}/></p>
-                        </div>
-                    </div>
-                    </div>
+{isLoading || !data ? (
+          <Skeleton variant="rounded" width="100%" height={100} />
+        ) : ( 
+          <div className='w-full flex-col items-start gap-2 rounded-md border-[1px] border-[#E3E3E3] p-3'>
+          <p className='text-general font-[500] text-[15px] '>Summary</p>
+
+          
+         <div className='w-full flex justify-between items-center mt-3'>
+             <div className='items-start flex  gap-2 flex-col'>
+                 <p className='font-[400] text-[14px] text-[#5E5E5E]'>Investment Cycle Count:</p>
+                 <p className='text-general font-[500] text-[20px] '>
+                  {data?.results?.overview?.active_investment_count}
+                 </p>
+             </div>
+             <div className='items-start flex  gap-2 flex-col'>
+                 <p className='font-[400] text-[14px] text-[#5E5E5E]'>All-Time Total Investment Value:</p>
+                 <p className='text-general font-[500] text-[20px] '><FormattedPrice amount= {data?.results?.overview?.active_investment_amount}/></p>
+             </div>
+             <div className='items-start flex  gap-2 flex-col'>
+                 <p className='font-[400] text-[14px] text-[#5E5E5E]'>All-Time Total Expected ROI:</p>
+                 <p className='text-general font-[500] text-[20px] '><FormattedPrice amount= {data?.results?.overview?.acive_investment_roi}/></p>
+             </div>
+         </div>
+</div>
+        )}
+      
 
 
            <div className='flex gap-3 items-center w-[80%]'>
@@ -274,7 +300,7 @@ const InvestmentHistory = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {!dummy ? (
+                          {isLoading ? (
                             <CircularProgress
                               size="4.2rem"
                               sx={{
@@ -283,38 +309,15 @@ const InvestmentHistory = () => {
                                 padding: "1em",
                               }}
                             />
-                          ) : dummy &&
-                            Array.isArray(dummy) &&
-                            dummy?.length > 0 ? (
-                            dummy?.map((item, i) => (
+                          ) : data?.results?.investments &&
+                            Array.isArray(data?.results?.investments) &&
+                            data?.results?.investments?.length > 0 ? (
+                            data?.results?.investments?.map((item, i) => (
                               <TableRow key={i + 2}>
                                 <TableCell>
                                   {page * rowsPerPage + i + 1}
                                 </TableCell>
-                                <TableCell>
-                              
-                                    {item?.plan}
-                             
-                                </TableCell>
-
-                             
-                                <TableCell>
-                                    <FormattedPrice amount={item?.value}/>
-                                </TableCell>
-                                <TableCell>
-                              
-                              {item?.duration}
-                       
-                          </TableCell>
-                                <TableCell>
-                                <FormattedPrice amount={parseInt(item?.roi)}/>
-                                 
-                                </TableCell>
-                                <TableCell>
-                              
-                              {item?.dd}
-                       
-                          </TableCell>
+                          
                           <TableCell>
                           <Box
                             sx={{

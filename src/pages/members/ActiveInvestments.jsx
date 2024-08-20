@@ -1,20 +1,37 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
 import NoActivity from './NoActivity'
 import InvestmentActivityData from './InvestmentActivityData'
+import useFetchData from '../../hooks/useFetchData'
+import { activeInvestmentsUrl } from '../../api/endpoint'
 
-const ActiveInvestments = () => {
-    const [active , setActive] = useState(["hello"])
+const ActiveInvestments = ({memberId}) => {
+  const [apiId , setApiId] = useState("") 
 
+
+  const apiUrl = activeInvestmentsUrl(apiId);
+  const queryKey = ["fetchActiveInvestments", apiUrl];
+
+  const {data , error, isLoading } = useFetchData(queryKey, apiUrl);
+
+
+
+
+
+    useEffect(() => {
+      setApiId(memberId)
+    
+
+    }, [memberId])
   return (
     <div className='w-full h-full'>
-        {  active.length ===  0 && (
+        {  data?.results?.investments?.length ===  0 && (
       <NoActivity/>
         )}
         
       {
-        active.length > 0 && (
-            <InvestmentActivityData/>
+         data?.results?.investments?.length > 0 && (
+            <InvestmentActivityData data={data ||  []} isLoading={isLoading}/>
         )
       }
 

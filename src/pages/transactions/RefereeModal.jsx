@@ -5,7 +5,6 @@ import { Button } from "@mui/material";
 import formattedDate from "../../utils/formattedDate";
 
 const RefereeModal = ({ closeRefereeModal, refereeData }) => {
-  console.log(refereeData);
   return (
     <div className="w-full flex flex-col items-start gap-2">
       <div className="flex items-center justify-between w-full mb-3">

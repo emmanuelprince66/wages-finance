@@ -44,8 +44,12 @@ import CustomModal from "../../components/CustomModal";
 import CorporativeSavingsModal from "./CorporativeSavingsModal";
 import PersonalSavingsModal from "./PersonalSavingsModal";
 import InvestmentDetailsModal from "./InvestmentDetailsModal";
+import RefereeModal from "../transactions/RefereeModal";
 
 const MemberProfile = ({ setShowComp, memberId }) => {
+  const [openRefereeModal, setOpenRefreeModal] = useState(false);
+
+  const closeRefereeModal = () => setOpenRefreeModal(false);
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
@@ -61,6 +65,10 @@ const MemberProfile = ({ setShowComp, memberId }) => {
   const queryKey = ["fetchMembersProfile", apiUrl];
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
+
+  const refereeData = data ||  []
+
+
   return (
     <div className="flex items-start flex-col gap-3">
       {/*  */}
@@ -434,6 +442,8 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                         </div>
                       </div>
                     </div>
+
+                    <div className="flex flex-col gap-10 items-start">
                     <div className="flex gap-3 items-center">
                       <div className="flex flex-col items-start gap-1">
                         <p className="text-primary_grey_2 text-[12px] ">
@@ -442,8 +452,27 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                         <p className="text-general text-[16px] font-[600] ">
                           {data?.referal_count}
                         </p>
+
+              
                       </div>
+
+
+                      
                     </div>
+
+                    <span className="flex gap-3 items-center cursor-pointer"
+                    onClick={() => setOpenRefreeModal(true)}
+                    >
+                      <p className="text-primary_green text-[12px] font-[500]">
+                        See Referees
+                      </p>
+
+                      <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
+                    </span>
+                    </div>
+                    
+                 
+                    
                   </div>
                 </div>
               </CustomCard>
@@ -570,22 +599,35 @@ const MemberProfile = ({ setShowComp, memberId }) => {
 
       {/* modal for total corporateSavings */}
       <CustomModal style="w-[55%]" open={openCorporateSavingsModal} closeModal={handleCloseCoModal}>
-                  <CorporativeSavingsModal close={handleCloseCoModal}/>
+                  <CorporativeSavingsModal close={handleCloseCoModal} memberId={memberId} />
       </CustomModal>
       {/* modal for total corporateSavings end */}
 
 
       {/* modal for total personal savings */}
       <CustomModal style="w-[65%]" open={openPersonalModal} closeModal={handleClosePersonal}>
-                  <PersonalSavingsModal close={handleClosePersonal}/>
+                  <PersonalSavingsModal close={handleClosePersonal} memberId={memberId} />
       </CustomModal>
       {/* modal for total personal savings end */}
 
       {/* modal for investment vallue */}
       <CustomModal style="w-[90%]" open={showInvDetailsModal} closeModal={handleCloseInvDetailsModal}>
-                  <InvestmentDetailsModal close={handleCloseInvDetailsModal}/>
+                  <InvestmentDetailsModal close={handleCloseInvDetailsModal} memberId={memberId} />
       </CustomModal>
       {/* modal end */}
+
+      {/* Referee Modal */}
+      <CustomModal
+        style="w-[50%]"
+        open={openRefereeModal}
+        closeModal={closeRefereeModal}
+      >
+        <RefereeModal
+          refereeData={refereeData}
+          closeRefereeModal={closeRefereeModal}
+        />
+      </CustomModal>
+      {/* Referee Modal ends */}
     </div>
   );
 };

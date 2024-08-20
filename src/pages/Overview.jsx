@@ -36,7 +36,7 @@ const Overview = () => {
     {
       type === "per" ? <div className="w-full flex justify-center items-start flex-col gap-3 min-h-[6.7rem]">
           <p className="text-[14px] font-[400] text-primary_grey_2">{textOne}</p>
-          <p className="text-[30px] font-[600] text-general">{time}</p>
+          <p className="text-[30px] font-[600] text-general">{time} </p>
       </div> : (
           <div className="w-full flex flex-col gap-3 items-start">
         <div className="w-full flex flex-col items-start gap-2">
@@ -59,7 +59,6 @@ const Overview = () => {
   const queryKey = ["fetchOverveiwData", apiUrl];
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  // console.log(data);
 
   return (
     <div className="w-full flex items-center flex-col ">
@@ -140,13 +139,13 @@ const Overview = () => {
               <div className="flex-col flex items-start gap-2 mt-5">
                 <p className="text-[14px] text-primary_grey_2">All-time:</p>
                 <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={data?.all_user_count} />
+                {data?.all_user_count} 
                 </p>
               </div>
               <div className="flex-col flex items-start gap-2 mt-5">
                 <p className="text-[14px] text-primary_grey_2">By Filter:</p>
                 <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={data?.filter_user_count} />
+                {data?.filter_user_count}
                 </p>
               </div>
             </div>
@@ -160,9 +159,24 @@ const Overview = () => {
        <p className="text-general font-[500] text-[16px]">Cooperative</p>
         
      <div className="flex justify-between gap-3 items-center w-full mt-4">
-     <CustomCorporativeCard text="Total Cooperative Members" amt="771"/>
-      <CustomCorporativeCard text="Total Active Members" amt="600"/>
-      <CustomCorporativeCard text="Total Cooperative Savings" amt={<FormattedPrice amount={20000}/>}/>
+      {isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={110} />
+      ):  
+     <CustomCorporativeCard text="Total Cooperative Members" amt={data?.total_coop_members}/>
+      }
+
+{isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={110} />
+      ): 
+      <CustomCorporativeCard text="Total Active Members" amt={data?.active_user} />
+      
+      }
+      {isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={110} />
+      ):
+      <CustomCorporativeCard text="Total Cooperative Savings" amt={<FormattedPrice amount={data?.total_coop_saved}/>}/>
+      
+      }
      </div>
       </div>
 
@@ -173,23 +187,36 @@ const Overview = () => {
        <p className="text-general font-[500] text-[16px]">Loan</p>
         
      <div className="flex justify-between gap-3 items-center w-full mt-4">
-        <CustomLoanCard
-        time={<FormattedPrice amount={2004000}/>}
-        filter={<FormattedPrice amount={3004000}/>}
-        textOne="Total Loan Disbursed(All-time)"
-        textTwo="Total Loan Disbursed(By-Filter)"
-        />
-        <CustomLoanCard
-        time={<FormattedPrice amount={2004000}/>}
-        filter={<FormattedPrice amount={3004000}/>}
-        textOne="Total Repayment for this Month(All-time)"
-        textTwo="Total Amount Paid Till Date(By-Filter)"
-        />
-        <CustomLoanCard
-        type="per"
-        time="39%"
-        textOne="Percentage Loan Repayment"
-        />
+     {isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={164} />
+      ):
+      <CustomLoanCard
+      time={<FormattedPrice amount={data?.total_loan_amount}/>}
+      filter={<FormattedPrice amount={data?.filtered_loan_amount}/>}
+      textOne="Total Loan Disbursed(All-time)"
+      textTwo="Total Loan Disbursed(By-Filter)"
+      />
+      }
+         {isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={164} />
+      ):
+      <CustomLoanCard
+      time={<FormattedPrice amount={data?.total_loan_repayment}/>}
+      filter={<FormattedPrice amount={data?.filtered_loan_amount}/>}
+      textOne="Total Repayment for this Month(All-time)"
+      textTwo="Total Amount Paid Till Date(By-Filter)"
+      />
+      }
+         {isLoading ? (
+      <Skeleton variant="rounded" width="100%" height={164} />
+      ):
+      <CustomLoanCard
+      type="per"
+      time={data?.percentage_loan_repaid}
+      textOne="Percentage Loan Repayment"
+      />
+      }
+     
      </div>
       </div>
 

@@ -51,3 +51,16 @@ export const referralDataUrl = (
 ) => {
   return `/admin/referals?searchValue=${searchValue}&page=${currentPage}&limit=${rowsPerPage}&start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
+export const corporativeBreakdownUrl =  (id, selectedDates) => {
+  return `/admin/user/coop_breakdown/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
+};
+export const savingsBreakdownUrl =  (id, selectedDates) => {
+  return `/admin/user/savings/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
+};
+export const activeInvestmentsUrl =  (id) => {
+  return `/admin/user/active_investment/${id}`;
+};
+export const investmentsHistoryUrl =  (id) => {
+  return `/admin/user/active_investment/${id}`;
+};
+

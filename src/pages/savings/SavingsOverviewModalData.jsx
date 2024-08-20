@@ -6,6 +6,7 @@ import CustomLinearProgress from "../../components/CustomLinearProgress";
 
 
 const SavingsOverviewModalData = ({participantModalQuery , title  , modalLoading}) => {
+
   return (
     <>
           <div className="flex flex-col items-start gap-3 w-full   ">
@@ -44,7 +45,7 @@ const SavingsOverviewModalData = ({participantModalQuery , title  , modalLoading
                     Target Amount:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={participantModalQuery?.amount} />
+                    <FormattedPrice amount={participantModalQuery?.target_amount} />
                   </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />

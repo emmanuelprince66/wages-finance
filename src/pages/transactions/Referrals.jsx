@@ -37,7 +37,6 @@ const Referrals = () => {
     setCurrentPage(page);
   };
 
-  console.log("ref", referralData);
   // referral card
   const CustomReferralCard = ({ text, amt }) => {
     return (

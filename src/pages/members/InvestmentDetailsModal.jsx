@@ -1,13 +1,15 @@
 import React from 'react'
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
-import { useState } from 'react';
 import { Grid } from '@mui/material';
 import ActiveInvestments from './ActiveInvestments';
 import InvestmentHistory from './InvestmentHistory';
+import { useState , useEffect } from 'react';
 
 
-const InvestmentDetailsModal = ({ close}) => {
+
+const InvestmentDetailsModal = ({ close , memberId}) => {
   const [showActiveInvestment , setShowActivInvestment] = useState(true)
+
   return (
     <div  className=' flex flex-col items-start gap-3 w-full'>
          <div className="flex items-center justify-between w-full mb-3">
@@ -44,7 +46,7 @@ const InvestmentDetailsModal = ({ close}) => {
               <div className='max-h-[80vh] overflow-y-auto'>
                  
                {
-                showActiveInvestment ? <ActiveInvestments/> : <InvestmentHistory/>
+                showActiveInvestment ? <ActiveInvestments memberId={memberId}/> : <InvestmentHistory memberId={memberId}/>
                }
               </div>
 

@@ -2,7 +2,7 @@ import React from 'react'
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import FormattedPrice from '../../utils/FormattedPrice';
 import SelectDate from '../../components/SelectDate';
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import {
     Table,
     Box,
@@ -21,52 +21,41 @@ import {
     Card,
     Modal,
   } from "@mui/material";
+  import useFetchData from '../../hooks/useFetchData';
+import { useDateContext } from '../../utils/DateContext';
+import { corporativeBreakdownUrl } from '../../api/endpoint';
+import CustomPagination from '../../components/CustomPagination';
+import formattedDate from '../../utils/formattedDate';
 
 
-const CorporativeSavingsModal = ({close}) => {
+const CorporativeSavingsModal = ({close , memberId} ) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [apiId , setApiId] = useState("") 
+     const { selectedDates } = useDateContext();
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+     const apiUrl = corporativeBreakdownUrl(apiId , selectedDates);
+     const queryKey = ["fetchCorporativeSavings", apiUrl];
+   
+     const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
+     const totalPages = data?.pages;
+console.log(data)
+
+const handlePageChange = (page) => {
+  setCurrentPage(page);
+};
+    useEffect(() => {
+      setApiId(memberId)
+    
+
+    }, [memberId])
+    
 
 
 
-    const dummy =[
-        {
-            id:1,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-        {
-            id:2,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-        {
-            id:3,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-        {
-            id:4,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-        {
-            id:5,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-        {
-            id:6,
-            dd:"30/05/2024, 6:24 PM",
-            as:"10,500",
-            balance:"1004,222"
-        },
-    ]
+ 
   return (
     <div className='w-full flex flex-col items-start gap-3'>
 
@@ -78,7 +67,15 @@ const CorporativeSavingsModal = ({close}) => {
 <div className="flex items-center justify-between w-full mb-3">
            <div className='flex gap-1 items-center'>
             <p className='font-[400] text-[14px] text-primary_grey_2'>Total Cooperative Savings:</p>
-            <p className='font-[600] text-[20px] text-general'><FormattedPrice amount={44000}/></p>
+            <p className='font-[600] text-[20px] text-general'>
+              {isLoading ? <CircularProgress size="0.6rem" 
+               sx={{
+                color: "#02981D",
+              }}
+              /> : 
+              <FormattedPrice amount={data?.total}/>
+              }
+              </p>
            </div>
 
             <SelectDate/>
@@ -104,7 +101,7 @@ const CorporativeSavingsModal = ({close}) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {!dummy ? (
+                          {isLoading ? (
                             <CircularProgress
                               size="4.2rem"
                               sx={{
@@ -113,28 +110,24 @@ const CorporativeSavingsModal = ({close}) => {
                                 padding: "1em",
                               }}
                             />
-                          ) : dummy &&
-                            Array.isArray(dummy) &&
-                            dummy?.length > 0 ? (
-                            dummy?.map((item, i) => (
+                          ) : data &&
+                            Array.isArray(data?.results) &&
+                            data?.results?.length > 0 ? (
+                            data?.results?.map((item, i) => (
                               <TableRow key={i + 2}>
                                 <TableCell>
                                   {page * rowsPerPage + i + 1}
                                 </TableCell>
                                 <TableCell>
-                              
-                                    {item?.dd}
-                             
-                                </TableCell>
-
-                             
-                                <TableCell>
-                                    <FormattedPrice amount={parseInt(item?.as)}/>
+                                  {formattedDate(item?.created_at)}
                                 </TableCell>
                                 <TableCell>
-                                <FormattedPrice amount={parseInt(item?.balance)}/>
-                                 
+                                  {item?.amount}
                                 </TableCell>
+                                <TableCell>
+                                  {item?.balance}
+                                </TableCell>
+                      
                               </TableRow>
                             ))
                           ) : (
@@ -146,13 +139,13 @@ const CorporativeSavingsModal = ({close}) => {
                       </Table>
                     </TableContainer>
 
-                    {/* <CustomPagination
+                    <CustomPagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
-                        nextPageLink={transactionsData?.links?.next}
-                        prevPageLink={transactionsData?.links?.previous}
-                    /> */}
+                        nextPageLink={data?.links?.next}
+                        prevPageLink={data?.links?.previous}
+                    />
 
                   </Box>
                   {/* Table */}
