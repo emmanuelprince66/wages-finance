@@ -28,10 +28,13 @@ import FormattedPrice from "../../utils/FormattedPrice";
 import CustomPagination from "../../components/CustomPagination";
 
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import MemberProfile from "../members/MemberProfile";
 const CorporateSavings = ({
+  setShowMemberProfile,
   setShowComp,
   showComp,
   corporativeData,
+  showMemberProfile,
   currentPage,
   handlePageChange,
   searchValue,
@@ -43,13 +46,38 @@ const CorporateSavings = ({
 }) => {
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
-  const handleMouseDownCash = (event) => {
+ 
+   const handleMouseDownCash = (event) => {
     event.preventDefault();
   };
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [memberId , setMemberId] =  useState("")
+
+
+
+
+  const handleOpenMemberProfile = (id) => {
+    setMemberId(id)
+    setShowMemberProfile((prev) => !prev)
+  }
+
+
+
+  const backSavings = () => {
+    setShowMemberProfile((prev) => !prev)
+  }
   return (
-    <div className="w-full gap-4 flex-col justify-center flex items-start">
+   <>
+   {
+    showMemberProfile && ( <MemberProfile memberId={memberId} close={backSavings}  type="Savings"/>)
+   }
+
+   {
+
+    !showMemberProfile && (
+      <>
+         <div className="w-full gap-4 flex-col justify-center flex items-start">
       <CustomCard style="w-full">
         <div className="flex items-center gap-8">
           <div className="flex flex-col items-start gap-3">
@@ -186,6 +214,7 @@ const CorporateSavings = ({
 
                         <TableCell>
                           <Button
+                          onClick={() => handleOpenMemberProfile(item?.id)}
                             variant="outlined"
                             sx={{
                               textTransform: "capitalize",
@@ -230,6 +259,10 @@ const CorporateSavings = ({
         </div>
       </CustomCard>
     </div>
+      </>
+    )
+   }
+   </>
   );
 };
 

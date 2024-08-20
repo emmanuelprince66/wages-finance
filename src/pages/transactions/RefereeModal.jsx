@@ -5,12 +5,13 @@ import { Button } from "@mui/material";
 import formattedDate from "../../utils/formattedDate";
 
 const RefereeModal = ({ closeRefereeModal, refereeData }) => {
+
   return (
     <div className="w-full flex flex-col items-start gap-2">
       <div className="flex items-center justify-between w-full mb-3">
         <p className="text-general font-[500] text-[20px] ">
           {refereeData?.lastname} {refereeData?.firstname} Referees (
-          {refereeData?.referral_count})
+          {refereeData?.referal_count})
         </p>
 
         <ClearRoundedIcon

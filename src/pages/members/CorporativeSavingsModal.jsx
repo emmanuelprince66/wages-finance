@@ -41,7 +41,6 @@ const CorporativeSavingsModal = ({close , memberId} ) => {
    
      const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
      const totalPages = data?.pages;
-console.log(data)
 
 const handlePageChange = (page) => {
   setCurrentPage(page);

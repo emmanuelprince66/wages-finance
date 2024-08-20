@@ -87,7 +87,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
   return (
     <div className="w-full">
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           {isLoading || !targetData ? (
             <Skeleton variant="rounded" width="100%" height={280} />
           ) : (
@@ -125,12 +125,12 @@ const TargetSavings = ({ handleShowParticipants }) => {
             </CustomCard>
           )}
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           {isLoading || !targetData ? (
             <Skeleton variant="rounded" width="100%" height={280} />
           ) : (
             <CustomCard style="w-full h-full">
-              <div className="w-full flex justify-between">
+              <div className="w-full flex gap-[9rem]">
                 <DoughnutChart
                   title={title}
                   data={data}

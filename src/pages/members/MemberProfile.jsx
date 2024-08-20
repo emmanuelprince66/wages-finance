@@ -14,6 +14,8 @@ import mNine from "../../assets/member-profile/m-9.svg";
 import avatar from "../../assets/member-profile/avatar.png";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { Skeleton } from "@mui/material";
+import SouthWestRoundedIcon from '@mui/icons-material/SouthWestRounded';
+import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
 import CustomCard from "../../components/CustomCard";
@@ -46,7 +48,7 @@ import PersonalSavingsModal from "./PersonalSavingsModal";
 import InvestmentDetailsModal from "./InvestmentDetailsModal";
 import RefereeModal from "../transactions/RefereeModal";
 
-const MemberProfile = ({ setShowComp, memberId }) => {
+const MemberProfile = ({ close , memberId   , type}) => {
   const [openRefereeModal, setOpenRefreeModal] = useState(false);
 
   const closeRefereeModal = () => setOpenRefreeModal(false);
@@ -69,18 +71,21 @@ const MemberProfile = ({ setShowComp, memberId }) => {
   const refereeData = data ||  []
 
 
+
   return (
     <div className="flex items-start flex-col gap-3">
       {/*  */}
       <div className="flex items-center gap-3">
         <div
           className="flex items-center gap-1 cursor-pointer hover:underline"
-          onClick={() => setShowComp("members")}
+          onClick={close}
         >
           <img src={mSeven} alt="" />
-          <p className="text-[14px]  text-[#17171]">Members</p>
+          <p className="text-[14px]  text-[#17171]">{type}</p>
         </div>
-        <ChevronRightOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
+        <ChevronRightOutlinedIcon 
+         
+        sx={{ color: "#919191", pt: "2px"}} />
         <div className="flex items-center gap-1">
           <img src={mOne} alt="" className="w-[12px] h-[12px]" />
           <p className="text-[14px]  text-[#17171]">
@@ -91,7 +96,9 @@ const MemberProfile = ({ setShowComp, memberId }) => {
       {/*  */}
 
       <div className="flex gap-2 items-center">
-        <WestOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
+        <WestOutlinedIcon
+        onClick={close}
+        sx={{ color: "#919191", pt: "2px" , cursor:"pointer" }} />
         <p className="text-[#171717] text-[20px] font-[600]">
           {data?.lastname} {data?.firstname}
         </p>
@@ -362,13 +369,13 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                     <p className="text-primary_red font-[600] text-[24px] ">
                       <FormattedPrice amount={data?.outstanding_loan} />
                     </p>
-                    <span className="flex gap-3 items-center cursor-pointer">
+                    {/* <span className="flex gap-3 items-center cursor-pointer">
                       <p className="text-primary_green text-[12px] font-[500]">
                         Loan History
                       </p>
 
                       <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
-                    </span>
+                    </span> */}
                   </div>
                   <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
 
@@ -550,14 +557,14 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                                 </TableCell>
 
                                 <TableCell>
+
                                   <Typography
                                     sx={{
-                                      color: "#1E1E1E",
+                                      color:item?.activity_type === "CREDIT" ? "#208637" : "#E52929",
                                       fontWeight: "500",
                                       fontSize: "12px",
-                                      background: "#EBFFF3",
+                                      background:item?.activity_type === "CREDIT" ?  "#EBFFF3": "#FBEBEC",
                                       py: "5px",
-                                      color: "#1E854A",
                                       borderRadius: "10px",
                                       display: "flex",
                                       alignItems: "center",
@@ -566,8 +573,10 @@ const MemberProfile = ({ setShowComp, memberId }) => {
                                       width: "80px",
                                     }}
                                   >
-                                    <span className="w-[10px] h-[10px] rounded-full  bg-primary_green" />
-                                    {item?.activity_type}
+                                    {item?.activity_type === "CREDIT" ? (
+                                      <SouthWestRoundedIcon sx={{fontSize:"12px"}}/>
+                                    ): (<NorthEastRoundedIcon sx={{fontSize:"12px"}}/>)}
+                                    {item?.activity_type?.toLowerCase()}
                                   </Typography>
                                 </TableCell>
                                 <TableCell>{item?.title}</TableCell>

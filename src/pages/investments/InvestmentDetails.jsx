@@ -31,6 +31,7 @@ import {
 } from "@mui/material";
 import { parseISO } from "date-fns";
 import { convertDate } from "../../utils/timeConvert";
+import InvestmentTable from "./InvestmentTable";
 const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
   const {
     register,
@@ -50,6 +51,8 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
   const [unitShare, setUnitShare] = useState(null);
   const [userInvest, setUserInvest] = useState(null);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const [showInvestmentDetails , setShowInvestmentDetails] =  useState(true)
 
   const [nameErr, setNameErr] = useState(false);
   const [interestErr, setInterestErr] = useState(false);
@@ -213,7 +216,40 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
 
       {/*  */}
 
-      <CustomCard style="w-full">
+  <div className="flex w-full h-full">
+    <Grid container spacing={2}>
+    <Grid item xs={2.4}>
+              <div className='h-full w-full bg-text_white flex-col items-start gap-2 rounded-md border-[1px] border-[#E3E3E3] '>
+                 <div
+                 onClick={() => setShowInvestmentDetails(true)}
+                 className={`${showInvestmentDetails ? 'bg-[#EFFFF1] ' : 'bg-transparent'  } mt-4 cursor-pointer rounded-[8px] py-[10px] pl-[16px] flex w-full justify-between items-center`}>
+                  <p className={`${showInvestmentDetails ? 'text-[#02981D]' : 'text-[#5E5E5E]'} text-[14px] font-[500]`}>Investment Details</p>
+                  { showInvestmentDetails && (
+                  <div className='h-[24px] rounded-[8px] bg-[#02981D] w-[6px]'></div>
+
+                   ) }
+                 </div>
+                 <div 
+                  onClick={() => setShowInvestmentDetails(false)}
+                 className={`${!showInvestmentDetails ? 'bg-[#EFFFF1] ' : 'bg-transparent'  } mt-4 cursor-pointer rounded-[8px] py-[10px] pl-[16px] flex w-full justify-between items-center`}>
+                  <p className={`${!showInvestmentDetails ? 'text-[#02981D]' : 'text-[#5E5E5E]'} text-[14px] font-[500]`}>Investors</p>
+                  { !showInvestmentDetails && (
+                  <div className='h-[24px] rounded-[8px] bg-[#02981D] w-[6px]'></div>
+
+                   ) }
+                 </div>
+              </div>
+      </Grid>
+
+
+      <Grid item xs={9.6}>
+
+
+        {
+          showInvestmentDetails ? (
+
+            <>
+             <CustomCard style="w-full">
         <p className="text-[15px] font-bold  text-[#17171]">Summary</p>
         <div className="flex items-center gap-8">
           <div className="flex flex-col items-start gap-3">
@@ -638,6 +674,18 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
           </Grid>
         </form>
       </div>
+            </>
+          ) : (
+            <InvestmentTable/>
+          )
+        }
+     
+      </Grid>
+    </Grid>
+  </div>
+      
+
+
     </div>
   );
 };

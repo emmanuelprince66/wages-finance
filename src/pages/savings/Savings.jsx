@@ -14,6 +14,7 @@ const Savings = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
 
+  const [showMemberProfile , setShowMemberProfile] = useState(false)
   // fetch card details
   const apiUrl = corporativeDataUrl();
 
@@ -54,7 +55,7 @@ const Savings = () => {
 
   return (
     <>
-      {showComp !== "participants" && (
+      {showComp !== "participants" && !showMemberProfile && (
         <div className="mb-4">
           <p className="font-[600] text-[20px] text-general mb-4">Savings</p>
 
@@ -110,6 +111,8 @@ const Savings = () => {
       {showComp === "corporate" && (
         <CorporateSavings
           isLoading={isLoading}
+          setShowMemberProfile={setShowMemberProfile}
+          showMemberProfile={showMemberProfile}
           corporativeData={corporativeData}
           setShowComp={setShowComp}
           showComp={showComp}

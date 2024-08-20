@@ -24,6 +24,7 @@ import { ToastContainer } from "react-toastify";
 const Investment = () => {
   const [showComp, setShowComp] = useState("all");
   const { selectedDates } = useDateContext();
+  const  [filterValue , setFilterValue ] = useState("")
   const token = getCookie("authToken");
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
@@ -31,7 +32,7 @@ const Investment = () => {
     event.preventDefault();
   };
 
-  const apiUrl = investmentListDataUrl();
+  const apiUrl = investmentListDataUrl(filterValue);
   const queryKey = ["fetchInvestmentListData", apiUrl];
 
   // fetch investment data for card
@@ -41,6 +42,7 @@ const Investment = () => {
     error: investmentListError,
     isLoading: investmentListLoading,
   } = useFetchData(queryKey, apiUrl);
+
 
   //
 

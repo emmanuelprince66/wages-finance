@@ -166,18 +166,30 @@ setCurrentPage(page);
                 </Grid>
 
 
-                {data?.results?.investments && Array.isArray(data?.results?.investments) && data?.results?.investments?.map((item) =>  (
-                    <Grid item xs={4} key={`${item?.type} + ${item?.cycle}`}>
-                    <FirstCard
-                    img={getIcon(item?.type)}
-                    titleOne={`Savings Towards ${item?.type}`}
-                    textOne={item?.cycle}
-                    textTwo={item?.amount_saved}
-                    color={getColor(item?.type)}
-                    link={{ title: "Savings Towards Birthdays", val: "birth" }}
-                />   
+                {
+                    isLoading ?
+
+                    <Grid item xs={12}>
+               <Skeleton variant="rounded" width="100%" height={180} />
+                 
                     </Grid>
-                )) }
+
+                    : 
+                    
+                data?.results?.investments && Array.isArray(data?.results?.investments) && data?.results?.investments?.map((item) =>  (
+                  <Grid item xs={4} key={`${item?.type} + ${item?.cycle}`}>
+                  <FirstCard
+                  img={getIcon(item?.type)}
+                  titleOne={`Savings Towards ${item?.type}`}
+                  textOne={item?.cycle}
+                  textTwo={item?.amount_saved}
+                  color={getColor(item?.type)}
+                  link={{ title: "Savings Towards Birthdays", val: "birth" }}
+              />   
+                  </Grid>
+              )) 
+
+                    }
 
             
            

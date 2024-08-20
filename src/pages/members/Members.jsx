@@ -34,6 +34,10 @@ const Members = () => {
     setCurrentPage(1); // Reset to page 1 when limit changes
   };
 
+
+  const backMembers =  () => {
+    setShowComp("members")
+  }
   return (
     <>
       {showComp === "members" && (
@@ -51,7 +55,7 @@ const Members = () => {
         />
       )}
       {showComp === "profile" && (
-        <MemberProfile memberId={memberId} setShowComp={setShowComp} />
+        <MemberProfile memberId={memberId} close={backMembers} type="Members" />
       )}
       {showComp === "all" && (
         <MemberFullTransaction setShowComp={setShowComp} />
