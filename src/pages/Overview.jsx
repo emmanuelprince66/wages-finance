@@ -15,8 +15,9 @@ const Overview = () => {
   const { selectedDates } = useDateContext();
 
   // fetch overview data
-
-
+  const apiUrl = overveiwUrl(selectedDates);
+  const queryKey = ["fetchOverveiwData", apiUrl];
+  const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   // cooperative card
   const CustomCorporativeCard = ({text , amt}) => {
@@ -55,9 +56,7 @@ const Overview = () => {
     )
   }
 
-  const apiUrl = overveiwUrl(selectedDates);
-  const queryKey = ["fetchOverveiwData", apiUrl];
-  const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
+
 
 
   return (

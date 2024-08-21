@@ -14,6 +14,8 @@ const TopBar = () => {
   const open = Boolean(anchorEl);
   const storedUserString = localStorage.getItem("user");
   const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
+
+  console.log(storedUser)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -65,7 +67,7 @@ const TopBar = () => {
                   {storedUser?.firstname}
                 </p>
                 <p className="font-[500] text-primary_grey_2 text-[13px]">
-                  {storedUser?.role[0]}
+                  {storedUser?.role ?  storedUser?.role[0] : '' }
                 </p>
               </div>
               <KeyboardArrowDownRoundedIcon sx={{ color: "#757575" }} />
