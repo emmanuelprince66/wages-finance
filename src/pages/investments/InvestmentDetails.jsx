@@ -28,10 +28,14 @@ import {
   Radio,
   RadioGroup,
   FormControl,
+  Skeleton,
 } from "@mui/material";
 import { parseISO } from "date-fns";
 import { convertDate } from "../../utils/timeConvert";
 import InvestmentTable from "./InvestmentTable";
+import useFetchData from "../../hooks/useFetchData";
+import { investmentsDetailsUrl } from "../../api/endpoint";
+import FormattedPrice from "../../utils/FormattedPrice";
 const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
   const {
     register,
@@ -51,6 +55,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
   const [unitShare, setUnitShare] = useState(null);
   const [userInvest, setUserInvest] = useState(null);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [apiId , setApiId] =  useState(null)
 
   const [showInvestmentDetails , setShowInvestmentDetails] =  useState(true)
 
@@ -103,6 +108,12 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
     setShowDetails(false);
     setShowComp("all");
   };
+
+
+  // fetch investment detalis
+  const apiUrl = investmentsDetailsUrl(apiId)
+  const queryKey = ["fetchInvestmentDetails", apiUrl];
+  const { data:investmentDetails, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   // mutation
   const updateInvestmentData = useMutation({
@@ -174,19 +185,22 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
       notiError("Please fill all fields.");
     }
   };
-  console.log(investById);
   useEffect(() => {
-    setName(investById?.name || "");
-    setQuota(investById?.quota || 0);
-    setImage(investById?.image || "");
+    setName(investmentDetails?.title || "");
+    setQuota(investmentDetails?.quota || 0);
+    setImage(investmentDetails?.image || "");
     setStartDate(
-      investById?.start_date ? parseISO(investById.start_date) : null
+      investmentDetails?.start_date ? parseISO(investmentDetails?.start_date) : null
     );
-    setEndDate(investById?.end_date ? parseISO(investById.end_date) : null);
-    setUnitShare(investById?.unit_share || 0);
-    setUserInvest(investById?.user_investments_count || 0);
-    setInvestId(investById?.id || "");
-  }, [investById]);
+    setEndDate(investmentDetails?.end_date ? parseISO(investmentDetails?.end_date) : null);
+    setUnitShare(investmentDetails?.unit_share || 0);
+    setUserInvest(investmentDetails?.user_investments_count || 0);
+  }, [investmentDetails]);
+
+
+  useEffect(() => {
+    setApiId(investById?.id)
+  } , [investById])
 
   return (
     <div className="flex items-start flex-col gap-3">
@@ -249,7 +263,11 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
           showInvestmentDetails ? (
 
             <>
-             <CustomCard style="w-full">
+              {isLoading ? (
+        <Skeleton variant="rounded" width="100%" height={150} />
+      ) : ( 
+
+        <CustomCard style="w-full">
         <p className="text-[15px] font-bold  text-[#17171]">Summary</p>
         <div className="flex items-center gap-8">
           <div className="flex flex-col items-start gap-3">
@@ -275,7 +293,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
               </IconButton>
             </div>
             <p className="text-general text-[16px]">
-              {showCash ? <p> &#8358;17,000</p> : "***********"}
+              {showCash ? <p><FormattedPrice amount={investmentDetails?.amount_invested ||  0}/></p> : "***********"}
             </p>
           </div>
           <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
@@ -286,7 +304,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
                 Total Number of investors:
               </p>
             </div>
-            <p className="text-general text-[16px]">771</p>
+            <p className="text-general text-[16px]">{investmentDetails?.investor_count || 0}</p>
           </div>
           <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
 
@@ -294,14 +312,26 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
             <div className="flex gap-4 items-center">
               <p className="text-[14px]  text-[#17171]">Number of Days left:</p>
             </div>
-            <p className="text-general text-[16px]">71</p>
+            <p className="text-general text-[16px]">{investmentDetails?.days_left}</p>
           </div>
         </div>
-      </CustomCard>
+             </CustomCard>
+      )}
+         
 
       {/* form */}
 
-      <div className="w-[60%] mx-auto p-2">
+      {isLoading ? (
+             <CircularProgress
+             size="4.2rem"
+             sx={{
+               color: "#02981D",
+               marginLeft: "auto",
+               padding: "1em",
+             }}
+           />
+      ) : (
+        <div className="w-[60%] mx-auto p-2">
         <form action="" className="w-full">
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -313,7 +343,7 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
 
                 <div className="h-full w-full">
                   <img
-                    src={banner}
+                    src={investmentDetails?.image || banner}
                     alt="banner"
                     className="object-fill w-full h-full"
                   />
@@ -674,9 +704,12 @@ const InvestmentDetails = ({ investById, setShowDetails, setShowComp }) => {
           </Grid>
         </form>
       </div>
+      )}
+
+   
             </>
           ) : (
-            <InvestmentTable/>
+            <InvestmentTable apiId={apiId}/>
           )
         }
      

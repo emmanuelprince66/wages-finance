@@ -21,12 +21,30 @@ import {
     Card,
     Modal,
   } from "@mui/material";
+import { investmentInvestorUrl } from '../../api/endpoint';
+import useFetchData from '../../hooks/useFetchData';
 
-const InvestmentTable = () => {
+const InvestmentTable = ({apiId}) => {
     const [investmentFilter , setInvestmentFilter] =  useState("all")
-    
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [currentPage, setCurrentPage] = useState(1);
+     const [rowsPerPage, setRowsPerPage] = useState(10);
+
+      // fetch investor detalis
+  const apiUrl = investmentInvestorUrl(apiId)
+  const queryKey = ["fetchInvestorData", apiUrl];
+  const { data:investmentInvestor, error, isLoading } = useFetchData(queryKey, apiUrl);
+
+  const totalPages = investmentInvestor?.pages;
+  console.log(investmentInvestor)
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+
+
+
+  console.log(apiId)
 
   const dummy = [ 
     {
@@ -106,7 +124,7 @@ const InvestmentTable = () => {
   return (
     <div className='w-full flex flex-col gap-3 h-full'>
           {/* filter */}
-          <div className="flex w-[40%] gap-3  items-center">
+          <div className="flex w-[50%] gap-3  items-center">
             <Button
               onClick={() => setInvestmentFilter("all")}
               sx={{
@@ -264,7 +282,7 @@ const InvestmentTable = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {!dummy ? (
+                          {isLoading ? (
                             <CircularProgress
                               size="4.2rem"
                               sx={{
@@ -273,10 +291,10 @@ const InvestmentTable = () => {
                                 padding: "1em",
                               }}
                             />
-                          ) : dummy &&
-                            Array.isArray(dummy) &&
-                            dummy?.length > 0 ? (
-                            dummy?.map((item, i) => (
+                          ) : investmentInvestor &&
+                            Array.isArray(investmentInvestor) &&
+                            investmentInvestor?.results?.length > 0 ? (
+                            investmentInvestor?.results?.map((item, i) => (
                               <TableRow key={i + 2}>
                                 <TableCell>
                                   {page * rowsPerPage + i + 1}

@@ -63,4 +63,10 @@ export const activeInvestmentsUrl =  (id) => {
 export const investmentsHistoryUrl =  (id) => {
   return `/admin/user/active_investment/${id}`;
 };
+export const investmentsDetailsUrl =  (id) => {
+  return `/admin/single_investment/${id}`;
+};
+export const investmentInvestorUrl =  (id) => {
+  return `/admin/investment_investors/${id}`;
+};
 
