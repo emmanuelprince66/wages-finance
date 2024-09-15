@@ -34,7 +34,7 @@ import { useToast } from "react-toastify";
 import CustomModal from "../../components/CustomModal";
 import ParticipantModalData from "./ParticipantModalData";
 const ParticipantsSavings = ({ event, setShowComp }) => {
-  const [apiId, setApiId] =  useState("")
+  const [apiId, setApiId] = useState("");
   const { title, link, id, img } = event;
   const [currentPage, setCurrentPage] = useState(1);
   const [page, setPage] = useState(1);
@@ -88,8 +88,8 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
   }, [participantId]);
 
   useEffect(() => {
-    setApiId(id)
-  } , [id])
+    setApiId(id);
+  }, [id]);
 
   const fetchSavingsParticipants = async (url) => {
     try {
@@ -114,7 +114,6 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
     staleTime: 5000, // Cache data for 5 seconds
   });
 
-
   // useEffect(() => {
 
   // }, [id]);
@@ -137,12 +136,12 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
         <div
           className="flex gap-1 items-center cursor-pointer"
           onClick={() => {
-            setShowComp("target");
+            setShowComp("personal");
           }}
         >
           <img src="" alt="" />
           <p className="text-general text-[14px] hover:underline">
-            Target Savings
+            Personal Savings
           </p>
         </div>
 
@@ -259,8 +258,13 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
 
       {/* partucipant modal start */}
       <CustomModal open={showParticipantModal}>
-      <ParticipantModalData close={closeParticipantModal} modalLoading={modalLoading} title={title}  participantModalQuery={participantModalQuery} />
-      </CustomModal> 
+        <ParticipantModalData
+          close={closeParticipantModal}
+          modalLoading={modalLoading}
+          title={title}
+          participantModalQuery={participantModalQuery}
+        />
+      </CustomModal>
       {/* partucipant modal end */}
     </div>
   );

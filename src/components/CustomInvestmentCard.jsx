@@ -24,7 +24,7 @@ const CustomInvestmentCard = ({
 
   return (
     <>
-      <Card sx={{ maxWidth: "300px", cursor: "pointer" }}>
+      <Card sx={{ maxWidth: "300px", cursor: "pointer", pb: "2rem" }}>
         <div className=" h-1/2  relative" onClick={() => handleShowDetails(id)}>
           <img
             src={banner}
