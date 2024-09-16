@@ -38,8 +38,9 @@ const AddInvestment = ({ setShowComp }) => {
     register,
     formState: { isValid, errors },
   } = useForm({ mode: "all" });
-  const selectedSubscription = watch("subscription", "3 months");
-  const subscriptionOptions = ["3 months", "6 months", "9 months", "12 months"];
+  const selectedSubscription = watch("subscription", 3);
+  const subscriptionOptions = [3, 6, 9, 12];
+
   const token = getCookie("authToken");
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -98,6 +99,7 @@ const AddInvestment = ({ setShowComp }) => {
   // submit form
 
   const onFormSubmit = (data) => {
+    console.log("data", data);
     const {
       sampleName,
       subscription,
@@ -112,6 +114,7 @@ const AddInvestment = ({ setShowComp }) => {
     formData.append("title", sampleName);
     formData.append("start_date", convertDate(startDate));
     formData.append("end_date", convertDate(endDate));
+    formData.append("duration", Number(subscription));
     formData.append("quota", np);
     formData.append("interest_rate", interestRate);
     formData.append("unit_share", amt);
@@ -255,7 +258,7 @@ const AddInvestment = ({ setShowComp }) => {
                 <Controller
                   name="subscription"
                   control={control}
-                  defaultValue="3 months"
+                  defaultValue={3}
                   render={({ field }) => (
                     <FormControl component="fieldset">
                       <RadioGroup
@@ -286,6 +289,7 @@ const AddInvestment = ({ setShowComp }) => {
                               }
                               label={label}
                             />
+                            Months
                           </div>
                         ))}
                       </RadioGroup>

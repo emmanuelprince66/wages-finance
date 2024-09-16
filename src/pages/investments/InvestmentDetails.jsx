@@ -56,7 +56,7 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
   const [userInvest, setUserInvest] = useState(null);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [apiId, setApiId] = useState(null);
-
+  const [subVal, setSubVal] = useState(null);
   const [showInvestmentDetails, setShowInvestmentDetails] = useState(true);
 
   const [nameErr, setNameErr] = useState(false);
@@ -65,10 +65,13 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
   const [unitShareErr, setUnitShareErr] = useState(false);
   const [userInvestErr, setUserInvestErr] = useState(false);
 
-  const selectedSubscription = watch("subscription", "3 months");
+  const [selectedSubscription, setSelectedSubscription] = useState(subVal); // default value
+  const subscriptionOptions = [3, 6, 9, 12];
+
+  console.log(selectedSubscription);
+
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
-  const subscriptionOptions = ["3 months", "6 months", "9 months", "12 months"];
   const validateName = (name) => {
     const regex = /^[a-zA-Z]+$/;
     return regex.test(name);
@@ -118,6 +121,9 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
     isLoading,
   } = useFetchData(queryKey, apiUrl);
 
+  const handleRadioChange = (event) => {
+    setSubVal(event.target.value);
+  };
   // mutation
   const updateInvestmentData = useMutation({
     mutationFn: async (formData) => {
@@ -179,6 +185,7 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
       formData.append("title", name);
       formData.append("start_date", convertDate(startDate));
       formData.append("end_date", convertDate(endDate));
+      formData.append("duration", Number(subVal));
       formData.append("quota", quota);
       formData.append("interest_rate", userInvest);
       formData.append("unit_share", unitShare);
@@ -193,6 +200,7 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
     setName(investmentDetails?.title || "");
     setQuota(investmentDetails?.quota || 0);
     setImage(investmentDetails?.image || "");
+    setSubVal(investmentDetails?.duration);
     setStartDate(
       investmentDetails?.start_date
         ? parseISO(investmentDetails?.start_date)
@@ -462,49 +470,42 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
                               DURATION
                               <sup className="text-[#DC3545]">*</sup>
                             </p>
-
-                            <Controller
-                              name="subscription"
-                              control={control}
-                              defaultValue="3 months"
-                              render={({ field }) => (
-                                <FormControl component="fieldset">
-                                  <RadioGroup
-                                    row
-                                    {...field}
-                                    onChange={(e) =>
-                                      field.onChange(e.target.value)
-                                    }
-                                  >
-                                    {subscriptionOptions?.map((label) => (
-                                      <div
-                                        key={label}
-                                        className={`rounded-md border-2  px-2 mr-1 ${
-                                          selectedSubscription === label
-                                            ? "border-[#02981D]"
-                                            : "border-[#E6F5E8]"
-                                        }`}
-                                      >
-                                        <FormControlLabel
-                                          value={label}
-                                          control={
-                                            <Radio
-                                              sx={{
+                            {subVal && (
+                              <FormControl component="fieldset">
+                                <RadioGroup
+                                  row
+                                  value={subVal}
+                                  onChange={handleRadioChange}
+                                >
+                                  {subscriptionOptions.map((label) => (
+                                    <div
+                                      key={label}
+                                      className={`rounded-md border-2 px-2 mr-1 ${
+                                        selectedSubscription ===
+                                        label.toString()
+                                          ? "border-[#02981D]"
+                                          : "border-[#E6F5E8]"
+                                      }`}
+                                    >
+                                      <FormControlLabel
+                                        value={label.toString()}
+                                        control={
+                                          <Radio
+                                            sx={{
+                                              color: "#02981D",
+                                              "&.Mui-checked": {
                                                 color: "#02981D",
-                                                "&.Mui-checked": {
-                                                  color: "#02981D",
-                                                },
-                                              }}
-                                            />
-                                          }
-                                          label={label}
-                                        />
-                                      </div>
-                                    ))}
-                                  </RadioGroup>
-                                </FormControl>
-                              )}
-                            />
+                                              },
+                                            }}
+                                          />
+                                        }
+                                        label={`${label} Months`}
+                                      />
+                                    </div>
+                                  ))}
+                                </RadioGroup>
+                              </FormControl>
+                            )}
                           </div>
                         </Grid>
                         <Grid item xs={6}>
