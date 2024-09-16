@@ -8,11 +8,14 @@ import InterestModalData from "./InterestModalData";
 
 const ParticipantModalData = ({
   participantModalQuery,
+  participantId,
   title,
   modalLoading,
   close,
 }) => {
   const [show, setShow] = useState("overview");
+
+  console.log("cacacacca", participantModalQuery?.id);
   return (
     <div className="flex flex-col items-start gap-3 w-full ">
       <div className="w-full">
@@ -94,10 +97,10 @@ const ParticipantModalData = ({
                   />
                 )}
                 {show === "break" && (
-                  <BreakdownModalData userId={participantModalQuery?.user} />
+                  <BreakdownModalData userId={participantId} />
                 )}
                 {show === "interest" && (
-                  <InterestModalData userId={participantModalQuery?.user} />
+                  <InterestModalData userId={participantId} />
                 )}
               </div>
             </Grid>

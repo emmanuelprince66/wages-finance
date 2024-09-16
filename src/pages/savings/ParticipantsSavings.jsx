@@ -263,6 +263,7 @@ const ParticipantsSavings = ({ event, setShowComp }) => {
           modalLoading={modalLoading}
           title={title}
           participantModalQuery={participantModalQuery}
+          participantId={participantId}
         />
       </CustomModal>
       {/* partucipant modal end */}

@@ -34,6 +34,8 @@ const BreakdownModalData = ({ userId }) => {
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
+  console.log(data);
+
   const dummy = [
     {
       id: 1,
