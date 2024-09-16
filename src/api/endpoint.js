@@ -23,8 +23,8 @@ export const targetSavingsUrl = () => {
 export const membersProfileUrl = (memberId) => {
   return `/admin/user/${memberId}`;
 };
-export const investmentListDataUrl = (filterValue) => {
-  return `/admin/investment_stats/?status=${filterValue}`;
+export const investmentListDataUrl = (filterValue, selectedDates) => {
+  return `/admin/investment_stats/?status=${filterValue}&start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
 export const loanStatisticsDataUrl = () => {
   return "/admin/loan_dashboard/";

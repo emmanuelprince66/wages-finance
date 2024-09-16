@@ -10,13 +10,14 @@ import CustomInvestmentCard from "../../components/CustomInvestmentCard";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 import InvestmentDetails from "./InvestmentDetails";
-<CustomInvestmentCard status="available" title="Available" />;
 const AllInvestments = ({
   setShowComp,
+  setFilterValue,
   investmentPlans,
+  filterValue,
   investmentListLoading,
 }) => {
-  const [filtered, setFiltered] = useState("all");
+  console.log("fil", filterValue);
   const [showDetails, setShowDetails] = useState(false);
   const [investmentById, setInvestmentById] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -44,19 +45,19 @@ const AllInvestments = ({
             <div className=" w-[100%] mx-auto ">
               <div className="flex gap-4 w-1/2   justify-start">
                 <Button
-                  onClick={() => setFiltered("all")}
+                  onClick={() => setFilterValue("")}
                   sx={{
-                    background: filtered === "all" ? "#FAFAFA" : "#fff",
+                    background: filterValue === "" ? "#FAFAFA" : "#fff",
                     borderRadius: "8px",
                     width: "100%",
                     px: "15px",
                     border:
-                      filtered === "all"
+                      filterValue === ""
                         ? "1px solid #02981D"
                         : "1px solid #5E5E5E",
-                    color: filtered === "all" ? "#02981D" : "#5E5E5E",
+                    color: filterValue === "" ? "#02981D" : "#5E5E5E",
                     "&:hover": {
-                      backgroundColor: filtered === "all" ? "#FAFAFA" : "#fff",
+                      backgroundColor: filterValue === "" ? "#FAFAFA" : "#fff",
                     },
                     textTransform: "capitalize",
                     fontWeight: "400",
@@ -65,19 +66,20 @@ const AllInvestments = ({
                   All Investment Plans
                 </Button>
                 <Button
-                  onClick={() => setFiltered("av")}
+                  onClick={() => setFilterValue("Active")}
                   sx={{
-                    background: filtered === "av" ? "#FAFAFA" : "#fff",
+                    background: filterValue === "Active" ? "#FAFAFA" : "#fff",
                     borderRadius: "8px",
                     width: "50%",
                     px: "15px",
                     border:
-                      filtered === "av"
+                      filterValue === "Active"
                         ? "1px solid #02981D"
                         : "1px solid #5E5E5E",
-                    color: filtered === "av" ? "#02981D" : "#5E5E5E",
+                    color: filterValue === "Active" ? "#02981D" : "#5E5E5E",
                     "&:hover": {
-                      backgroundColor: filtered === "av" ? "#FAFAFA" : "#fff",
+                      backgroundColor:
+                        filterValue === "Active" ? "#FAFAFA" : "#fff",
                     },
                     textTransform: "capitalize",
                     fontWeight: "400",
@@ -86,19 +88,20 @@ const AllInvestments = ({
                   Available
                 </Button>
                 <Button
-                  onClick={() => setFiltered("sold")}
+                  onClick={() => setFilterValue("Sold")}
                   sx={{
-                    background: filtered === "sold" ? "#FAFAFA" : "#fff",
+                    background: filterValue === "Sold" ? "#FAFAFA" : "#fff",
                     borderRadius: "8px",
                     width: "50%",
                     px: "15px",
                     border:
-                      filtered === "sold"
+                      filterValue === "Sold"
                         ? "1px solid #02981D"
                         : "1px solid #5E5E5E",
-                    color: filtered === "sold" ? "#02981D" : "#5E5E5E",
+                    color: filterValue === "Sold" ? "#02981D" : "#5E5E5E",
                     "&:hover": {
-                      backgroundColor: filtered === "sold" ? "#FAFAFA" : "#fff",
+                      backgroundColor:
+                        filterValue === "Sold" ? "#FAFAFA" : "#fff",
                     },
                     textTransform: "capitalize",
                     fontWeight: "400",
