@@ -34,59 +34,13 @@ const BreakdownModalData = ({ userId }) => {
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log(data);
-
-  const dummy = [
-    {
-      id: 1,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 2,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 3,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 4,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 5,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 6,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 7,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-  ];
   return (
     <div className="flex w-full justify-end gap-3 flex-col">
-      <SelectDate />
+      {/* <SelectDate /> */}
 
       {/* Table */}
 
-      <Box className="w-full mt-3">
+      <Box className="w-full mt-3 max-h-[80vh] overflow-y-auto">
         <TableContainer>
           <Table sx={{ minWidth: 100, padding: "8px" }}>
             <TableHead
@@ -96,13 +50,13 @@ const BreakdownModalData = ({ userId }) => {
             >
               <TableRow>
                 <TableCell>S/N</TableCell>
-                <TableCell> Date</TableCell>
-                <TableCell>Interest(N)</TableCell>
+                <TableCell> Date & Time</TableCell>
+                <TableCell>Amount Saved(N)</TableCell>
                 <TableCell>Balance(N)</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {!dummy ? (
+              {isLoading ? (
                 <CircularProgress
                   size="4.2rem"
                   sx={{
@@ -111,18 +65,22 @@ const BreakdownModalData = ({ userId }) => {
                     padding: "1em",
                   }}
                 />
-              ) : dummy && Array.isArray(dummy) && dummy?.length > 0 ? (
-                dummy?.map((item, i) => (
-                  <TableRow key={i + 2}>
-                    <TableCell>{page * rowsPerPage + i + 1}</TableCell>
-                    <TableCell>{item?.dd}</TableCell>
-                    <TableCell>{item?.interest}</TableCell>
+              ) : data &&
+                data.payment_details &&
+                Object.keys(data.payment_details).length > 0 ? (
+                Object.entries(data.payment_details).map(
+                  ([timestamp, item], i) => (
+                    <TableRow key={timestamp}>
+                      <TableCell>{page * rowsPerPage + i + 1}</TableCell>
+                      <TableCell>{item.date}</TableCell>
+                      <TableCell>{item.amount}</TableCell>
 
-                    <TableCell>
-                      <FormattedPrice amount={item?.bal} />
-                    </TableCell>
-                  </TableRow>
-                ))
+                      <TableCell>
+                        <FormattedPrice amount={item.balance} />
+                      </TableCell>
+                    </TableRow>
+                  )
+                )
               ) : (
                 <TableRow>
                   <TableCell colSpan="7">No data found</TableCell>

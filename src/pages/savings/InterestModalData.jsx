@@ -35,50 +35,7 @@ const InterestModalData = ({ userId }) => {
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   console.log("interets", data?.results);
-  const dummy = [
-    {
-      id: 1,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 2,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 3,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 4,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 5,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 6,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-    {
-      id: 7,
-      dd: "30/05/2024",
-      interest: "120.2",
-      bal: 102000,
-    },
-  ];
+
   return (
     <div className="flex w-full justify-end gap-3 flex-col">
       <SelectDate />
