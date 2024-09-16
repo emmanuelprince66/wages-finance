@@ -8,7 +8,7 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import { useQuery } from "@tanstack/react-query";
 import { getCookie } from "../../utils/cookieAuth";
 import { AuthAxios } from "../../helpers/axiosInstance";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Divider } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { IconButton } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
@@ -24,7 +24,7 @@ import { ToastContainer } from "react-toastify";
 const Investment = () => {
   const [showComp, setShowComp] = useState("all");
   const { selectedDates } = useDateContext();
-  const  [filterValue , setFilterValue ] = useState("")
+  const [filterValue, setFilterValue] = useState("");
   const token = getCookie("authToken");
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
@@ -43,6 +43,7 @@ const Investment = () => {
     isLoading: investmentListLoading,
   } = useFetchData(queryKey, apiUrl);
 
+  console.log("name", investmentListData);
 
   //
 
@@ -83,82 +84,37 @@ const Investment = () => {
               )}
             </div>
 
-            <CustomCard style="w-full mt-6">
-              <div className="flex items-center gap-8">
-                <div className="flex flex-col items-start gap-3">
+            <CustomCard style="w-full ">
+              <div className="flex items-center gap-8 justify-between mt-5">
+                <div className="flex flex-col items-start gap-3 border border-primary_grey w-full p-3 rounded-md">
                   <div className="flex gap-4 items-center">
-                    <p className="text-[14px]  text-[#17171]">
+                    <p className="text-[14px] font-bold  text-[#17171]">
                       Total Amount Invested By Members:
                     </p>
-                    <IconButton
-                      aria-label="toggle cash visibility"
-                      onClick={handleClickShowCash}
-                      onMouseDown={handleMouseDownCash}
-                      edge="end"
-                    >
-                      {showCash ? (
-                        <VisibilityOffOutlinedIcon
-                          sx={{ color: "#02981D", fontSize: "15px" }}
-                        />
-                      ) : (
-                        <VisibilityOutlinedIcon
-                          sx={{ color: "#02981D", fontSize: "15px" }}
-                        />
-                      )}
-                    </IconButton>
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">All - Time:</p>
                     <p className="text-general text-[16px]">
-                      {showCash ? (
-                        <p>
-                          {investmentListLoading || !investmentListData ? (
-                            <CircularProgress
-                              sx={{
-                                color: "#02981D",
-                              }}
-                              size="1rem"
-                            />
-                          ) : (
-                            <FormattedPrice
-                              amount={investmentListData?.total_investments}
-                            />
-                          )}
-                        </p>
-                      ) : (
-                        "***********"
-                      )}
+                      <FormattedPrice
+                        amount={investmentListData?.total_investments}
+                      />
                     </p>
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">By Filter:</p>
                     <p className="text-general text-[16px]">
-                      {showCash ? (
-                        <p>
-                          {investmentListLoading || !investmentListData ? (
-                            <CircularProgress
-                              sx={{
-                                color: "#02981D",
-                              }}
-                              size="1rem"
-                            />
-                          ) : (
-                            <FormattedPrice
-                              amount={investmentListData?.count_by_filter}
-                            />
-                          )}
-                        </p>
-                      ) : (
-                        "***********"
-                      )}
+                      <p>
+                        <FormattedPrice
+                          amount={investmentListData?.total_by_filter}
+                        />
+                      </p>
                     </p>
                   </div>
                 </div>
-                <div className="min-h-[8rem] w-[1px] bg-[#E3E3E3]" />
 
-                <div className="flex flex-col items-start gap-3">
+                <div className="flex flex-col items-start gap-3 border border-primary_grey  p-3 w-full rounded-md">
                   <div className="flex gap-4 items-center">
-                    <p className="text-[14px]  text-[#17171]">
+                    <p className="text-[14px] font-bold text-[#17171]">
                       Total Number Of Investors :
                     </p>
                   </div>
@@ -190,9 +146,182 @@ const Investment = () => {
                           size="1rem"
                         />
                       ) : (
-                        investmentListData?.total_by_filter
+                        investmentListData?.count_by_filter
                       )}
                     </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center gap-3 border border-primary_grey p-3 w-full rounded-md h-[10rem] ">
+                  <div className="flex gap-4 items-center">
+                    <p className="text-[14px] font-bold text-[#17171]">
+                      Active Investments :
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-3">
+                    <p className="text-general text-[16px]">
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        investmentListData?.active_investments
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {/* second div child */}
+
+              <div className="flex items-center gap-8 justify-between mt-6">
+                <div className="flex flex-col items-start gap-3 border border-primary_grey w-full p-3 rounded-md">
+                  <div className="flex gap-4 items-center">
+                    <p className="text-[14px] font-bold  text-[#17171]">
+                      Total Upcoming Payouts:
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-3">
+                    <p className="text-primary_grey text-[14px]">This Month:</p>
+                    <p className="text-general text-[16px]">
+                      <FormattedPrice
+                        amount={investmentListData?.upcoming_payout_this_month}
+                      />
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-3">
+                    <p className="text-primary_grey text-[14px]">Today:</p>
+                    <p className="text-general text-[16px]">
+                      <p>
+                        <FormattedPrice
+                          amount={investmentListData?.upcoming_payout_today}
+                        />
+                      </p>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center gap-3 border border-primary_grey p-3 w-full rounded-md h-[10rem] ">
+                  <div className="flex gap-4 items-center">
+                    <p className="text-[14px] font-bold text-[#17171]">
+                      Total Interest :
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-3">
+                    <p className="text-general text-[16px]">
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        investmentListData?.total_interest
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start gap-3 border border-primary_grey p-3 w-full rounded-md">
+                  <div className="flex gap-4 items-center">
+                    <p className="text-[14px] font-bold text-[#17171]">
+                      Cancelled Investments :
+                    </p>
+                  </div>
+
+                  <div className="flex w-[70%]  mr-auto justify-between items-center">
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="text-primary_grey text-[14px]">
+                        All - Time:
+                      </p>
+                      <p className="text-general text-[16px]">
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          investmentListData?.cancelled_investment_count
+                        )}
+                      </p>
+                    </div>
+
+                    <Divider
+                      sx={{
+                        minHeight: "35px",
+                        backgroundColor: "grey",
+                        width: "1px",
+                      }}
+                    />
+
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="text-primary_grey text-[14px]">
+                        Total (By Filter):
+                      </p>
+                      <p className="text-general text-[16px]">
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          investmentListData?.cancelled_investment_filter_count
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* second */}
+                  <div className="flex w-[70%]  mr-auto justify-between items-center">
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="text-primary_grey text-[14px]">
+                        Penalty(All-time):
+                      </p>
+                      <p className="text-general text-[16px]">
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          investmentListData?.cancelled_investment_penalties
+                        )}
+                      </p>
+                    </div>
+
+                    <Divider
+                      sx={{
+                        minHeight: "35px",
+                        backgroundColor: "grey",
+                        width: "1px",
+                      }}
+                    />
+
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="text-primary_grey text-[14px]">
+                        Penalty (By Filter):
+                      </p>
+                      <p className="text-general text-[16px]">
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          investmentListData?.cancelled_investment_filter_penalty
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

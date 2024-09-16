@@ -20,6 +20,7 @@ const AllInvestments = ({
   const [showDetails, setShowDetails] = useState(false);
   const [investmentById, setInvestmentById] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,8 +41,8 @@ const AllInvestments = ({
       {!showDetails && (
         <>
           <div className="w-full flex flex-col gap-3 items-start mt-4">
-            <div className=" w-[90%] mx-auto ">
-              <div className="flex gap-4 w-1/2  justify-start">
+            <div className=" w-[100%] mx-auto ">
+              <div className="flex gap-4 w-1/2   justify-start">
                 <Button
                   onClick={() => setFiltered("all")}
                   sx={{
@@ -109,7 +110,7 @@ const AllInvestments = ({
             </div>
 
             {/*  */}
-            <div className=" w-[90%] mx-auto ">
+            <div className="  mr-auto ">
               <Button
                 id="basic-button"
                 aria-controls={open ? "basic-menu" : undefined}
@@ -188,7 +189,7 @@ const AllInvestments = ({
 
             {/*  */}
 
-            <div className="flex flex-wrap gap-4  w-[90%] mx-auto ">
+            <div className="flex flex-wrap gap-4  w-[100%] mx-auto ">
               {investmentListLoading ? (
                 <Skeleton variant="rounded" width="35%" height={250} />
               ) : (
@@ -256,7 +257,7 @@ const AllInvestments = ({
       {showDetails && (
         <InvestmentDetails
           setShowDetails={setShowDetails}
-          investById={investmentById}
+          investmentById={investmentById}
           setShowComp={setShowComp}
         />
       )}

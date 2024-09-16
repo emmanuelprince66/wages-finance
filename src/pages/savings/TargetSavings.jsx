@@ -19,7 +19,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
 
   const { data: targetData, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-
+  console.log("canca", targetData);
 
   const FirstCard = ({ titleOne, textOne, textTwo, img, color, link }) => {
     return (
@@ -91,35 +91,93 @@ const TargetSavings = ({ handleShowParticipants }) => {
           {isLoading || !targetData ? (
             <Skeleton variant="rounded" width="100%" height={280} />
           ) : (
-            <CustomCard style="w-full h-full">
-              <div className="w-full bg-text_white flex-col items-start ">
-                <p className="text-general text-[16px] font-[500] mb-3">
-                  Summary
-                </p>
+            <CustomCard style="w-full h-full p-0">
+              <p className="text-general text-[16px] text-start font-[500] mb-3">
+                Summary
+              </p>
 
-                <div className="flex flex-col items-start gap-2 mb-3 ">
-                  <p className="text-primary_grey_2 text-[14px] ">
-                    Total Members on Target Savings:
-                  </p>
-                  <p className="text-general font-[600] text-[20px]">
-                    {targetData?.unique_users_active_savings}
-                  </p>
+              <div className="flex justify-between items-center gap-5">
+                <div className="w-full bg-text_white border border-slate-100 rounded-md p-3 flex-col items-start ">
+                  <div className="flex flex-col items-start gap-2 mb-3 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Total Personal Savings
+                    </p>
+                    {/* <p className="text-general font-[600] text-[20px]">
+                      {targetData?.unique_users_active_savings}
+                    </p> */}
+                  </div>
+                  <div className="flex flex-col items-start mb-3 gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      All-Time :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice amount={targetData?.total_saved_active} />
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Current Total :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice amount={targetData?.total_saved_all} />
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-start mb-3 gap-2 ">
-                  <p className="text-primary_grey_2 text-[14px] ">
-                    All-Time Total Amount Saved by Users on Target Savings:
-                  </p>
-                  <p className="text-general font-[600] text-[20px]">
-                    <FormattedPrice amount={targetData?.total_saved_active} />
-                  </p>
+                <div className="w-full bg-text_white border border-slate-100 rounded-md p-3 flex-col items-start ">
+                  <div className="flex flex-col items-start gap-2 mb-3 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Interest Paid
+                    </p>
+                    {/* <p className="text-general font-[600] text-[20px]">
+                      {targetData?.unique_users_active_savings}
+                    </p> */}
+                  </div>
+                  <div className="flex flex-col items-start mb-3 gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      All-Time :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice amount={targetData?.intered_paid} />
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Current Total :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice
+                        amount={targetData?.interest_paid_today}
+                      />
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-start gap-2 ">
-                  <p className="text-primary_grey_2 text-[14px] ">
-                    Current Total Amount Saved by Users on Target Savings:
-                  </p>
-                  <p className="text-general font-[600] text-[20px]">
-                    <FormattedPrice amount={targetData?.total_saved_all} />
-                  </p>
+                <div className="w-full bg-text_white border border-slate-100 rounded-md p-3 flex-col items-start ">
+                  <div className="flex flex-col items-start gap-2 mb-3 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Cancelled Personal Savings
+                    </p>
+                    {/* <p className="text-general font-[600] text-[20px]">
+                      {targetData?.unique_users_active_savings}
+                    </p> */}
+                  </div>
+                  <div className="flex flex-col items-start mb-3 gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      All-Time :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice
+                        amount={targetData?.cancelled_savings_amount}
+                      />
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-start gap-2 ">
+                    <p className="text-primary_grey_2 text-[14px] ">
+                      Current Total :
+                    </p>
+                    <p className="text-general font-[600] text-[20px]">
+                      <FormattedPrice amount={targetData?.cancelled_penalty} />
+                    </p>
+                  </div>
                 </div>
               </div>
             </CustomCard>

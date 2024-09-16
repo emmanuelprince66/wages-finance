@@ -24,12 +24,12 @@ const CustomInvestmentCard = ({
 
   return (
     <>
-      <Card sx={{ maxWidth: "300px", cursor: "pointer", pb: "2rem" }}>
+      <Card sx={{ width: "20%", cursor: "pointer", pb: "2rem" }}>
         <div className=" h-1/2  relative" onClick={() => handleShowDetails(id)}>
           <img
-            src={banner}
+            src={image}
             alt="banner"
-            className="object-fill rounded-b-0 w-full h-full"
+            className="object-fill max-h-[200px] min-w-full rounded-b-0 w-full h-full"
           />
 
           <span

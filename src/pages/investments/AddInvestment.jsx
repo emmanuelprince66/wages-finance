@@ -208,7 +208,7 @@ const AddInvestment = ({ setShowComp }) => {
               <div className="w-full flex flex-col items-start gap-1 my-2">
                 <span className="flex items-center justify-between w-full">
                   <p className="text-[#001533] font-[500] text-[16px]">
-                    PLAY NAME
+                    PLAN NAME
                     <sup className="text-[#DC3545]">*</sup>
                   </p>
                   <p className="text-[#001533] font-[500] text-[16px]">0/50</p>

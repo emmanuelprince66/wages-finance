@@ -14,8 +14,8 @@ import mNine from "../../assets/member-profile/m-9.svg";
 import avatar from "../../assets/member-profile/avatar.png";
 import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import { Skeleton } from "@mui/material";
-import SouthWestRoundedIcon from '@mui/icons-material/SouthWestRounded';
-import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
+import SouthWestRoundedIcon from "@mui/icons-material/SouthWestRounded";
+import NorthEastRoundedIcon from "@mui/icons-material/NorthEastRounded";
 import WestOutlinedIcon from "@mui/icons-material/WestOutlined";
 
 import CustomCard from "../../components/CustomCard";
@@ -48,29 +48,32 @@ import PersonalSavingsModal from "./PersonalSavingsModal";
 import InvestmentDetailsModal from "./InvestmentDetailsModal";
 import RefereeModal from "../transactions/RefereeModal";
 
-const MemberProfile = ({ close , memberId   , type}) => {
+const MemberProfile = ({ close, memberId, type }) => {
   const [openRefereeModal, setOpenRefreeModal] = useState(false);
+
+  console.log(memberId);
 
   const closeRefereeModal = () => setOpenRefreeModal(false);
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
-  const [openCorporateSavingsModal , setOpenCorporateSavingsModal] = useState(false)
-  const handleCloseCoModal = () => setOpenCorporateSavingsModal(false)
-  const  [showInvDetailsModal , setShowInvDetailsModal] =  useState(false)
-  const handleCloseInvDetailsModal =  () => setShowInvDetailsModal(false)
- 
-  const [openPersonalModal , setOpenPersonalModal] = useState(false)
-  const handleClosePersonal = () => setOpenPersonalModal(false)
+  const [openCorporateSavingsModal, setOpenCorporateSavingsModal] =
+    useState(false);
+  const handleCloseCoModal = () => setOpenCorporateSavingsModal(false);
+  const [showInvDetailsModal, setShowInvDetailsModal] = useState(false);
+  const handleCloseInvDetailsModal = () => setShowInvDetailsModal(false);
+
+  const [openPersonalModal, setOpenPersonalModal] = useState(false);
+  const handleClosePersonal = () => setOpenPersonalModal(false);
 
   const apiUrl = membersProfileUrl(memberId);
   const queryKey = ["fetchMembersProfile", apiUrl];
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  const refereeData = data ||  []
+  console.log("case", data);
 
-
+  const refereeData = data || [];
 
   return (
     <div className="flex items-start flex-col gap-3">
@@ -83,9 +86,7 @@ const MemberProfile = ({ close , memberId   , type}) => {
           <img src={mSeven} alt="" />
           <p className="text-[14px]  text-[#17171]">{type}</p>
         </div>
-        <ChevronRightOutlinedIcon 
-         
-        sx={{ color: "#919191", pt: "2px"}} />
+        <ChevronRightOutlinedIcon sx={{ color: "#919191", pt: "2px" }} />
         <div className="flex items-center gap-1">
           <img src={mOne} alt="" className="w-[12px] h-[12px]" />
           <p className="text-[14px]  text-[#17171]">
@@ -97,8 +98,9 @@ const MemberProfile = ({ close , memberId   , type}) => {
 
       <div className="flex gap-2 items-center">
         <WestOutlinedIcon
-        onClick={close}
-        sx={{ color: "#919191", pt: "2px" , cursor:"pointer" }} />
+          onClick={close}
+          sx={{ color: "#919191", pt: "2px", cursor: "pointer" }}
+        />
         <p className="text-[#171717] text-[20px] font-[600]">
           {data?.lastname} {data?.firstname}
         </p>
@@ -113,7 +115,6 @@ const MemberProfile = ({ close , memberId   , type}) => {
           <div className="w-full bg-white">
             <div className="flex gap-4 items-end ">
               <div className="flex flex-col items-start gap-6">
-
                 <p className="text-general font-[500] text-[16px] ">
                   Personal Details
                 </p>
@@ -327,10 +328,11 @@ const MemberProfile = ({ close , memberId   , type}) => {
                         Total Corporative Savings :
                       </p>
                       <p className="text-general font-[600] text-[24px] ">
-                        <FormattedPrice amount={data?.total_savings} />
+                        <FormattedPrice amount={data?.total_coop_savings} />
                       </p>
-                      <span className="flex gap-3 items-center cursor-pointer"
-                      onClick={() =>  setOpenCorporateSavingsModal(true)}
+                      <span
+                        className="flex gap-3 items-center cursor-pointer"
+                        onClick={() => setOpenCorporateSavingsModal(true)}
                       >
                         <p className="text-primary_green text-[12px] font-[500]">
                           View Savings Plans
@@ -345,10 +347,11 @@ const MemberProfile = ({ close , memberId   , type}) => {
                         Total Personal Savings :
                       </p>
                       <p className="text-general font-[600] text-[24px] ">
-                        <FormattedPrice amount={data?.total_investment} />
+                        <FormattedPrice amount={data?.total_savings} />
                       </p>
-                      <span className="flex gap-3 items-center cursor-pointer"
-                      onClick={() => setOpenPersonalModal(true)}
+                      <span
+                        className="flex gap-3 items-center cursor-pointer"
+                        onClick={() => setOpenPersonalModal(true)}
                       >
                         <p className="text-primary_green text-[12px] font-[500]">
                           See Details
@@ -359,35 +362,34 @@ const MemberProfile = ({ close , memberId   , type}) => {
                     </div>
                   </div>
 
-                   <div className="w-full flex justify-between items-center">
-
-
-                   <div className="flex-col flex items-start gap-1 mt-4">
-                    <p className="text-[14px] text-primary_grey_2">
-                      Outstanding Loan: :
-                    </p>
-                    <p className="text-primary_red font-[600] text-[24px] ">
-                      <FormattedPrice amount={data?.outstanding_loan} />
-                    </p>
-                    {/* <span className="flex gap-3 items-center cursor-pointer">
+                  <div className="w-full flex justify-between items-center">
+                    <div className="flex-col flex items-start gap-1 mt-4">
+                      <p className="text-[14px] text-primary_grey_2">
+                        Outstanding Loan: :
+                      </p>
+                      <p className="text-primary_red font-[600] text-[24px] ">
+                        <FormattedPrice amount={data?.outstanding_loan} />
+                      </p>
+                      {/* <span className="flex gap-3 items-center cursor-pointer">
                       <p className="text-primary_green text-[12px] font-[500]">
                         Loan History
                       </p>
 
                       <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
                     </span> */}
-                  </div>
-                  <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
+                    </div>
+                    <div className="min-h-[5rem] w-[1px] bg-[#E3E3E3]"></div>
 
-                   <div className="flex-col flex items-start gap-1">
+                    <div className="flex-col flex items-start gap-1">
                       <p className="text-[14px] text-primary_grey_2">
                         Total Investment Value :
                       </p>
                       <p className="text-general font-[600] text-[24px] ">
                         <FormattedPrice amount={data?.total_investment} />
                       </p>
-                      <span className="flex gap-3 items-center cursor-pointer"
-                      onClick={() => setShowInvDetailsModal(true)}
+                      <span
+                        className="flex gap-3 items-center cursor-pointer"
+                        onClick={() => setShowInvDetailsModal(true)}
                       >
                         <p className="text-primary_green text-[12px] font-[500]">
                           See Details
@@ -396,8 +398,7 @@ const MemberProfile = ({ close , memberId   , type}) => {
                         <ChevronRightOutlinedIcon sx={{ color: "#02981D" }} />
                       </span>
                     </div>
-                   </div>
-                
+                  </div>
                 </div>
               </CustomCard>
             )}
@@ -451,35 +452,28 @@ const MemberProfile = ({ close , memberId   , type}) => {
                     </div>
 
                     <div className="flex flex-col gap-10 items-start">
-                    <div className="flex gap-3 items-center">
-                      <div className="flex flex-col items-start gap-1">
-                        <p className="text-primary_grey_2 text-[12px] ">
-                          Unclaimed Referral Bonus:
-                        </p>
-                        <p className="text-general text-[16px] font-[600] ">
-                          {data?.referal_count}
-                        </p>
-
-              
+                      <div className="flex gap-3 items-center">
+                        <div className="flex flex-col items-start gap-1">
+                          <p className="text-primary_grey_2 text-[12px] ">
+                            Unclaimed Referral Bonus:
+                          </p>
+                          <p className="text-general text-[16px] font-[600] ">
+                            {data?.referal_count}
+                          </p>
+                        </div>
                       </div>
 
+                      <span
+                        className="flex gap-3 items-center cursor-pointer"
+                        onClick={() => setOpenRefreeModal(true)}
+                      >
+                        <p className="text-primary_green text-[12px] font-[500]">
+                          See Referees
+                        </p>
 
-                      
+                        <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
+                      </span>
                     </div>
-
-                    <span className="flex gap-3 items-center cursor-pointer"
-                    onClick={() => setOpenRefreeModal(true)}
-                    >
-                      <p className="text-primary_green text-[12px] font-[500]">
-                        See Referees
-                      </p>
-
-                      <ChevronRightOutlinedIcon sx={{ color: "#02981D " }} />
-                    </span>
-                    </div>
-                    
-                 
-                    
                   </div>
                 </div>
               </CustomCard>
@@ -557,13 +551,18 @@ const MemberProfile = ({ close , memberId   , type}) => {
                                 </TableCell>
 
                                 <TableCell>
-
                                   <Typography
                                     sx={{
-                                      color:item?.activity_type === "CREDIT" ? "#208637" : "#E52929",
+                                      color:
+                                        item?.activity_type === "CREDIT"
+                                          ? "#208637"
+                                          : "#E52929",
                                       fontWeight: "500",
                                       fontSize: "12px",
-                                      background:item?.activity_type === "CREDIT" ?  "#EBFFF3": "#FBEBEC",
+                                      background:
+                                        item?.activity_type === "CREDIT"
+                                          ? "#EBFFF3"
+                                          : "#FBEBEC",
                                       py: "5px",
                                       borderRadius: "10px",
                                       display: "flex",
@@ -574,8 +573,14 @@ const MemberProfile = ({ close , memberId   , type}) => {
                                     }}
                                   >
                                     {item?.activity_type === "CREDIT" ? (
-                                      <SouthWestRoundedIcon sx={{fontSize:"12px"}}/>
-                                    ): (<NorthEastRoundedIcon sx={{fontSize:"12px"}}/>)}
+                                      <SouthWestRoundedIcon
+                                        sx={{ fontSize: "12px" }}
+                                      />
+                                    ) : (
+                                      <NorthEastRoundedIcon
+                                        sx={{ fontSize: "12px" }}
+                                      />
+                                    )}
                                     {item?.activity_type?.toLowerCase()}
                                   </Typography>
                                 </TableCell>
@@ -604,24 +609,39 @@ const MemberProfile = ({ close , memberId   , type}) => {
 
       {/* card 2 */}
 
-
-
       {/* modal for total corporateSavings */}
-      <CustomModal style="w-[55%]" open={openCorporateSavingsModal} closeModal={handleCloseCoModal}>
-                  <CorporativeSavingsModal close={handleCloseCoModal} memberId={memberId} />
+      <CustomModal
+        style="w-[55%]"
+        open={openCorporateSavingsModal}
+        closeModal={handleCloseCoModal}
+      >
+        <CorporativeSavingsModal
+          close={handleCloseCoModal}
+          memberId={memberId}
+        />
       </CustomModal>
       {/* modal for total corporateSavings end */}
 
-
       {/* modal for total personal savings */}
-      <CustomModal style="w-[65%]" open={openPersonalModal} closeModal={handleClosePersonal}>
-                  <PersonalSavingsModal close={handleClosePersonal} memberId={memberId} />
+      <CustomModal
+        style="w-[65%]"
+        open={openPersonalModal}
+        closeModal={handleClosePersonal}
+      >
+        <PersonalSavingsModal close={handleClosePersonal} memberId={memberId} />
       </CustomModal>
       {/* modal for total personal savings end */}
 
       {/* modal for investment vallue */}
-      <CustomModal style="w-[90%]" open={showInvDetailsModal} closeModal={handleCloseInvDetailsModal}>
-                  <InvestmentDetailsModal close={handleCloseInvDetailsModal} memberId={memberId} />
+      <CustomModal
+        style="w-[90%]"
+        open={showInvDetailsModal}
+        closeModal={handleCloseInvDetailsModal}
+      >
+        <InvestmentDetailsModal
+          close={handleCloseInvDetailsModal}
+          memberId={memberId}
+        />
       </CustomModal>
       {/* modal end */}
 

@@ -51,22 +51,28 @@ export const referralDataUrl = (
 ) => {
   return `/admin/referals?searchValue=${searchValue}&page=${currentPage}&limit=${rowsPerPage}&start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
-export const corporativeBreakdownUrl =  (id, selectedDates) => {
+export const corporativeBreakdownUrl = (id, selectedDates) => {
+  console.log("helo", id);
   return `/admin/user/coop_breakdown/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
-export const savingsBreakdownUrl =  (id, selectedDates) => {
+export const personalSavingsBreakdownUrl = (id, selectedDates) => {
+  return `/admin/user/savings_breakdown/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
+};
+export const personalInterestBreakdownUrl = (id, selectedDates) => {
+  return `/admin/user/savings_interest/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
+};
+export const savingsBreakdownUrl = (id, selectedDates) => {
   return `/admin/user/savings/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
-export const activeInvestmentsUrl =  (id) => {
+export const activeInvestmentsUrl = (id) => {
   return `/admin/user/active_investment/${id}`;
 };
-export const investmentsHistoryUrl =  (id) => {
+export const investmentsHistoryUrl = (id) => {
   return `/admin/user/active_investment/${id}`;
 };
-export const investmentsDetailsUrl =  (id) => {
+export const investmentsDetailsUrl = (id) => {
   return `/admin/single_investment/${id}`;
 };
-export const investmentInvestorUrl =  (id) => {
+export const investmentInvestorUrl = (id) => {
   return `/admin/investment_investors/${id}`;
 };
-
