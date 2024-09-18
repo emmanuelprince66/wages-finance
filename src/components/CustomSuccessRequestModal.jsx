@@ -1,10 +1,79 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import success from "../assets/transactions/success.png";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import { Button } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { AuthAxios } from "../helpers/axiosInstance";
+import { getCookie } from "../utils/cookieAuth";
+import useFetchData from "../hooks/useFetchData";
+import { checkNameForWithdrawalApprovalUrl } from "../api/endpoint";
+const CustomSuccessRequestModal = ({
+  titleOne,
+  titleTwo,
+  btnText,
+  close,
+  id,
+}) => {
+  const token = getCookie("authToken");
 
-const CustomSuccessRequestModal = ({ titleOne, titleTwo, btnText, close }) => {
+  const [apiId, setApiId] = useState("");
+
+  const apiUrl = checkNameForWithdrawalApprovalUrl(apiId);
+  const queryKey = ["checkNameForWithdrawalApproval", apiUrl];
+
+  const {
+    data: checkedName,
+    error,
+    isLoading,
+  } = useFetchData(queryKey, apiUrl);
+  console.log("app", id);
+  console.log("check", checkedName);
+  // verify user name
+  // const verifyApprove = useMutation({
+  //   mutationFn: async (formData) => {
+  //     console.log(formData);
+  //     try {
+  //       const response = await AuthAxios({
+  //         url: `/admin/check_name/${id}`,
+  //         method: "POST",
+  //         data: formData,
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+
+  //       if (response.status !== 201) {
+  //         setButtonDisabled(false);
+
+  //         throw new Error(response.data.message);
+  //       }
+
+  //       return response;
+  //     } catch (error) {
+  //       console.log(error);
+  //       notiError("An error occured! try again.");
+
+  //       throw new Error(error.response.data.message);
+  //     }
+  //   },
+  //   onSuccess: (data) => {
+  //     console.log("data", data);
+
+  //     // Handle success, update state, or perform further actions
+  //   },
+  //   onError: (error) => {
+  //     setButtonDisabled(false);
+
+  //     console.log(error);
+  //   },
+  // });
+
+  useEffect(() => {
+    setApiId(id);
+  }, [id]);
+
   return (
     <div className="w-full flex flex-col gap-3 items-end">
       <ClearRoundedIcon

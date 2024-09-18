@@ -40,6 +40,9 @@ export const loanRequestsDataUrl = (
 export const transactionsDataUrl = (currentPage, rowsPerPage, searchValue) => {
   return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}`;
 };
+export const checkNameForWithdrawalApprovalUrl = (id) => {
+  return `/admin/check_name/${id}`;
+};
 export const administratorDataUrl = () => {
   return "/admin/team/";
 };

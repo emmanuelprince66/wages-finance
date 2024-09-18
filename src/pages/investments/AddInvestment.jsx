@@ -211,7 +211,7 @@ const AddInvestment = ({ setShowComp }) => {
               <div className="w-full flex flex-col items-start gap-1 my-2">
                 <span className="flex items-center justify-between w-full">
                   <p className="text-[#001533] font-[500] text-[16px]">
-                    PLAN NAME
+                    INVESTMENT NAME
                     <sup className="text-[#DC3545]">*</sup>
                   </p>
                   <p className="text-[#001533] font-[500] text-[16px]">0/50</p>
@@ -364,7 +364,7 @@ const AddInvestment = ({ setShowComp }) => {
               <div className="w-full flex flex-col items-start gap-1 my-4">
                 <span className="flex items-center justify-between w-full">
                   <p className="text-[#001533] font-[500] text-[16px]">
-                    NO. OF PARTICIPANTS
+                    NO. OF UNITS
                     <sup className="text-[#DC3545]">*</sup>
                   </p>
                 </span>

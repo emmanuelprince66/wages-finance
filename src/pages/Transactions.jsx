@@ -24,6 +24,8 @@ import useFetchData from "../hooks/useFetchData";
 import FormattedPrice from "../utils/FormattedPrice";
 import TransactionTable from "./transactions/TransactionTable";
 import Referrals from "./transactions/Referrals";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import DeclineModal from "./transactions/DeclineModal";
 const Transactions = () => {
   const {
     handleSubmit,
@@ -38,15 +40,31 @@ const Transactions = () => {
   const [openWalletTrxModal, setOpenWalletTrxModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
+  const [openWidthdrawalModal, setOpenWithdrawalModal] = useState(false);
   const [openRequestModal, setOpenRequestModal] = useState(false);
   const [walletCreditModalData, setWalletCreditModalData] = useState(null);
+  const [withdrawalModalData, setWithdrawalModalData] = useState(null);
+  const [openDeclineReqModal, setOpenDeclineReqModal] = useState(false);
 
+  const closeDeclineReqModal = () => setOpenDeclineReqModal(false);
+  console.log("withdrawal", withdrawalModalData);
   const closeOpenRequestModal = () => setOpenRequestModal(false);
   const closeWalletTrxModal = () => setOpenWalletTrxModal(false);
+  const closeWithdrawalModal = () => setWithdrawalModalData(false);
+
+  const [approveWithId, setApproveWithId] = useState("");
   const closeSuccessModal = () => setOpenSuccessModal(false);
+  const [declineId, setDeclineId] = useState("");
   const closeWTrxModal = () => setWOpenTrxModal(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [page, setPage] = useState(0);
+
+  const handleOpenDeclineReqModal = (id) => {
+    console.log(id);
+    setDeclineId(id);
+    setOpenDeclineReqModal(true);
+    closeWithdrawalModal();
+  };
 
   const [filteredTrxData, setFilteredTrxData] = useState(null);
 
@@ -71,11 +89,22 @@ const Transactions = () => {
         setWalletCreditModalData(item);
         setOpenWalletTrxModal(true);
         break;
+      case "Withdrawal":
+        setWithdrawalModalData(item);
+        setOpenWithdrawalModal(true);
       default:
         break;
     }
   };
+
+  const handleOpenApproveReq = (id) => {
+    setApproveWithId(id);
+    setOpenRequestModal(true);
+    closeWithdrawalModal();
+  };
   // filter functionality
+
+  console.log("wiii", withdrawalModalData);
 
   useEffect(() => {
     const res = transactionsData?.results;
@@ -401,6 +430,7 @@ const Transactions = () => {
         </div>
       </CustomModal>
       {/* All transactions modal */}
+
       {/* update transactios modal */}
       <CustomModal open={openWTrxModal} closeModal={closeWTrxModal}>
         <div className="w-full flex flex-col items-start gap-2">
@@ -570,9 +600,193 @@ const Transactions = () => {
         </div>
       </CustomModal>
       {/* update transactios modal */}
+      {/* widthdrawal modal */}
+      <CustomModal open={withdrawalModalData} closeModal={closeWithdrawalModal}>
+        <div className="w-full flex flex-col items-start gap-2">
+          <div className="flex items-center justify-between w-full mb-3">
+            <p className="text-general font-[500] text-[20px] ">Transactions</p>
+
+            <ClearRoundedIcon
+              onClick={closeWithdrawalModal}
+              sx={{ color: "#1E1E1E", cursor: "pointer" }}
+            />
+          </div>
+          <div className="flex items-center justify-between w-full">
+            <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
+            <Button
+              sx={{
+                background: "#FAFAFA",
+                borderRadius: "8px",
+                px: "15px",
+                border: "1px solid #C8C8C8",
+                color: "#02981D",
+                "&:hover": {
+                  backgroundColor: "#FAFAFA",
+                },
+                fontWeight: "600",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              Go to profile
+            </Button>
+          </div>
+
+          <div className="rounded-md w-full border-[1px] border-[#E3E3E3] p-2 flex flex-col items-start">
+            <div className="w-full flex justify-between mt-1">
+              <p className="text-[14px] text-primary_grey_2">User:</p>
+              <p className="text-[14px] text-general font-[500]">
+                {withdrawalModalData?.lastname || ""}{" "}
+                {withdrawalModalData?.firstname || ""}
+              </p>
+            </div>
+            <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+            <div className="w-full flex justify-between">
+              <p className="text-[14px] text-primary_grey_2">Email:</p>
+              <p className="text-[14px] text-general font-[500]">
+                {withdrawalModalData?.email || ""}
+              </p>
+            </div>
+
+            <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+            <div className="w-full flex justify-between">
+              <p className="text-[14px] text-primary_grey_2">Phone Number:</p>
+              <p className="text-[14px] text-general font-[500]">
+                {withdrawalModalData?.phone || ""}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start gap-2 w-full mt-3">
+            <p className="text-general font-[500] text-[14px] ">
+              TRANSACTION DETAILS
+            </p>
+
+            <div className="rounded-md w-full border-[1px] border-[#E3E3E3] p-2 flex flex-col items-start">
+              <div className="w-full flex justify-between mt-1">
+                <p className="text-[14px] text-primary_grey_2">Description:</p>
+                <p className="text-[14px] text-general font-[500]">
+                  {withdrawalModalData?.description || ""}
+                </p>
+              </div>
+
+              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+              <div className="w-full flex justify-between">
+                <p className="text-[14px] text-primary_grey_2">Date:</p>
+                <p className="text-[14px] text-general font-[500]">
+                  not sending the date
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-start gap-2 w-full mt-3">
+            <p className="text-general font-[500] text-[14px] ">
+              WITHDRAWAL DETAILS
+            </p>
+
+            <div className="rounded-md w-full border-[1px] bg-[#F7F7F7] border-[#E3E3E3] p-2 flex flex-col items-start">
+              <div className="w-full flex justify-between">
+                <p className="text-[14px] text-primary_grey_2">Amount:</p>
+                <p className="text-[14px] text-general font-[500]">
+                  <FormattedPrice
+                    amount={withdrawalModalData?.withdrawal_details?.amount}
+                  />
+                </p>
+              </div>
+
+              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+              <div className="w-full flex justify-between">
+                <p className="text-[14px] text-primary_grey_2">Bank Name:</p>
+                <p className="text-[14px] text-general font-[500]">
+                  {withdrawalModalData?.withdrawal_details?.bank_name || ""}
+                </p>
+              </div>
+              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+              <div className="w-full flex justify-between">
+                <p className="text-[14px] text-primary_grey_2">
+                  Account Number:
+                </p>
+                <p className="text-[14px] text-general font-[500]">
+                  {withdrawalModalData?.withdrawal_details?.account_number}
+                </p>
+              </div>
+
+              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+              <div className="w-full flex justify-between">
+                <p className="text-[14px] text-primary_grey_2">Account Name:</p>
+                <p className="text-[14px] text-general font-[500]">
+                  {withdrawalModalData?.withdrawal_details?.account_name ||
+                    "nil"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex-col items-start gap-2 mt-2">
+            <p className="text-general font-[500] text-[14px] ">Action</p>
+            <div className="flex justify-start gap-5 w-full mt-3">
+              <Button
+                onClick={() =>
+                  handleOpenDeclineReqModal(
+                    withdrawalModalData?.withdrawal_details?.id
+                  )
+                }
+                variant="contained"
+                sx={{
+                  color: "#DC3545",
+                  background: "#F7F7F7",
+                  boxShadow: "none",
+                  width: "10rem",
+                  fontSize: "1rem",
+                  py: "1rem",
+                  textTransform: "capitalize",
+                  "&:hover": {
+                    background: "#F7F7F7",
+                  },
+                }}
+              >
+                <ClearRoundedIcon sx={{ mr: "1rem" }} />
+                Cancel
+              </Button>
+              <Button
+                onClick={() =>
+                  handleOpenApproveReq(
+                    withdrawalModalData?.withdrawal_details?.id
+                  )
+                }
+                variant="contained"
+                sx={{
+                  color: "#02981D",
+                  background: "#F7F7F7",
+                  boxShadow: "none",
+                  width: "10rem",
+                  fontSize: "1rem",
+                  py: "1rem",
+                  textTransform: "capitalize",
+                  "&:hover": {
+                    background: "#F7F7F7",
+                  },
+                }}
+              >
+                <CheckRoundedIcon sx={{ mr: "1rem" }} />
+                Approve
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CustomModal>
+      {/* widthdrawal modal ends */}
       {/* success request modal */}
       <CustomModal open={openRequestModal}>
         <CustomSuccessRequestModal
+          id={approveWithId}
           close={closeOpenRequestModal}
           titleOne="Sure to Update Transaction Status?"
           titleTwo=" User will be notified of this action."
@@ -588,6 +802,28 @@ const Transactions = () => {
         />
       </CustomModal>
       {/* success modal */}
+
+      {/* decline req modal */}
+      <CustomModal open={openDeclineReqModal} closeModal={closeDeclineReqModal}>
+        <div className="w-full flex flex-col items-start gap-2">
+          <div className="flex items-center justify-between w-full mb-3">
+            <p className="text-general font-[500] text-[20px] ">
+              Decline Withdrawal
+            </p>
+
+            <ClearRoundedIcon
+              onClick={closeDeclineReqModal}
+              sx={{ color: "#1E1E1E", cursor: "pointer" }}
+            />
+          </div>
+
+          <div className="w-full">
+            <DeclineModal declineId={declineId} />
+          </div>
+        </div>
+      </CustomModal>
+
+      {/* decline req modal end */}
 
       {/*  */}
     </div>
