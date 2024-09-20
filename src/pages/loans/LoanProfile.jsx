@@ -43,6 +43,13 @@ import CustomSuccessModal from "../../components/CustomSuccessModal";
 import CustomSuccessRequestModal from "../../components/CustomSuccessRequestModal";
 import FormattedPrice from "../../utils/FormattedPrice";
 import formattedDate from "../../utils/formattedDate";
+import useFetchData from "../../hooks/useFetchData";
+import { approveLoanUrl } from "../../api/endpoint";
+import { getCookie } from "../../utils/cookieAuth";
+import { useMutation } from "@tanstack/react-query";
+import { notiSuccess, notiError } from "../../utils/noti";
+import { declineLoanUrl } from "../../api/endpoint";
+import axios from "axios";
 
 const LoanProfile = ({
   memberLoanDetails,
@@ -58,34 +65,39 @@ const LoanProfile = ({
     formState: { isValid, errors },
   } = useForm({ mode: "all" });
   const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(100)
+  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const closeSuccessModal = () => setOpenSuccessModal(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const closeDeclineModal = () => setOpenDeclineModal(false);
+  const [openDeclineModal, setOpenDeclineModal] = useState(false);
+
   const dummy = [
-    { 
-      id:1,
-      amt:300000,
-      dd:"30th June, 2024 • 9:43 AM"
+    {
+      id: 1,
+      amt: 300000,
+      dd: "30th June, 2024 • 9:43 AM",
     },
-    { 
-      id:2,
-      amt:300000,
-      dd:"30th June, 2024 • 9:43 AM"
+    {
+      id: 2,
+      amt: 300000,
+      dd: "30th June, 2024 • 9:43 AM",
     },
-    { 
-      id:3,
-      amt:300000,
-      dd:"30th June, 2024 • 9:43 AM"
+    {
+      id: 3,
+      amt: 300000,
+      dd: "30th June, 2024 • 9:43 AM",
     },
-    { 
-      id:4,
-      amt:300000,
-      dd:"30th June, 2024 • 9:43 AM"
+    {
+      id: 4,
+      amt: 300000,
+      dd: "30th June, 2024 • 9:43 AM",
     },
-    { 
-      id:5,
-      amt:300000,
-      dd:"30th June, 2024 • 9:43 AM"
+    {
+      id: 5,
+      amt: 300000,
+      dd: "30th June, 2024 • 9:43 AM",
     },
-  ]
+  ];
 
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
@@ -99,6 +111,10 @@ const LoanProfile = ({
   const statusOptions = ["Pending", "Approved", "Declined"];
   const [openLoanSuccessModal, setOpenLoanSuccessModal] = useState(false);
   const closeLoanSuccessModal = () => setOpenLoanSuccessModal(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
+
+  const [openDeclineLoanModal, setOpenDeclineLoanModal] = useState(false);
+  const closeOpenDeclineModal = () => setOpenDeclineLoanModal(false);
   const handleChange = (event) => {
     setStatusValue(event.target.value);
   };
@@ -109,6 +125,108 @@ const LoanProfile = ({
     showLoans === undefined
       ? setShowStatistics("request")
       : setShowLoans((prev) => !prev);
+  };
+
+  console.log("merchant", memberLoanDetails);
+
+  const token = getCookie("authToken");
+
+  const approveLoanMutation = useMutation({
+    mutationFn: async (id) => {
+      try {
+        const response = await AuthAxios({
+          url: approveLoanUrl(id),
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status !== 201) {
+          setButtonLoading(false);
+          throw new Error(response.data.message);
+        }
+        console.log(response);
+        return response;
+      } catch (error) {
+        setButtonLoading(false);
+
+        notiError(error.response.data.message);
+        throw new Error(error.response.data.message);
+      }
+    },
+    onSuccess: (data) => {
+      setButtonLoading(false);
+      notiSuccess(data?.data?.message);
+    },
+    onError: (error) => {
+      setButtonLoading(false);
+    },
+  });
+
+  const openSuccess = () => {
+    if (selectedStatus === "Approved") {
+      setOpenSuccessModal(true);
+      setOpenLoanSuccessModal(false);
+    } else {
+      setOpenDeclineModal(true);
+      setOpenDeclineLoanModal(false);
+    }
+  };
+
+  const handleOpenModal = () => {
+    if (selectedStatus === "Approved") {
+      setOpenLoanSuccessModal(true);
+    } else {
+      setOpenDeclineLoanModal(true);
+    }
+  };
+
+  const causeApprovalMutation = async (memberLoanDetails) => {
+    try {
+      setButtonLoading(true);
+
+      // Log the entire object to check if `memberLoanDetails` is defined
+      console.log("Member Loan Details:", memberLoanDetails);
+
+      if (!memberLoanDetails || !memberLoanDetails.id) {
+        console.error("Member Loan Details or ID is missing!");
+        return; // Exit early if the ID is missing
+      }
+
+      const response = await axios.get(approveLoanUrl(memberLoanDetails?.id));
+
+      if (response?.status === 200) {
+        openSuccess();
+      }
+    } catch (error) {
+      console.error("Error approving loan:", error);
+    } finally {
+      setButtonLoading(false);
+    }
+  };
+  const causeDeclineMutation = async (memberLoanDetails) => {
+    try {
+      setButtonLoading(true);
+
+      // Log the entire object to check if `memberLoanDetails` is defined
+      console.log("Member Loan Details:", memberLoanDetails);
+
+      if (!memberLoanDetails || !memberLoanDetails.id) {
+        console.error("Member Loan Details or ID is missing!");
+        return; // Exit early if the ID is missing
+      }
+
+      const response = await axios.get(declineLoanUrl(memberLoanDetails?.id));
+
+      if (response?.status === 200) {
+        openSuccess();
+      }
+    } catch (error) {
+      console.error("Error approving loan:", error);
+    } finally {
+      setButtonLoading(false);
+    }
   };
 
   return (
@@ -244,7 +362,11 @@ const LoanProfile = ({
                   <p className="text-[14px] text-primary_grey_2">
                     Total Repayment:
                   </p>
-                  <p className="text-[14px] text-general font-[500]">null</p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice
+                      amount={memberLoanDetails?.total_repayment || ""}
+                    />
+                  </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
                 <div className="w-full flex justify-between">
@@ -271,7 +393,9 @@ const LoanProfile = ({
                   <p className="text-[14px] text-primary_grey_2">
                     Date Due for Repayment:
                   </p>
-                  <p className="text-[14px] text-general font-[500]">null </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    {formattedDate(memberLoanDetails?.due_date)}
+                  </p>
                 </div>
               </div>
 
@@ -327,6 +451,7 @@ const LoanProfile = ({
 
               <div className="flex w-full justify-start">
                 <Button
+                  onClick={handleOpenModal}
                   variant="contained"
                   type="submit"
                   sx={{
@@ -363,7 +488,7 @@ const LoanProfile = ({
                           {` Guarantor ${i + 1}`}
                         </p>
 
-                        {!item?.status ? (
+                        {item?.status === "PENDING" ? (
                           <div className=" bg-[#FFF9E6] flex  gap-1 items-center rounded-md border-[1px] border-[#FFE69C] py-1 px-2">
                             <Lfour color="#CC9A06" />
                             <p className="text-[14px] text-[#CC9A06] ">
@@ -371,7 +496,12 @@ const LoanProfile = ({
                             </p>
                           </div>
                         ) : (
-                          ""
+                          <div className=" bg-[#E9F6EC] flex  gap-1 items-center rounded-md border-[1px] border-[#fff] py-1 px-2">
+                            <Lfour color="#208637" />
+                            <p className="text-[14px] text-[#208637] ">
+                              Pending Approval
+                            </p>
+                          </div>
                         )}
                       </div>
 
@@ -419,136 +549,145 @@ const LoanProfile = ({
                 Repayment Details
               </p>
 
-      
-                  <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
-                    <div className="flex w-full items-center justify-between mt-2 mb-4">
-                      <div className=" items-center flex  gap-2">
-                        <p className="text-general   font-[500] text-[16px]">
-                        </p>
-
-                  
-                      </div>
-
-                   
-                    </div>
-
-                    <div className="w-full flex justify-between ">
-                      <p className="text-[14px] text-primary_grey_2">Total Repayment Amount:</p>
-                      <p className="text-[14px] text-general font-[500]">
-                        <FormattedPrice amount={20000}/>
-                      </p>                    </div>
-                    <Divider
-                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
-                    />
-
-                    <div className="w-full flex justify-between">
-                      <p className="text-[14px] text-primary_grey_2">Total Amount Repaid:</p>
-                      <p className="text-[14px] text-general font-[500]">
-                      <FormattedPrice amount={20000}/>
-                        
-                      </p>
-                    </div>
-                    <Divider
-                      sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
-                    />
-
-                    <div className="w-full flex justify-between">
-                      <p className="text-[14px] text-primary_grey_2">Outstanding Balance:</p>
-                      <p className="text-[14px] text-general font-[500]">
-                      <FormattedPrice amount={20000}/>
-                      
-                      </p>
-                    </div>
+              <div className="rounded-md w-full border-[1px] bg-text_white border-[#E3E3E3] p-2 flex flex-col items-start">
+                <div className="flex w-full items-center justify-between mt-2 mb-4">
+                  <div className=" items-center flex  gap-2">
+                    <p className="text-general   font-[500] text-[16px]"></p>
                   </div>
+                </div>
 
-                  
-                  <Box className="w-full mt-3">
-                    <TableContainer>
-                      <Table sx={{ minWidth: 100, padding: "8px" }}>
-                        <TableHead
+                <div className="w-full flex justify-between ">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Total Repayment Amount:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={20000} />
+                  </p>{" "}
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Total Amount Repaid:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={20000} />
+                  </p>
+                </div>
+                <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
+
+                <div className="w-full flex justify-between">
+                  <p className="text-[14px] text-primary_grey_2">
+                    Outstanding Balance:
+                  </p>
+                  <p className="text-[14px] text-general font-[500]">
+                    <FormattedPrice amount={20000} />
+                  </p>
+                </div>
+              </div>
+
+              <Box className="w-full mt-3">
+                <TableContainer>
+                  <Table sx={{ minWidth: 100, padding: "8px" }}>
+                    <TableHead
+                      sx={{
+                        background: "#F8F8F8",
+                      }}
+                    >
+                      <TableRow>
+                        <TableCell>S/N</TableCell>
+                        <TableCell>Amount(N)</TableCell>
+                        <TableCell>Date of Payment</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {!dummy ? (
+                        <CircularProgress
+                          size="2.2rem"
                           sx={{
-                            background: "#F8F8F8",
+                            color: "#02981D",
+                            marginLeft: "auto",
+                            padding: "1em",
                           }}
-                        >
-                          <TableRow>
-                            <TableCell>S/N</TableCell>
-                            <TableCell>Amount(N)</TableCell>
-                            <TableCell>Date of Payment</TableCell>
-                            
+                        />
+                      ) : dummy && Array.isArray(dummy) && dummy?.length > 0 ? (
+                        dummy?.map((item, i) => (
+                          <TableRow key={i + 2}>
+                            <TableCell>{page * rowsPerPage + i + 1}</TableCell>
+
+                            <TableCell>
+                              <FormattedPrice amount={item?.amt} />
+                            </TableCell>
+                            <TableCell>{item?.dd}</TableCell>
                           </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {!dummy ? (
-                            <CircularProgress
-                              size="2.2rem"
-                              sx={{
-                                color: "#02981D",
-                                marginLeft: "auto",
-                                padding: "1em",
-                              }}
-                            />
-                          ) : dummy &&
-                            Array.isArray(dummy) &&
-                            dummy?.length > 0 ? (
-                            dummy?.map((item, i) => (
-                              <TableRow key={i + 2}>
-                                <TableCell>
-                                  {page * rowsPerPage + i + 1}
-                                </TableCell>
-                             
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan="7">No data found</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
 
-                             
-                                <TableCell>
-                                    <FormattedPrice amount={item?.amt}/>
-                                </TableCell>
-                                <TableCell>
-                              
-                              {item?.dd}
-                       
-                          </TableCell>
-                             
-                              </TableRow>
-                            ))
-                          ) : (
-                            <TableRow>
-                              <TableCell colSpan="7">No data found</TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-
-                    {/* <CustomPagination
+                {/* <CustomPagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                         nextPageLink={transactionsData?.links?.next}
                         prevPageLink={transactionsData?.links?.previous}
                     /> */}
-
-                  </Box>
-             
+              </Box>
             </div>
           </CustomCard>
         </Grid>
 
-
         {/*  */}
-  
       </Grid>
       {/* Grid */}
 
       {/* Loan success modal */}
       <CustomModal open={openLoanSuccessModal}>
         <CustomSuccessRequestModal
+          onClick={() => causeApprovalMutation(memberLoanDetails)}
           close={closeLoanSuccessModal}
           titleOne="Sure to Approved Loan Request?"
           titleTwo=" User's main wallet will be credited with the requested loan amount"
-          btnText="Approved Loan Request"
+          btnText={buttonLoading ? "Loading..." : "Approve Loan Request"}
         ></CustomSuccessRequestModal>
       </CustomModal>
 
       {/* Loan success modal */}
+
+      {/* decline Loan success modal */}
+      <CustomModal open={openDeclineLoanModal}>
+        <CustomSuccessRequestModal
+          onClick={() => causeDeclineMutation(memberLoanDetails)}
+          close={openDeclineLoanModal}
+          titleOne="Sure to Decline Loan Request?"
+          titleTwo=" Users will notified."
+          btnText={buttonLoading ? "Loading..." : "Decline Loan Request"}
+        ></CustomSuccessRequestModal>
+      </CustomModal>
+
+      {/* Loan success modal */}
+
+      {/* success modal */}
+      <CustomModal open={openSuccessModal}>
+        <CustomSuccessModal
+          close={closeSuccessModal}
+          textOne="Loan Request has been Approved."
+        />
+      </CustomModal>
+      {/* success modal */}
+      {/* decline modal */}
+      <CustomModal open={openDeclineModal}>
+        <CustomSuccessModal
+          close={closeDeclineModal}
+          textOne="Loan Request has been Declined."
+        />
+      </CustomModal>
+      {/* success modal */}
     </div>
   );
 };

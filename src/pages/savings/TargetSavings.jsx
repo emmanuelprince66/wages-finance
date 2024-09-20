@@ -244,7 +244,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
               textOne="233"
               textTwo={500}
               color="text-[#00A26B]"
-              link={{ title: "Savings Towards Birthdays", val: "birth" }}
+              link={{ title: "Savings Towards Birthdays", val: "birth", id: 1 }}
             />
             <FirstCard
               img={sTwo}
@@ -252,7 +252,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
               textOne="233"
               textTwo={200}
               color="text-[#E29600]"
-              link={{ title: "Savings for car Purchase", val: "car" }}
+              link={{ title: "Savings for car Purchase", val: "car", id: 2 }}
             />
             {isLoading || !targetData ? (
               <Skeleton variant="rounded" width="100%" height={280} />
@@ -266,7 +266,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
                 link={{
                   title: "Savings for Vacation",
                   val: "vacation",
-                  id: "VACATION",
+                  id: 3,
                 }}
               />
             )}
@@ -281,7 +281,11 @@ const TargetSavings = ({ handleShowParticipants }) => {
               textOne="233"
               textTwo={200}
               color="text-[#FF6D84]"
-              link={{ title: "Savings for Gadget purchase", val: "Gadget" }}
+              link={{
+                title: "Savings for Gadget purchase",
+                val: "Gadget",
+                id: 4,
+              }}
             />
 
             {isLoading || !targetData ? (
@@ -300,7 +304,7 @@ const TargetSavings = ({ handleShowParticipants }) => {
                 link={{
                   title: "Savings for Miscellaneous",
                   val: "mis",
-                  id: "MISCELLANEOUS",
+                  id: 5,
                   img: sFive,
                 }}
               />

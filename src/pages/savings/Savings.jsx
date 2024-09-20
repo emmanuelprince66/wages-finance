@@ -14,7 +14,7 @@ const Savings = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
 
-  const [showMemberProfile , setShowMemberProfile] = useState(false)
+  const [showMemberProfile, setShowMemberProfile] = useState(false);
   // fetch card details
   const apiUrl = corporativeDataUrl();
 

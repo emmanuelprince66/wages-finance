@@ -29,6 +29,13 @@ export const investmentListDataUrl = (filterValue, selectedDates) => {
 export const loanStatisticsDataUrl = () => {
   return "/admin/loan_dashboard/";
 };
+
+export const approveLoanUrl = (id) => {
+  return `/admin/accept_loan/${id}`;
+};
+export const declineLoanUrl = (id) => {
+  return `/admin/reject_loan/${id}`;
+};
 export const loanRequestsDataUrl = (
   currentPage,
   rowsPerPage,
