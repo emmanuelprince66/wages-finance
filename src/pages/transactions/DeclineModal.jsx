@@ -19,7 +19,8 @@ import {
   RadioGroup,
   FormControl,
 } from "@mui/material";
-const DeclineModal = ({ declineId }) => {
+import { ToastContainer } from "react-toastify";
+const DeclineModal = ({ declineId, closeDeclineReqModal }) => {
   const {
     handleSubmit,
     control,
@@ -59,7 +60,7 @@ const DeclineModal = ({ declineId }) => {
       console.log(formData);
       try {
         const response = await AuthAxios({
-          url: `/admin/reject_withdrawal/${declineId}`,
+          url: `/admin/reject_withdrawal/${declineId}/`,
           method: "POST",
           data: formData,
           headers: {
@@ -68,37 +69,27 @@ const DeclineModal = ({ declineId }) => {
           },
         });
 
-        if (response.status !== 201) {
-          setButtonDisabled(false);
-
-          throw new Error(response.data.message);
-        }
-
         return response;
       } catch (error) {
         setButtonDisabled(false);
-
-        console.log(error);
-        notiError("An error occured! try again.");
-
+        notiError(error.response.data.message);
+        closeDeclineReqModal();
         throw new Error(error.response.data.message);
       }
     },
     onSuccess: (data) => {
       notiSuccess("Withdrawal successfull declined");
       setButtonDisabled(false);
-
+      closeDeclineReqModal();
       // Handle success, update state, or perform further actions
     },
     onError: (error) => {
       setButtonDisabled(false);
-
-      console.log(error);
+      notiError(error);
+      closeDeclineReqModal();
     },
   });
   const onFormSubmit = (data) => {
-    console.log(data);
-
     const payload = {
       reason: data?.reason === "" ? oreason : data?.reason,
     };

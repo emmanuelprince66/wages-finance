@@ -115,9 +115,7 @@ const LoanProfile = ({
 
   const [openDeclineLoanModal, setOpenDeclineLoanModal] = useState(false);
   const closeOpenDeclineModal = () => setOpenDeclineLoanModal(false);
-  const handleChange = (event) => {
-    setStatusValue(event.target.value);
-  };
+
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
   };
@@ -126,43 +124,6 @@ const LoanProfile = ({
       ? setShowStatistics("request")
       : setShowLoans((prev) => !prev);
   };
-
-  console.log("merchant", memberLoanDetails);
-
-  const token = getCookie("authToken");
-
-  const approveLoanMutation = useMutation({
-    mutationFn: async (id) => {
-      try {
-        const response = await AuthAxios({
-          url: approveLoanUrl(id),
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status !== 201) {
-          setButtonLoading(false);
-          throw new Error(response.data.message);
-        }
-        console.log(response);
-        return response;
-      } catch (error) {
-        setButtonLoading(false);
-
-        notiError(error.response.data.message);
-        throw new Error(error.response.data.message);
-      }
-    },
-    onSuccess: (data) => {
-      setButtonLoading(false);
-      notiSuccess(data?.data?.message);
-    },
-    onError: (error) => {
-      setButtonLoading(false);
-    },
-  });
 
   const openSuccess = () => {
     if (selectedStatus === "Approved") {
@@ -195,10 +156,8 @@ const LoanProfile = ({
       }
 
       const response = await axios.get(approveLoanUrl(memberLoanDetails?.id));
-
-      if (response?.status === 200) {
-        openSuccess();
-      }
+      console.log("resp", response);
+      openSuccess();
     } catch (error) {
       console.error("Error approving loan:", error);
     } finally {
@@ -663,7 +622,7 @@ const LoanProfile = ({
       <CustomModal open={openDeclineLoanModal}>
         <CustomSuccessRequestModal
           onClick={() => causeDeclineMutation(memberLoanDetails)}
-          close={openDeclineLoanModal}
+          close={closeOpenDeclineModal}
           titleOne="Sure to Decline Loan Request?"
           titleTwo=" Users will notified."
           btnText={buttonLoading ? "Loading..." : "Decline Loan Request"}

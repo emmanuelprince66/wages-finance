@@ -4,7 +4,6 @@ import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import success from "../assets/transactions/success.png";
 import { getCookie } from "../utils/cookieAuth";
 import useFetchData from "../hooks/useFetchData";
-import { checkNameForWithdrawalApprovalUrl } from "../api/endpoint";
 
 const CustomSuccessRequestModal = ({
   onClick,
@@ -17,18 +16,18 @@ const CustomSuccessRequestModal = ({
   const token = getCookie("authToken");
   const [apiId, setApiId] = useState("");
 
-  const apiUrl = checkNameForWithdrawalApprovalUrl(apiId);
-  const queryKey = ["checkNameForWithdrawalApproval", apiUrl];
+  // const apiUrl = checkNameForWithdrawalApprovalUrl(apiId);
+  // const queryKey = ["checkNameForWithdrawalApproval", apiUrl];
 
-  const {
-    data: checkedName,
-    error,
-    isLoading,
-  } = useFetchData(queryKey, apiUrl);
+  // const {
+  //   data: checkedName,
+  //   error,
+  //   isLoading,
+  // } = useFetchData(queryKey, apiUrl);
 
-  useEffect(() => {
-    setApiId(id);
-  }, [id]);
+  // useEffect(() => {
+  //   setApiId(id);
+  // }, [id]);
 
   return (
     <div className="w-full flex flex-col gap-3 items-end">

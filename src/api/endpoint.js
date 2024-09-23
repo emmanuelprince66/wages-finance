@@ -53,6 +53,9 @@ export const checkNameForWithdrawalApprovalUrl = (id) => {
 export const administratorDataUrl = () => {
   return "/admin/team/";
 };
+export const acceptWithdrawalUrl = (id) => {
+  return `/admin/accept_withdrawal/${id}/`;
+};
 export const referralDataUrl = (
   searchValue,
   currentPage,
@@ -62,7 +65,6 @@ export const referralDataUrl = (
   return `/admin/referals?searchValue=${searchValue}&page=${currentPage}&limit=${rowsPerPage}&start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
 export const corporativeBreakdownUrl = (id, selectedDates) => {
-  console.log("helo", id);
   return `/admin/user/coop_breakdown/${id}?start_date=${selectedDates?.startDate}&end_date=${selectedDates?.endDate}`;
 };
 export const personalSavingsBreakdownUrl = (id, selectedDates) => {
@@ -85,4 +87,12 @@ export const investmentsDetailsUrl = (id) => {
 };
 export const investmentInvestorUrl = (id) => {
   return `/admin/investment_investors/${id}`;
+};
+
+export const usersPendingDividendUrl = (
+  searchValue,
+  rowsPerPage,
+  currentPage
+) => {
+  return `/admin/outsanding_dividends/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}`;
 };

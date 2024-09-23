@@ -100,18 +100,36 @@ const Investment = () => {
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">All - Time:</p>
                     <p className="text-general text-[16px]">
-                      <FormattedPrice
-                        amount={investmentListData?.total_investments}
-                      />
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        <FormattedPrice
+                          amount={investmentListData?.total_investments}
+                        />
+                      )}
                     </p>
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">By Filter:</p>
                     <p className="text-general text-[16px]">
                       <p>
-                        <FormattedPrice
-                          amount={investmentListData?.total_by_filter}
-                        />
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          <FormattedPrice
+                            amount={investmentListData?.total_by_filter}
+                          />
+                        )}
                       </p>
                     </p>
                   </div>
@@ -191,18 +209,38 @@ const Investment = () => {
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">This Month:</p>
                     <p className="text-general text-[16px]">
-                      <FormattedPrice
-                        amount={investmentListData?.upcoming_payout_this_month}
-                      />
+                      {investmentListLoading || !investmentListData ? (
+                        <CircularProgress
+                          sx={{
+                            color: "#02981D",
+                          }}
+                          size="1rem"
+                        />
+                      ) : (
+                        <FormattedPrice
+                          amount={
+                            investmentListData?.upcoming_payout_this_month
+                          }
+                        />
+                      )}
                     </p>
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-primary_grey text-[14px]">Today:</p>
                     <p className="text-general text-[16px]">
                       <p>
-                        <FormattedPrice
-                          amount={investmentListData?.upcoming_payout_today}
-                        />
+                        {investmentListLoading || !investmentListData ? (
+                          <CircularProgress
+                            sx={{
+                              color: "#02981D",
+                            }}
+                            size="1rem"
+                          />
+                        ) : (
+                          <FormattedPrice
+                            amount={investmentListData?.upcoming_payout_today}
+                          />
+                        )}
                       </p>
                     </p>
                   </div>

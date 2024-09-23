@@ -20,12 +20,18 @@ import CustomSuccessRequestModal from "../components/CustomSuccessRequestModal";
 import CustomSuccessModal from "../components/CustomSuccessModal";
 import CustomPagination from "../components/CustomPagination";
 import { transactionsDataUrl } from "../api/endpoint";
+import { acceptWithdrawalUrl } from "../api/endpoint";
 import useFetchData from "../hooks/useFetchData";
 import FormattedPrice from "../utils/FormattedPrice";
 import TransactionTable from "./transactions/TransactionTable";
 import Referrals from "./transactions/Referrals";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import DeclineModal from "./transactions/DeclineModal";
+import { checkNameForWithdrawalApprovalUrl } from "../api/endpoint";
+import { notiError } from "../utils/noti";
+import axios from "axios";
+import { AuthAxios } from "../helpers/axiosInstance";
+import { ToastContainer } from "react-toastify";
 const Transactions = () => {
   const {
     handleSubmit,
@@ -41,11 +47,13 @@ const Transactions = () => {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
   const [openWidthdrawalModal, setOpenWithdrawalModal] = useState(false);
+  const [sessionId, setSessionId] = useState("");
+  const [isPosting, setIsPosting] = useState(false);
   const [openRequestModal, setOpenRequestModal] = useState(false);
   const [walletCreditModalData, setWalletCreditModalData] = useState(null);
   const [withdrawalModalData, setWithdrawalModalData] = useState(null);
   const [openDeclineReqModal, setOpenDeclineReqModal] = useState(false);
-
+  const [buttonLoading, setButtonLoading] = useState(false);
   const closeDeclineReqModal = () => setOpenDeclineReqModal(false);
   console.log("withdrawal", withdrawalModalData);
   const closeOpenRequestModal = () => setOpenRequestModal(false);
@@ -58,6 +66,15 @@ const Transactions = () => {
   const closeWTrxModal = () => setWOpenTrxModal(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [page, setPage] = useState(0);
+
+  const apiUrlName = checkNameForWithdrawalApprovalUrl(approveWithId);
+  const queryKeyName = ["checkNameForWithdrawalApproval", apiUrlName];
+
+  const {
+    data: checkedName,
+    error,
+    isLoading: isCheckNameLoading,
+  } = useFetchData(queryKeyName, apiUrlName);
 
   const handleOpenDeclineReqModal = (id) => {
     console.log(id);
@@ -97,14 +114,41 @@ const Transactions = () => {
     }
   };
 
-  const handleOpenApproveReq = (id) => {
+  const handleOpenApproveReq = async (id) => {
     setApproveWithId(id);
-    setOpenRequestModal(true);
-    closeWithdrawalModal();
-  };
-  // filter functionality
 
-  console.log("wiii", withdrawalModalData);
+    const isValid = await checkNameValidator(id);
+
+    if (isValid) {
+      setOpenRequestModal(true);
+      closeWithdrawalModal();
+    } else {
+      console.log("error");
+    }
+  };
+  const checkNameValidator = async (id) => {
+    console.log("before fetching...");
+    try {
+      setButtonLoading(true);
+      const response = await AuthAxios.get(
+        checkNameForWithdrawalApprovalUrl(id)
+      );
+
+      console.log("res", response);
+      setSessionId(response?.data?.id);
+
+      return true;
+    } catch (error) {
+      notiError(error?.response?.data?.message); // Ensure you're displaying the correct error message
+      console.log("error", error?.response?.data?.message);
+      return false;
+    } finally {
+      setButtonLoading(false);
+      console.log("after fetching...");
+    }
+  };
+
+  // filter functionality
 
   useEffect(() => {
     const res = transactionsData?.results;
@@ -133,6 +177,26 @@ const Transactions = () => {
       setFilteredTrxData(filteredResult);
     }
   }, [transactionsData, trxFilter, searchValue]);
+
+  const checkNameForWithdrawalReq = async () => {
+    try {
+      setIsPosting(true);
+      const payload = { session_id: sessionId };
+
+      console.log(payload);
+      const response = await AuthAxios.post(
+        acceptWithdrawalUrl(approveWithId),
+        payload
+      );
+      console.log("res", response);
+    } catch (error) {
+      notiError(error?.response?.data);
+      console.log("error", error);
+    } finally {
+      console.log("after fetching...");
+      setIsPosting(false);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-start  gap-3">
@@ -753,7 +817,7 @@ const Transactions = () => {
                 }}
               >
                 <ClearRoundedIcon sx={{ mr: "1rem" }} />
-                Cancel
+                Decline
               </Button>
               <Button
                 onClick={() =>
@@ -775,8 +839,14 @@ const Transactions = () => {
                   },
                 }}
               >
-                <CheckRoundedIcon sx={{ mr: "1rem" }} />
-                Approve
+                {buttonLoading ? (
+                  <CircularProgress size="1.2rem" sx={{ color: "#02981D" }} />
+                ) : (
+                  <>
+                    <CheckRoundedIcon sx={{ mr: "1rem" }} />
+                    Approve
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -787,10 +857,17 @@ const Transactions = () => {
       <CustomModal open={openRequestModal}>
         <CustomSuccessRequestModal
           id={approveWithId}
+          onClick={checkNameForWithdrawalReq}
           close={closeOpenRequestModal}
           titleOne="Sure to Update Transaction Status?"
           titleTwo=" User will be notified of this action."
-          btnText="Update Status"
+          btnText={
+            isPosting ? (
+              <CircularProgress size="1.2rem" sx={{ color: "#fff" }} />
+            ) : (
+              "Update Status"
+            )
+          }
         />
       </CustomModal>
       {/* success request modal */}
@@ -818,7 +895,10 @@ const Transactions = () => {
           </div>
 
           <div className="w-full">
-            <DeclineModal declineId={declineId} />
+            <DeclineModal
+              declineId={declineId}
+              closeDeclineReqModal={closeDeclineReqModal}
+            />
           </div>
         </div>
       </CustomModal>
@@ -826,6 +906,17 @@ const Transactions = () => {
       {/* decline req modal end */}
 
       {/*  */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
