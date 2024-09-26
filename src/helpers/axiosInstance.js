@@ -3,13 +3,13 @@ import { getCookie, setCookie } from "../utils/cookieAuth";
 
 // Axios instance for API calls
 export const AuthAxios = Axios.create({
-  baseURL: "https://wages.fog-agric.com/api/v1/",
+  baseURL: "https://www.api.wagesfinance.ng/",
   withCredentials: false,
 });
 
 // Axios instance for authentication related calls
 export const BaseAxios = Axios.create({
-  baseURL: "https://wages.fog-agric.com/api/v1/",
+  baseURL: "https://www.api.wagesfinance.ng/",
   withCredentials: false,
 });
 
