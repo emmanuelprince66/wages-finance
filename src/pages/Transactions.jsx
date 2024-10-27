@@ -42,7 +42,7 @@ const Transactions = () => {
   } = useForm({ mode: "all" });
   const status = watch("status", "Pending");
   const statusOptions = ["Pending", "Successfull", "Failed"];
-  const [trxFilter, setTrxFilter] = useState("all");
+  const [trxFilter, setTrxFilter] = useState("");
   const [openWalletTrxModal, setOpenWalletTrxModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
@@ -89,8 +89,13 @@ const Transactions = () => {
   const [filterValue, setFilterValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  const apiUrl = transactionsDataUrl(currentPage, rowsPerPage, searchValue);
-  const queryKey = ["fetchTransactionData", apiUrl];
+  const apiUrl = transactionsDataUrl(
+    currentPage,
+    rowsPerPage,
+    searchValue,
+    trxFilter
+  );
+  const queryKey = ["fetchTransactionData", apiUrl, trxFilter, searchValue];
   // fetch referral data
 
   const { isLoading, data: transactionsData } = useFetchData(queryKey, apiUrl);
@@ -150,33 +155,33 @@ const Transactions = () => {
 
   // filter functionality
 
-  useEffect(() => {
-    const res = transactionsData?.results;
+  // useEffect(() => {
+  //   const res = transactionsData?.results;
 
-    if (res && Array.isArray(res)) {
-      let filteredResult = res;
+  //   if (res && Array.isArray(res)) {
+  //     let filteredResult = res;
 
-      // Filter by transaction type
-      if (trxFilter !== "all") {
-        filteredResult = filteredResult.filter(
-          (item) => item?.type?.toLowerCase() === trxFilter
-        );
-      }
+  //     // Filter by transaction type
+  //     if (trxFilter !== "") {
+  //       filteredResult = filteredResult.filter(
+  //         (item) => item?.type?.toLowerCase() === trxFilter
+  //       );
+  //     }
 
-      // Filter by search value
-      if (searchValue !== "") {
-        filteredResult = filteredResult.filter(
-          (item) =>
-            item?.lastname
-              ?.toLowerCase()
-              .includes(searchValue?.toLowerCase()) ||
-            item?.firstname?.toLowerCase().includes(searchValue?.toLowerCase())
-        );
-      }
+  //     // Filter by search value
+  //     if (searchValue !== "") {
+  //       filteredResult = filteredResult.filter(
+  //         (item) =>
+  //           item?.lastname
+  //             ?.toLowerCase()
+  //             .includes(searchValue?.toLowerCase()) ||
+  //           item?.firstname?.toLowerCase().includes(searchValue?.toLowerCase())
+  //       );
+  //     }
 
-      setFilteredTrxData(filteredResult);
-    }
-  }, [transactionsData, trxFilter, searchValue]);
+  //     setFilteredTrxData(filteredResult);
+  //   }
+  // }, [transactionsData, trxFilter, searchValue]);
 
   const checkNameForWithdrawalReq = async () => {
     try {
@@ -244,19 +249,17 @@ const Transactions = () => {
           </div>
           <div className="flex w-[90%] gap-3  items-center">
             <Button
-              onClick={() => setTrxFilter("all")}
+              onClick={() => setTrxFilter("")}
               sx={{
-                background: trxFilter === "all" ? "#FAFAFA" : "#fff",
+                background: trxFilter === "" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
                 width: "100%",
                 px: "15px",
                 border:
-                  trxFilter === "all"
-                    ? "1px solid #3F3767"
-                    : "1px solid #C8C8C8",
-                color: trxFilter === "all" ? "#3F3767" : "#C8C8C8",
+                  trxFilter === "" ? "1px solid #3F3767" : "1px solid #C8C8C8",
+                color: trxFilter === "" ? "#3F3767" : "#C8C8C8",
                 "&:hover": {
-                  backgroundColor: trxFilter === "all" ? "#FAFAFA" : "#fff",
+                  backgroundColor: trxFilter === "" ? "#FAFAFA" : "#fff",
                 },
                 textTransform: "capitalize",
                 fontWeight: "400",
@@ -265,20 +268,20 @@ const Transactions = () => {
               All Transactions
             </Button>
             <Button
-              onClick={() => setTrxFilter("wallet-credit")}
+              onClick={() => setTrxFilter("WALLET-CREDIT")}
               sx={{
-                background: trxFilter === "wallet-credit" ? "#FAFAFA" : "#fff",
+                background: trxFilter === "WALLET-CREDIT" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
                 width: "100%",
                 px: "15px",
                 border:
-                  trxFilter === "wallet-credit"
+                  trxFilter === "WALLET-CREDIT"
                     ? "1px solid #02981D"
                     : "1px solid #5E5E5E",
-                color: trxFilter === "wallet-credit" ? "#02981D" : "#5E5E5E",
+                color: trxFilter === "WALLET-CREDIT" ? "#02981D" : "#5E5E5E",
                 "&:hover": {
                   backgroundColor:
-                    trxFilter === "wallet-credit" ? "#FAFAFA" : "#fff",
+                    trxFilter === "WALLET-CREDIT" ? "#FAFAFA" : "#fff",
                 },
                 textTransform: "capitalize",
                 fontWeight: "400",
@@ -287,20 +290,21 @@ const Transactions = () => {
               Wallet Credit
             </Button>
             <Button
-              onClick={() => setTrxFilter("dpurchase")}
+              onClick={() => setTrxFilter("DATA_AND_AIRTIME")}
               sx={{
-                background: trxFilter === "dpurchase" ? "#FAFAFA" : "#fff",
+                background:
+                  trxFilter === "DATA_AND_AIRTIME" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
                 width: "100%",
                 px: "15px",
                 border:
-                  trxFilter === "dpurchase"
+                  trxFilter === "DATA_AND_AIRTIME"
                     ? "1px solid #02981D"
                     : "1px solid #5E5E5E",
-                color: trxFilter === "dpurchase" ? "#02981D" : "#5E5E5E",
+                color: trxFilter === "DATA_AND_AIRTIME" ? "#02981D" : "#5E5E5E",
                 "&:hover": {
                   backgroundColor:
-                    trxFilter === "dpurchase" ? "#FAFAFA" : "#fff",
+                    trxFilter === "DATA_AND_AIRTIME" ? "#FAFAFA" : "#fff",
                 },
                 textTransform: "capitalize",
                 fontWeight: "400",
@@ -309,20 +313,20 @@ const Transactions = () => {
               Data Purchase
             </Button>
             <Button
-              onClick={() => setTrxFilter("withdrawal")}
+              onClick={() => setTrxFilter("WITHDRAWAL")}
               sx={{
-                background: trxFilter === "withdrawal" ? "#FAFAFA" : "#fff",
+                background: trxFilter === "WITHDRAWAL" ? "#FAFAFA" : "#fff",
                 borderRadius: "8px",
                 width: "100%",
                 px: "15px",
                 border:
-                  trxFilter === "withdrawal"
+                  trxFilter === "WITHDRAWAL"
                     ? "1px solid #02981D"
                     : "1px solid #5E5E5E",
-                color: trxFilter === "withdrawal" ? "#02981D" : "#5E5E5E",
+                color: trxFilter === "WITHDRAWAL" ? "#02981D" : "#5E5E5E",
                 "&:hover": {
                   backgroundColor:
-                    trxFilter === "withdrawal" ? "#FAFAFA" : "#fff",
+                    trxFilter === "WITHDRAWAL" ? "#FAFAFA" : "#fff",
                 },
                 textTransform: "capitalize",
                 fontWeight: "400",

@@ -112,8 +112,8 @@ const AddInvestment = ({ setShowComp }) => {
     const formData = new FormData();
     formData.append("image", imgFile);
     formData.append("title", sampleName);
-    formData.append("start_date", convertDate(startDate));
-    formData.append("end_date", convertDate(endDate));
+    // formData.append("start_date", convertDate(startDate));
+    // formData.append("end_date", convertDate(endDate));
     formData.append("duration", Number(subscription));
     formData.append("quota", np);
     formData.append("interest_rate", interestRate);

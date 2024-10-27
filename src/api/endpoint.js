@@ -44,8 +44,13 @@ export const loanRequestsDataUrl = (
 ) => {
   return `/admin/loan_overview/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&status=${filterValue}`;
 };
-export const transactionsDataUrl = (currentPage, rowsPerPage, searchValue) => {
-  return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}`;
+export const transactionsDataUrl = (
+  currentPage,
+  rowsPerPage,
+  searchValue,
+  trxFilter
+) => {
+  return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&type=${trxFilter}`;
 };
 export const checkNameForWithdrawalApprovalUrl = (id) => {
   return `/admin/check_name/${id}`;

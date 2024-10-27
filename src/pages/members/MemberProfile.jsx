@@ -119,8 +119,8 @@ const MemberProfile = ({ close, memberId, type }) => {
                   Personal Details
                 </p>
 
-                <div>
-                  <img src={data?.profile_picture || ""} alt="" />
+                <div className="max-h-[100px] max-w-[100px]">
+                  <img src={data?.profile_picture || ""} className="" alt="" />
                 </div>
               </div>
               <div className="flex flex-col gap-3 items-start">
