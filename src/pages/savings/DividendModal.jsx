@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 import CustomPagination from "../../components/CustomPagination";
 import { ToastContainer } from "react-toastify";
+import { notiSuccess } from "../../utils/noti";
 const DividendModal = () => {
   const [searchValue, setSearchValue] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -38,6 +39,8 @@ const DividendModal = () => {
   const [diviLoading, setDiviLoading] = useState(false);
 
   const [checkedItems, setCheckedItems] = useState([]);
+
+  console.log("checked", checkedItems);
 
   const handleCheckboxChange = (itemId) => {
     setCheckedItems(
@@ -54,7 +57,8 @@ const DividendModal = () => {
       const payload = { indices: checkedItems };
       console.log("payload", payload);
       const response = await AuthAxios.post("admin/pay_dividends/", payload);
-      console.log(response);
+      notiSuccess(response?.data?.message);
+      setCheckedItems([]);
     } catch (error) {
       console.error("Error while posting data:", error);
       setDiviLoading(false);
@@ -208,7 +212,7 @@ const DividendModal = () => {
               variant="contained"
               type="submit"
               onClick={handleProceedToPay}
-              disabled={checkedItems.length === 0} // Disable if no items selected
+              disabled={checkedItems?.length === 0} // Disable if no items selected
               sx={{
                 color: "#fff",
                 width: "100%",

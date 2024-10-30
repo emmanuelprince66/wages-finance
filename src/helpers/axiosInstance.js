@@ -3,13 +3,13 @@ import { getCookie, setCookie } from "../utils/cookieAuth";
 
 // Axios instance for API calls
 export const AuthAxios = Axios.create({
-  baseURL: "https://www.api.wagesfinance.ng/api/v1/",
+  baseURL: "https://staging.wagesfinance.ng/api/v1/",
   withCredentials: false,
 });
-
+// https://staging.wagesfinance.ng/
 // Axios instance for authentication related calls
 export const BaseAxios = Axios.create({
-  baseURL: "https://www.api.wagesfinance.ng/api/v1/",
+  baseURL: "https://staging.wagesfinance.ng/api/v1/",
   withCredentials: false,
 });
 

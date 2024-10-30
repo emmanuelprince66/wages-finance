@@ -99,7 +99,11 @@ const AddInvestment = ({ setShowComp }) => {
   // submit form
 
   const onFormSubmit = (data) => {
-    console.log("data", data);
+    if (!imgFile) {
+      notiError("Please select a file.");
+      return;
+    }
+
     const {
       sampleName,
       subscription,
@@ -221,6 +225,9 @@ const AddInvestment = ({ setShowComp }) => {
                   name="sampleName"
                   control={control}
                   defaultValue=""
+                  rules={{
+                    required: "This field is required", // Add required validation
+                  }}
                   render={({ field }) => (
                     <TextField
                       {...field}
@@ -373,6 +380,9 @@ const AddInvestment = ({ setShowComp }) => {
                   name="np"
                   control={control}
                   defaultValue=""
+                  rules={{
+                    required: "This field is required", // Add required validation
+                  }}
                   render={({ field }) => (
                     <TextField
                       {...field}
@@ -411,6 +421,9 @@ const AddInvestment = ({ setShowComp }) => {
                   name="interestRate"
                   control={control}
                   defaultValue=""
+                  rules={{
+                    required: "This field is required", // Add required validation
+                  }}
                   render={({ field }) => (
                     <TextField
                       {...field}
@@ -451,6 +464,9 @@ const AddInvestment = ({ setShowComp }) => {
                   name="amt"
                   control={control}
                   defaultValue=""
+                  rules={{
+                    required: "This field is required", // Add required validation
+                  }}
                   render={({ field }) => (
                     <TextField
                       {...field}
