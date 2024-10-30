@@ -3,14 +3,21 @@ import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import { Button } from "@mui/material";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
 
-const PageNumberPagination = ({ currentPage, totalPages, onPageChange }) => {
+const PageNumberPagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+  setCurrentPage,
+}) => {
   const pageNumbers = Array.from(
     { length: totalPages },
     (_, index) => index + 1
   );
 
+  console.log("total", totalPages);
   const handlePageClick = (pageNumber) => {
-    onPageChange(pageNumber);
+    // onPageChange(pageNumber);
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -40,16 +47,17 @@ const CustomPagination = ({
   onPageChange,
   nextPageLink,
   prevPageLink,
+  setCurrentPage,
 }) => {
   const handleNext = () => {
     if (nextPageLink) {
-      onPageChange(currentPage + 1, nextPageLink);
+      setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
     }
   };
 
   const handleBack = () => {
     if (prevPageLink) {
-      onPageChange(currentPage - 1, prevPageLink);
+      setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
     }
   };
 
@@ -80,6 +88,7 @@ const CustomPagination = ({
       </Button>
       <PageNumberPagination
         currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
         totalPages={totalPages}
         onPageChange={(page) => onPageChange(page)}
       />

@@ -59,16 +59,16 @@ const AllMembers = ({
             (
             <div className="flex gap-1">
               <span className="font-[500] text-[#171717] text-[14px]  ">
-                1,9970
+                {data?.total}{" "}
               </span>
               <p className="font-normal text-[#171717] text-[14px]">Total</p>
             </div>
-            <div className="flex gap-1">
+            {/* <div className="flex gap-1">
               <span className="font-[500] text-[#171717] text-[14px]  ">
                 1,9970
               </span>
               <p className="font-normal text-[#171717] text-[14px]">Total</p>
-            </div>
+            </div> */}
             )
           </div>
         </div>

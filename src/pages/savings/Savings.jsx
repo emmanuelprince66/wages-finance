@@ -18,16 +18,25 @@ const Savings = () => {
   // fetch card details
   const apiUrl = corporativeDataUrl();
 
-  const getCorporateMembersUrl = corporativeMembersUrl(searchValue);
+  const getCorporateMembersUrl = corporativeMembersUrl(
+    searchValue,
+    currentPage
+  );
 
   const queryKey = ["fetchCorporativeData", apiUrl];
-  const queryKeyTwo = ["fetchCorporativeMembers", getCorporateMembersUrl];
+  const queryKeyTwo = [
+    "fetchCorporativeMembers",
+    getCorporateMembersUrl,
+    currentPage,
+  ];
 
   const {
     data: corporativeData,
     error,
     isLoading,
   } = useFetchData(queryKey, apiUrl);
+
+  console.log("curr", currentPage);
 
   const {
     data: corporativeMembers,
@@ -40,12 +49,6 @@ const Savings = () => {
   const handleShowParticipants = (link) => {
     setEvent(link);
     setShowComp("participants");
-  };
-
-  const totalPages = corporativeData?.pages;
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
   };
 
   const handleLimitChange = (e) => {
@@ -114,12 +117,12 @@ const Savings = () => {
           setShowMemberProfile={setShowMemberProfile}
           showMemberProfile={showMemberProfile}
           corporativeData={corporativeData}
+          setCurrentPage={setCurrentPage}
           setShowComp={setShowComp}
           showComp={showComp}
           corporativeMembers={corporativeMembers || {}}
           isLoadingMembers={isLoadingMembers}
           setSearchValue={setSearchValue}
-          handlePageChange={handlePageChange}
           searchValue={searchValue}
           currentPage={currentPage}
         />

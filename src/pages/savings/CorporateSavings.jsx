@@ -35,11 +35,11 @@ import DividendModal from "./DividendModal";
 const CorporateSavings = ({
   setShowMemberProfile,
   setShowComp,
+  setCurrentPage,
   showComp,
   corporativeData,
   showMemberProfile,
   currentPage,
-  handlePageChange,
   searchValue,
   isLoadingMembers,
   setSearchValue,
@@ -315,9 +315,9 @@ const CorporateSavings = ({
 
                   <CustomPagination
                     currentPage={currentPage}
-                    s
                     totalPages={corporativeMembers?.pages}
-                    onPageChange={handlePageChange}
+                    onPageChange=""
+                    setCurrentPage={setCurrentPage}
                     nextPageLink={corporativeMembers?.links?.next}
                     prevPageLink={corporativeMembers?.links?.previous}
                   />

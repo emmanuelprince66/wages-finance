@@ -63,10 +63,10 @@ const TargetSavings = ({ handleShowParticipants }) => {
     );
   };
   const data = [
-    { name: "Group A", value: 4 },
-    { name: "Group B", value: 1 },
+    { name: "Group A", value: 0 },
+    { name: "Group B", value: 0 },
     { name: "Group C", value: targetData?.title_data?.VACATION?.savings_count },
-    { name: "Group D", value: 5 },
+    { name: "Group D", value: 0 },
     {
       name: "Group E",
       value: targetData?.title_data?.MISCELLANEOUS?.savings_count,

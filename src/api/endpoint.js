@@ -14,8 +14,8 @@ export const overveiwUrl = (selectedDates) => {
 export const corporativeDataUrl = () => {
   return `/admin/coporative_stats/`;
 };
-export const corporativeMembersUrl = (searchValue) => {
-  return `/admin/active_coporative_members/?search=${searchValue}`;
+export const corporativeMembersUrl = (searchValue, currentPage) => {
+  return `/admin/active_coporative_members/?search=${searchValue}&page=${currentPage}`;
 };
 export const targetSavingsUrl = () => {
   return "/admin/savings_stats";

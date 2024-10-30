@@ -111,7 +111,11 @@ const Transactions = () => {
         setWalletCreditModalData(item);
         setOpenWalletTrxModal(true);
         break;
-      case "Withdrawal":
+      case "DATA_AND_AIRTIME":
+        setWalletCreditModalData(item);
+        setOpenWalletTrxModal(true);
+        break;
+      case "WITHDRAWAL":
         setWithdrawalModalData(item);
         setOpenWithdrawalModal(true);
       default:
