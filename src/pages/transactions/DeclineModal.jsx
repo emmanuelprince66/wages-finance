@@ -20,7 +20,7 @@ import {
   FormControl,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
-const DeclineModal = ({ declineId, closeDeclineReqModal }) => {
+const DeclineModal = ({ declineId, closeDeclineReqModal, refetch }) => {
   const {
     handleSubmit,
     control,
@@ -79,6 +79,7 @@ const DeclineModal = ({ declineId, closeDeclineReqModal }) => {
     },
     onSuccess: (data) => {
       notiSuccess("Withdrawal successfull declined");
+      refetch();
       setButtonDisabled(false);
       closeDeclineReqModal();
       // Handle success, update state, or perform further actions
@@ -94,8 +95,12 @@ const DeclineModal = ({ declineId, closeDeclineReqModal }) => {
       reason: data?.reason === "" ? oreason : data?.reason,
     };
 
-    setButtonDisabled(true);
-    uploadDeclineReason.mutate(payload);
+    if (payload?.reason === "") {
+      notiError("Fill in all fields.");
+    } else {
+      setButtonDisabled(true);
+      uploadDeclineReason.mutate(payload);
+    }
   };
   return (
     <div className="w-full flex-col items-start gap-3">

@@ -98,7 +98,11 @@ const Transactions = () => {
   const queryKey = ["fetchTransactionData", apiUrl, trxFilter, searchValue];
   // fetch referral data
 
-  const { isLoading, data: transactionsData } = useFetchData(queryKey, apiUrl);
+  const {
+    isLoading,
+    data: transactionsData,
+    refetch,
+  } = useFetchData(queryKey, apiUrl);
 
   const totalPages = transactionsData?.pages;
   const handlePageChange = (page) => {
@@ -904,6 +908,7 @@ const Transactions = () => {
 
           <div className="w-full">
             <DeclineModal
+              refetch={refetch}
               declineId={declineId}
               closeDeclineReqModal={closeDeclineReqModal}
             />
