@@ -293,8 +293,6 @@ const AllMembers = ({
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              nextPageLink={data?.links?.next}
-              prevPageLink={data?.links?.previous}
             />
           </div>
         </CustomCard>

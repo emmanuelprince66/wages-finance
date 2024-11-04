@@ -152,6 +152,58 @@ const Overview = () => {
             </div>
           </CustomCard>
         )}
+        {isLoading || !data ? (
+          <Skeleton variant="rounded" width="100%" height={247} />
+        ) : (
+          <CustomCard color="#FCF5FF" style="w-full">
+            <div className="w-full flex-col items-start gap-3">
+              <div className="flex gap-3   items-center">
+                <img src={oThree} alt="0-1" />
+                <p className="text-general text-[14px] font-[500]">Data</p>
+              </div>
+
+              <div className="flex-col flex items-start gap-2 mt-5">
+                <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                <p className="text-[24px] font-[600] text-general">
+                  {data?.all_user_count}
+                </p>
+              </div>
+              <div className="flex-col flex items-start gap-2 mt-5">
+                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                <p className="text-[24px] font-[600] text-general">
+                  {data?.filter_user_count}
+                </p>
+              </div>
+            </div>
+          </CustomCard>
+        )}
+        {isLoading || !data ? (
+          <Skeleton variant="rounded" width="100%" height={247} />
+        ) : (
+          <CustomCard color="#F6FFF8" style="w-full">
+            <div className="w-full flex-col items-start gap-3">
+              <div className="flex gap-3   items-center">
+                <img src={oThree} alt="0-1" />
+                <p className="text-general text-[14px] font-[500]">
+                  Total Withdrawals
+                </p>
+              </div>
+
+              <div className="flex-col flex items-start gap-2 mt-5">
+                <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                <p className="text-[24px] font-[600] text-general">
+                  {data?.all_user_count}
+                </p>
+              </div>
+              <div className="flex-col flex items-start gap-2 mt-5">
+                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                <p className="text-[24px] font-[600] text-general">
+                  {data?.filter_user_count}
+                </p>
+              </div>
+            </div>
+          </CustomCard>
+        )}
       </div>
 
       {/* corporative data analytics */}

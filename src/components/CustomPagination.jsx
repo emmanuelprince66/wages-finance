@@ -1,31 +1,55 @@
 import React from "react";
-import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import { Button } from "@mui/material";
 import KeyboardBackspaceRoundedIcon from "@mui/icons-material/KeyboardBackspaceRounded";
+import EastRoundedIcon from "@mui/icons-material/EastRounded";
 
 const PageNumberPagination = ({
   currentPage,
   totalPages,
   onPageChange,
-  setCurrentPage,
+  maxPageNumbersToShow = 10,
 }) => {
-  const pageNumbers = Array.from(
-    { length: totalPages },
-    (_, index) => index + 1
-  );
-
-  console.log("total", totalPages);
   const handlePageClick = (pageNumber) => {
-    // onPageChange(pageNumber);
-    setCurrentPage(pageNumber);
+    if (typeof pageNumber === "number") {
+      onPageChange(pageNumber);
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const startPage = Math.max(
+      1,
+      currentPage - Math.floor(maxPageNumbersToShow / 2)
+    );
+    const endPage = Math.min(totalPages, startPage + maxPageNumbersToShow - 1);
+
+    if (startPage > 1) {
+      pageNumbers.push(1);
+      if (startPage > 2) {
+        pageNumbers.push("...");
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push("...");
+      }
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
   };
 
   return (
     <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-      {pageNumbers.map((pageNumber) => (
+      {getPageNumbers().map((pageNumber, index) => (
         <button
-          key={pageNumber}
-          onClick={() => handlePageClick(pageNumber)}
+          key={index}
+          onClick={() => handlePageClick(pageNumber)} // Update pageNumber click handling
           style={{
             padding: "8px",
             borderRadius: "4px",
@@ -33,7 +57,9 @@ const PageNumberPagination = ({
             background: currentPage === pageNumber ? "#FEF2E6" : "transparent",
             color: currentPage === pageNumber ? "#F78105" : "#667085",
             fontWeight: currentPage === pageNumber ? "bold" : "normal",
+            cursor: pageNumber === "..." ? "default" : "pointer",
           }}
+          disabled={pageNumber === "..."}
         >
           {pageNumber}
         </button>
@@ -41,23 +67,17 @@ const PageNumberPagination = ({
     </div>
   );
 };
-const CustomPagination = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-  nextPageLink,
-  prevPageLink,
-  setCurrentPage,
-}) => {
+
+export const CustomPagination = ({ currentPage, totalPages, onPageChange }) => {
   const handleNext = () => {
-    if (nextPageLink) {
-      setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
     }
   };
 
   const handleBack = () => {
-    if (prevPageLink) {
-      setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
     }
   };
 
@@ -65,7 +85,7 @@ const CustomPagination = ({
     <div className="flex items-center w-full justify-between mt-5">
       <Button
         onClick={handleBack}
-        disabled={!prevPageLink}
+        disabled={currentPage === 1}
         sx={{
           background: "transparent",
           borderRadius: "8px",
@@ -86,15 +106,16 @@ const CustomPagination = ({
         <KeyboardBackspaceRoundedIcon />
         Back
       </Button>
+
       <PageNumberPagination
         currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
         totalPages={totalPages}
-        onPageChange={(page) => onPageChange(page)}
+        onPageChange={onPageChange}
       />
+
       <Button
         onClick={handleNext}
-        disabled={!nextPageLink}
+        disabled={currentPage === totalPages}
         sx={{
           background: "transparent",
           borderRadius: "8px",

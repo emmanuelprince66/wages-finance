@@ -20,7 +20,7 @@ const Members = () => {
     filterValue,
     searchValue
   );
-  const queryKey = ["fetchMembers", apiUrl];
+  const queryKey = ["fetchMembers", apiUrl, currentPage];
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
   const totalPages = data?.pages;
@@ -34,10 +34,9 @@ const Members = () => {
     setCurrentPage(1); // Reset to page 1 when limit changes
   };
 
-
-  const backMembers =  () => {
-    setShowComp("members")
-  }
+  const backMembers = () => {
+    setShowComp("members");
+  };
   return (
     <>
       {showComp === "members" && (
