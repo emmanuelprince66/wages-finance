@@ -55,10 +55,14 @@ const Transactions = () => {
   const [openDeclineReqModal, setOpenDeclineReqModal] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
   const closeDeclineReqModal = () => setOpenDeclineReqModal(false);
-  console.log("withdrawal", withdrawalModalData);
   const closeOpenRequestModal = () => setOpenRequestModal(false);
   const closeWalletTrxModal = () => setOpenWalletTrxModal(false);
-  const closeWithdrawalModal = () => setWithdrawalModalData(false);
+  const closeWithdrawalModal = () => {
+    setShowAcctName(false);
+    setWithdrawalModalData(false);
+  };
+
+  const [showAcctName, setShowAcctName] = useState(false);
 
   const [approveWithId, setApproveWithId] = useState("");
   const closeSuccessModal = () => setOpenSuccessModal(false);
@@ -75,6 +79,13 @@ const Transactions = () => {
     error,
     isLoading: isCheckNameLoading,
   } = useFetchData(queryKeyName, apiUrlName);
+
+  const handleShowAcctName = (id) => {
+    console.log("id", id);
+    setShowAcctName(!showAcctName);
+  };
+
+  console.log("show", showAcctName);
 
   const handleOpenDeclineReqModal = (id) => {
     console.log(id);
@@ -760,108 +771,145 @@ const Transactions = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-start gap-2 w-full mt-3">
-            <p className="text-general font-[500] text-[14px] ">
-              WITHDRAWAL DETAILS
-            </p>
 
-            <div className="rounded-md w-full border-[1px] bg-[#F7F7F7] border-[#E3E3E3] p-2 flex flex-col items-start">
-              <div className="w-full flex justify-between">
-                <p className="text-[14px] text-primary_grey_2">Amount:</p>
-                <p className="text-[14px] text-general font-[500]">
-                  <FormattedPrice
-                    amount={withdrawalModalData?.withdrawal_details?.amount}
+          {showAcctName ? (
+            <>
+              <div className="flex flex-col items-start gap-2 w-full mt-3">
+                <p className="text-general font-[500] text-[14px] ">
+                  WITHDRAWAL DETAILS
+                </p>
+
+                <div className="rounded-md w-full border-[1px] bg-[#F7F7F7] border-[#E3E3E3] p-2 flex flex-col items-start">
+                  <div className="w-full flex justify-between">
+                    <p className="text-[14px] text-primary_grey_2">Amount:</p>
+                    <p className="text-[14px] text-general font-[500]">
+                      <FormattedPrice
+                        amount={withdrawalModalData?.withdrawal_details?.amount}
+                      />
+                    </p>
+                  </div>
+
+                  <Divider
+                    sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
                   />
-                </p>
+
+                  <div className="w-full flex justify-between">
+                    <p className="text-[14px] text-primary_grey_2">
+                      Bank Name:
+                    </p>
+                    <p className="text-[14px] text-general font-[500]">
+                      {withdrawalModalData?.withdrawal_details?.bank_name || ""}
+                    </p>
+                  </div>
+                  <Divider
+                    sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                  />
+
+                  <div className="w-full flex justify-between">
+                    <p className="text-[14px] text-primary_grey_2">
+                      Account Number:
+                    </p>
+                    <p className="text-[14px] text-general font-[500]">
+                      {withdrawalModalData?.withdrawal_details?.account_number}
+                    </p>
+                  </div>
+
+                  <Divider
+                    sx={{ color: "#E3E3E3", width: "100%", my: "8px" }}
+                  />
+
+                  <div className="w-full flex justify-between">
+                    <p className="text-[14px] text-primary_grey_2">
+                      Account Name:
+                    </p>
+                    <p className="text-[14px] text-general font-[500]">
+                      {withdrawalModalData?.withdrawal_details?.account_name ||
+                        "nil"}
+                    </p>
+                  </div>
+                </div>
               </div>
-
-              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-              <div className="w-full flex justify-between">
-                <p className="text-[14px] text-primary_grey_2">Bank Name:</p>
-                <p className="text-[14px] text-general font-[500]">
-                  {withdrawalModalData?.withdrawal_details?.bank_name || ""}
-                </p>
+              <div className="w-full flex-col items-start gap-2 mt-2">
+                <p className="text-general font-[500] text-[14px] ">Action</p>
+                <div className="flex justify-start gap-5 w-full mt-3">
+                  <Button
+                    onClick={() =>
+                      handleOpenDeclineReqModal(
+                        withdrawalModalData?.withdrawal_details?.id
+                      )
+                    }
+                    variant="contained"
+                    sx={{
+                      color: "#DC3545",
+                      background: "#F7F7F7",
+                      boxShadow: "none",
+                      width: "10rem",
+                      fontSize: "1rem",
+                      py: "1rem",
+                      textTransform: "capitalize",
+                      "&:hover": {
+                        background: "#F7F7F7",
+                      },
+                    }}
+                  >
+                    <ClearRoundedIcon sx={{ mr: "1rem" }} />
+                    Decline
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      handleOpenApproveReq(
+                        withdrawalModalData?.withdrawal_details?.id
+                      )
+                    }
+                    variant="contained"
+                    sx={{
+                      color: "#02981D",
+                      background: "#F7F7F7",
+                      boxShadow: "none",
+                      width: "10rem",
+                      fontSize: "1rem",
+                      py: "1rem",
+                      textTransform: "capitalize",
+                      "&:hover": {
+                        background: "#F7F7F7",
+                      },
+                    }}
+                  >
+                    {buttonLoading ? (
+                      <CircularProgress
+                        size="1.2rem"
+                        sx={{ color: "#02981D" }}
+                      />
+                    ) : (
+                      <>
+                        <CheckRoundedIcon sx={{ mr: "1rem" }} />
+                        Approve
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-              <div className="w-full flex justify-between">
-                <p className="text-[14px] text-primary_grey_2">
-                  Account Number:
-                </p>
-                <p className="text-[14px] text-general font-[500]">
-                  {withdrawalModalData?.withdrawal_details?.account_number}
-                </p>
-              </div>
-
-              <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
-
-              <div className="w-full flex justify-between">
-                <p className="text-[14px] text-primary_grey_2">Account Name:</p>
-                <p className="text-[14px] text-general font-[500]">
-                  {withdrawalModalData?.withdrawal_details?.account_name ||
-                    "nil"}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="w-full flex-col items-start gap-2 mt-2">
-            <p className="text-general font-[500] text-[14px] ">Action</p>
-            <div className="flex justify-start gap-5 w-full mt-3">
-              <Button
-                onClick={() =>
-                  handleOpenDeclineReqModal(
-                    withdrawalModalData?.withdrawal_details?.id
-                  )
-                }
-                variant="contained"
-                sx={{
-                  color: "#DC3545",
+            </>
+          ) : (
+            <Button
+              onClick={() => handleShowAcctName(withdrawalModalData?.id)}
+              variant="contained"
+              sx={{
+                color: "#02981D",
+                background: "#F7F7F7",
+                boxShadow: "none",
+                width: "10rem",
+                fontSize: "1rem",
+                py: "1rem",
+                textTransform: "capitalize",
+                "&:hover": {
                   background: "#F7F7F7",
-                  boxShadow: "none",
-                  width: "10rem",
-                  fontSize: "1rem",
-                  py: "1rem",
-                  textTransform: "capitalize",
-                  "&:hover": {
-                    background: "#F7F7F7",
-                  },
-                }}
-              >
-                <ClearRoundedIcon sx={{ mr: "1rem" }} />
-                Decline
-              </Button>
-              <Button
-                onClick={() =>
-                  handleOpenApproveReq(
-                    withdrawalModalData?.withdrawal_details?.id
-                  )
-                }
-                variant="contained"
-                sx={{
-                  color: "#02981D",
-                  background: "#F7F7F7",
-                  boxShadow: "none",
-                  width: "10rem",
-                  fontSize: "1rem",
-                  py: "1rem",
-                  textTransform: "capitalize",
-                  "&:hover": {
-                    background: "#F7F7F7",
-                  },
-                }}
-              >
-                {buttonLoading ? (
-                  <CircularProgress size="1.2rem" sx={{ color: "#02981D" }} />
-                ) : (
-                  <>
-                    <CheckRoundedIcon sx={{ mr: "1rem" }} />
-                    Approve
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+                },
+              }}
+            >
+              Proceed
+            </Button>
+          )}
         </div>
       </CustomModal>
       {/* widthdrawal modal ends */}
