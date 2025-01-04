@@ -36,8 +36,6 @@ const Savings = () => {
     isLoading,
   } = useFetchData(queryKey, apiUrl);
 
-  console.log("curr", currentPage);
-
   const {
     data: corporativeMembers,
     error: membersError,

@@ -39,13 +39,10 @@ const InvestmentTable = ({ apiId }) => {
   } = useFetchData(queryKey, apiUrl);
 
   const totalPages = investmentInvestor?.pages;
-  console.log("sorry", investmentInvestor);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-  console.log(apiId);
 
   return (
     <div className="w-full flex flex-col gap-3 h-full">

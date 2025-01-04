@@ -13,8 +13,6 @@ const ActiveInvestments = ({ memberId }) => {
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log("cassere", data);
-
   useEffect(() => {
     setApiId(memberId);
   }, [memberId]);

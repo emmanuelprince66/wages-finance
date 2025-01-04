@@ -28,8 +28,6 @@ const Investment = () => {
   console.log(selectedDates?.startDate, selectedDates?.endDate);
   const [filterValue, setFilterValue] = useState("");
 
-  console.log("original", filterValue);
-
   const token = getCookie("authToken");
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
@@ -47,8 +45,6 @@ const Investment = () => {
     error: investmentListError,
     isLoading: investmentListLoading,
   } = useFetchData(queryKey, apiUrl);
-
-  console.log("name", investmentListData);
 
   //
 

@@ -17,7 +17,6 @@ const AllInvestments = ({
   filterValue,
   investmentListLoading,
 }) => {
-  console.log("fil", filterValue);
   const [showDetails, setShowDetails] = useState(false);
   const [investmentById, setInvestmentById] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);

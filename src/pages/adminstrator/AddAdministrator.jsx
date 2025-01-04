@@ -45,7 +45,6 @@ const AddAdministrator = ({ handleCloseAddAdminModal, setRefetchTeam }) => {
           setButtonLoading(false);
           throw new Error(response.data.message);
         }
-        console.log(response);
         return response;
       } catch (error) {
         setButtonLoading(false);

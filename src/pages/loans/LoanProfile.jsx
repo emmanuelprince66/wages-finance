@@ -148,7 +148,6 @@ const LoanProfile = ({
       setButtonLoading(true);
 
       // Log the entire object to check if `memberLoanDetails` is defined
-      console.log("Member Loan Details:", memberLoanDetails);
 
       if (!memberLoanDetails || !memberLoanDetails.id) {
         console.error("Member Loan Details or ID is missing!");
@@ -156,10 +155,8 @@ const LoanProfile = ({
       }
 
       const response = await axios.get(approveLoanUrl(memberLoanDetails?.id));
-      console.log("resp", response);
       openSuccess();
     } catch (error) {
-      console.error("Error approving loan:", error);
     } finally {
       setButtonLoading(false);
     }

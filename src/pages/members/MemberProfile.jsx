@@ -71,8 +71,6 @@ const MemberProfile = ({ close, memberId, type }) => {
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log("case", data);
-
   const refereeData = data || [];
 
   return (

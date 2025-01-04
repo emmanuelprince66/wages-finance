@@ -28,7 +28,6 @@ const VerifyOtpCom = ({ setComponent, userEmail, setUuid }) => {
   // verify otp mutation
   const verifyOtpMutation = useMutation({
     mutationFn: async (formData) => {
-      console.log(formData);
       try {
         const response = await BaseAxios({
           url: "/admin/verify_code/",

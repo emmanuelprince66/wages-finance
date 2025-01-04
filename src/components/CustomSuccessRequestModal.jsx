@@ -63,7 +63,7 @@ const CustomSuccessRequestModal = ({
           </Button>
           {onClick && (
             <Button
-              onClick={onClick}
+              onClick={onClick} // This ensures it runs only on click
               variant="contained"
               type="submit"
               sx={{

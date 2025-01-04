@@ -19,8 +19,6 @@ const TargetSavings = ({ handleShowParticipants }) => {
 
   const { data: targetData, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log("canca", targetData);
-
   const FirstCard = ({ titleOne, textOne, textTwo, img, color, link }) => {
     return (
       <>

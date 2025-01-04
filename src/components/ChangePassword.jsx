@@ -44,7 +44,6 @@ const ChangePassword = ({ setComponent, uuid }) => {
   // verify otp mutation
   const changeMutation = useMutation({
     mutationFn: async (formData) => {
-      console.log(formData);
       try {
         const response = await BaseAxios({
           url: "/admin/reset_password/",
@@ -59,12 +58,10 @@ const ChangePassword = ({ setComponent, uuid }) => {
         return response.data;
       } catch (error) {
         notiError(error?.response?.data?.error);
-        console.log(error?.response?.data?.error);
         throw new Error(error.response.data.error);
       }
     },
     onSuccess: (data) => {
-      console.log(data);
       notiSuccess(data?.message);
       setTimeout(() => {
         setButtonDisabled(false);

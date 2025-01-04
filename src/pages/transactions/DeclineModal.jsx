@@ -57,7 +57,6 @@ const DeclineModal = ({ declineId, closeDeclineReqModal, refetch }) => {
   // mutation
   const uploadDeclineReason = useMutation({
     mutationFn: async (formData) => {
-      console.log(formData);
       try {
         const response = await AuthAxios({
           url: `/admin/reject_withdrawal/${declineId}/`,

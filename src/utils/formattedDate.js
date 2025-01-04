@@ -1,5 +1,4 @@
 function formattedDate(createdAt) {
-  console.log(createdAt);
   const date = new Date(createdAt);
   const day = date.getDate();
   const month = date.getMonth() + 1;

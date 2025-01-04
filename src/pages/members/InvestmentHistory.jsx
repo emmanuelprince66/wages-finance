@@ -38,8 +38,6 @@ const InvestmentHistory = ({ memberId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100);
 
-  console.log("sssss", data);
-
   useEffect(() => {
     setApiId(memberId);
   }, [memberId]);

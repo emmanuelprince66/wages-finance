@@ -24,8 +24,6 @@ const PersonalSavingsModal = ({ close, memberId }) => {
   const queryKey = ["fetchSavingsBreakdown", apiUrl];
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
-  console.log("dd", apiId);
-  console.log("human", data);
 
   const totalPages = data?.pages;
 

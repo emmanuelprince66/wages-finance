@@ -68,8 +68,6 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
   const [selectedSubscription, setSelectedSubscription] = useState(subVal); // default value
   const subscriptionOptions = [3, 6, 9, 12];
 
-  console.log(selectedSubscription);
-
   const [showCash, setShowCash] = useState(false);
   const handleClickShowCash = () => setShowCash((show) => !show);
   const validateName = (name) => {
@@ -127,7 +125,6 @@ const InvestmentDetails = ({ investmentById, setShowDetails, setShowComp }) => {
   // mutation
   const updateInvestmentData = useMutation({
     mutationFn: async (formData) => {
-      console.log(formData);
       try {
         const response = await AuthAxios({
           url: `/admin/update_investment/${apiId}`,

@@ -46,7 +46,6 @@ const LoginCom = ({ setComponent }) => {
 
   const loginMutation = useMutation({
     mutationFn: async (formData) => {
-      console.log(formData);
       try {
         const response = await BaseAxios({
           url: "/admin/login/",

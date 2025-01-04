@@ -28,10 +28,11 @@ import Referrals from "./transactions/Referrals";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import DeclineModal from "./transactions/DeclineModal";
 import { checkNameForWithdrawalApprovalUrl } from "../api/endpoint";
-import { notiError } from "../utils/noti";
+import { notiError, notiSuccess } from "../utils/noti";
 import axios from "axios";
 import { AuthAxios } from "../helpers/axiosInstance";
 import { ToastContainer } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 const Transactions = () => {
   const {
     handleSubmit,
@@ -74,11 +75,11 @@ const Transactions = () => {
   const apiUrlName = checkNameForWithdrawalApprovalUrl(approveWithId);
   const queryKeyName = ["checkNameForWithdrawalApproval", apiUrlName];
 
-  const {
-    data: checkedName,
-    error,
-    isLoading: isCheckNameLoading,
-  } = useFetchData(queryKeyName, apiUrlName);
+  // const {
+  //   data: checkedName,
+  //   error,
+  //   isLoading: isCheckNameLoading,
+  // } = useFetchData(queryKeyName, apiUrlName);
 
   const handleShowAcctName = (id) => {
     console.log("id", id);
@@ -143,12 +144,9 @@ const Transactions = () => {
 
     // const isValid = await checkNameValidator(id);
 
-    if (isValid) {
-      setOpenRequestModal(true);
-      closeWithdrawalModal();
-    } else {
-      console.log("error");
-    }
+    setOpenRequestModal(true);
+    closeWithdrawalModal();
+    console.log("error");
   };
   // const checkNameValidator = async (id) => {
   //   console.log("before fetching...");
@@ -201,22 +199,26 @@ const Transactions = () => {
   //     setFilteredTrxData(filteredResult);
   //   }
   // }, [transactionsData, trxFilter, searchValue]);
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const response = await AuthAxios.get(acceptWithdrawalUrl(approveWithId));
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("Success:", data);
+      notiSuccess("Withdrawal request approved successfully");
+      setOpenRequestModal(false);
+    },
+    onError: (error) => {
+      notiError(error?.response?.data?.message);
+      setOpenRequestModal(false);
+      console.error("Error:", error);
+    },
+  });
 
   const checkNameForWithdrawalReq = async () => {
-    try {
-      setIsPosting(true);
-
-      const response = await AuthAxios.get(acceptWithdrawalUrl(approveWithId));
-      console.log("res", response);
-    } catch (error) {
-      notiError(error?.response?.data);
-      console.log("error", error);
-    } finally {
-      console.log("after fetching...");
-      setIsPosting(false);
-    }
+    mutation.mutate();
   };
-
   return (
     <div className="w-full flex flex-col items-start  gap-3">
       <div className="w-full flex items-center justify-between mb-3">
@@ -912,12 +914,12 @@ const Transactions = () => {
       <CustomModal open={openRequestModal}>
         <CustomSuccessRequestModal
           id={approveWithId}
-          onClick={checkNameForWithdrawalReq}
+          onClick={checkNameForWithdrawalReq} // Correct: Passing function reference
           close={closeOpenRequestModal}
           titleOne="Sure to Update Transaction Status?"
-          titleTwo=" User will be notified of this action."
+          titleTwo="User will be notified of this action."
           btnText={
-            isPosting ? (
+            mutation.isPending ? (
               <CircularProgress size="1.2rem" sx={{ color: "#fff" }} />
             ) : (
               "Update Status"

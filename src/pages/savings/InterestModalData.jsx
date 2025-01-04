@@ -34,8 +34,6 @@ const InterestModalData = ({ userId }) => {
 
   const { data, error, isLoading } = useFetchData(queryKey, apiUrl);
 
-  console.log("interets", data?.results);
-
   return (
     <div className="flex w-full justify-end gap-3 flex-col">
       <SelectDate />
