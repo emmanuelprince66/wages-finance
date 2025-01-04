@@ -141,7 +141,7 @@ const Transactions = () => {
   const handleOpenApproveReq = async (id) => {
     setApproveWithId(id);
 
-    const isValid = await checkNameValidator(id);
+    // const isValid = await checkNameValidator(id);
 
     if (isValid) {
       setOpenRequestModal(true);
@@ -150,27 +150,27 @@ const Transactions = () => {
       console.log("error");
     }
   };
-  const checkNameValidator = async (id) => {
-    console.log("before fetching...");
-    try {
-      setButtonLoading(true);
-      const response = await AuthAxios.get(
-        checkNameForWithdrawalApprovalUrl(id)
-      );
+  // const checkNameValidator = async (id) => {
+  //   console.log("before fetching...");
+  //   try {
+  //     setButtonLoading(true);
+  //     const response = await AuthAxios.get(
+  //       checkNameForWithdrawalApprovalUrl(id)
+  //     );
 
-      console.log("res", response);
-      setSessionId(response?.data?.id);
+  //     console.log("res", response);
+  //     setSessionId(response?.data?.id);
 
-      return true;
-    } catch (error) {
-      notiError(error?.response?.data?.message); // Ensure you're displaying the correct error message
-      console.log("error", error?.response?.data?.message);
-      return false;
-    } finally {
-      setButtonLoading(false);
-      console.log("after fetching...");
-    }
-  };
+  //     return true;
+  //   } catch (error) {
+  //     notiError(error?.response?.data?.message); // Ensure you're displaying the correct error message
+  //     console.log("error", error?.response?.data?.message);
+  //     return false;
+  //   } finally {
+  //     setButtonLoading(false);
+  //     console.log("after fetching...");
+  //   }
+  // };
 
   // filter functionality
 
@@ -205,13 +205,8 @@ const Transactions = () => {
   const checkNameForWithdrawalReq = async () => {
     try {
       setIsPosting(true);
-      const payload = { session_id: sessionId };
 
-      console.log(payload);
-      const response = await AuthAxios.post(
-        acceptWithdrawalUrl(approveWithId),
-        payload
-      );
+      const response = await AuthAxios.get(acceptWithdrawalUrl(approveWithId));
       console.log("res", response);
     } catch (error) {
       notiError(error?.response?.data);
@@ -823,8 +818,8 @@ const Transactions = () => {
                       Account Name:
                     </p>
                     <p className="text-[14px] text-general font-[500]">
-                      {withdrawalModalData?.withdrawal_details?.account_name ||
-                        "nil"}
+                      {withdrawalModalData?.withdrawal_details
+                        ?.beneficiary_details?.name || "nil"}
                     </p>
                   </div>
                 </div>

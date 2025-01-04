@@ -26,6 +26,35 @@ import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 
 const ForgetCom = ({ setComponent, setUserEmail }) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  console.log("hello");
+
+  const futaStudents = [
+    {
+      name: "emmanuel",
+      email: "emmanuel@emmanuel",
+      password: "emmanuel",
+      confirmPassword: "emmanuel",
+      phone: "emmanuel",
+    },
+    {
+      name: "lekan",
+      email: "lekan@emmanuel",
+      password: "emmanuel",
+      confirmPassword: "emmanuel",
+      phone: "emmanuel",
+    },
+    {
+      name: "best",
+      email: "best@emmanuel",
+      password: "emmanuel",
+      confirmPassword: "emmanuel",
+      phone: "emmanuel",
+    },
+  ];
+
+  const findLekan = futaStudents.find((student) => student.name === "lekan");
+
+  console.log("test test", findLekan);
 
   const {
     register,
