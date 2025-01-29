@@ -42,8 +42,7 @@ const AllMembers = ({
   const navigate = useNavigate();
 
   const handleNavigateMember = (id) => {
-    setShowComp("profile");
-    setMemberId(id);
+    navigate(`/member/${id}`);
   };
 
   const handleSearchChange = (e) => {

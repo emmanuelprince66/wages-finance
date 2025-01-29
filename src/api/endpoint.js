@@ -48,9 +48,10 @@ export const transactionsDataUrl = (
   currentPage,
   rowsPerPage,
   searchValue,
-  trxFilter
+  trxFilter,
+  memberId
 ) => {
-  return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&type=${trxFilter}`;
+  return `/admin/transactions/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&type=${trxFilter}&user_id=${memberId}`;
 };
 export const checkNameForWithdrawalApprovalUrl = (id) => {
   return `/admin/check_name/${id}`;

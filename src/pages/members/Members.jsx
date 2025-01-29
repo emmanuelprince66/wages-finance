@@ -53,9 +53,7 @@ const Members = () => {
           data={data || []}
         />
       )}
-      {showComp === "profile" && (
-        <MemberProfile memberId={memberId} close={backMembers} type="Members" />
-      )}
+      {showComp === "profile" && <MemberProfile setShowComp={setShowComp} />}
       {showComp === "all" && (
         <MemberFullTransaction setShowComp={setShowComp} />
       )}

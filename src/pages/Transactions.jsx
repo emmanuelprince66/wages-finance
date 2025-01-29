@@ -33,7 +33,8 @@ import axios from "axios";
 import { AuthAxios } from "../helpers/axiosInstance";
 import { ToastContainer } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
-const Transactions = () => {
+import { Link } from "react-router-dom";
+const Transactions = ({ memberId }) => {
   const {
     handleSubmit,
     control,
@@ -58,6 +59,7 @@ const Transactions = () => {
   const closeDeclineReqModal = () => setOpenDeclineReqModal(false);
   const closeOpenRequestModal = () => setOpenRequestModal(false);
   const closeWalletTrxModal = () => setOpenWalletTrxModal(false);
+
   const closeWithdrawalModal = () => {
     setShowAcctName(false);
     setWithdrawalModalData(false);
@@ -82,14 +84,10 @@ const Transactions = () => {
   // } = useFetchData(queryKeyName, apiUrlName);
 
   const handleShowAcctName = (id) => {
-    console.log("id", id);
     setShowAcctName(!showAcctName);
   };
 
-  console.log("show", showAcctName);
-
   const handleOpenDeclineReqModal = (id) => {
-    console.log(id);
     setDeclineId(id);
     setOpenDeclineReqModal(true);
     closeWithdrawalModal();
@@ -100,12 +98,14 @@ const Transactions = () => {
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [filterValue, setFilterValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
+  const memId = !memberId ? "" : memberId;
 
   const apiUrl = transactionsDataUrl(
     currentPage,
     rowsPerPage,
     searchValue,
-    trxFilter
+    trxFilter,
+    memId
   );
   const queryKey = ["fetchTransactionData", apiUrl, trxFilter, searchValue];
   // fetch referral data
@@ -122,6 +122,7 @@ const Transactions = () => {
   };
 
   const handleOpenModal = (item) => {
+    console.log("item", item);
     switch (item?.type) {
       case "WALLET-CREDIT":
         setWalletCreditModalData(item);
@@ -210,9 +211,9 @@ const Transactions = () => {
       setOpenRequestModal(false);
     },
     onError: (error) => {
-      notiError(error?.response?.data?.message);
+      notiError(error?.response?.data);
       setOpenRequestModal(false);
-      console.error("Error:", error);
+      console.log("Error:", error);
     },
   });
 
@@ -221,11 +222,16 @@ const Transactions = () => {
   };
   return (
     <div className="w-full flex flex-col items-start  gap-3">
-      <div className="w-full flex items-center justify-between mb-3">
-        <p className="font-[600] text-[20px] text-general ">Transactions</p>
+      {!memberId && (
+        <>
+          <div className="w-full flex items-center justify-between mb-3">
+            <p className="font-[600] text-[20px] text-general ">Transactions</p>
 
-        <SelectDate />
-      </div>
+            <SelectDate />
+          </div>
+        </>
+      )}
+
       <CustomCard style="w-full">
         <div className="flex items-start gap-4 flex-col">
           <div className="w-full flex items-center justify-between">
@@ -392,6 +398,7 @@ const Transactions = () => {
           {trxFilter === "referral" && <Referrals />}
         </div>
       </CustomCard>
+
       {/* wallet credit transactions modal */}
       <CustomModal open={openWalletTrxModal} closeModal={closeWalletTrxModal}>
         <div className="w-full flex flex-col items-start gap-2">
@@ -405,25 +412,28 @@ const Transactions = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
-            <Button
-              sx={{
-                background: "#FAFAFA",
-                borderRadius: "8px",
-                px: "15px",
-                border: "1px solid #C8C8C8",
-                color: "#02981D",
-                "&:hover": {
-                  backgroundColor: "#FAFAFA",
-                },
-                fontWeight: "600",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              Go to profile
-            </Button>
+
+            <Link to={`/profile/${walletCreditModalData?.user_id}`}>
+              <Button
+                sx={{
+                  background: "#FAFAFA",
+                  borderRadius: "8px",
+                  px: "15px",
+                  border: "1px solid #C8C8C8",
+                  color: "#02981D",
+                  "&:hover": {
+                    backgroundColor: "#FAFAFA",
+                  },
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                Go to profile
+              </Button>
+            </Link>
           </div>
 
           <div className="rounded-md w-full border-[1px] border-[#E3E3E3] p-2 flex flex-col items-start">
@@ -525,6 +535,8 @@ const Transactions = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
+
+            <Link to={`/member/${walletCreditModalData?.user_id}`}></Link>
             <Button
               sx={{
                 background: "#FAFAFA",
@@ -697,25 +709,28 @@ const Transactions = () => {
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
-            <Button
-              sx={{
-                background: "#FAFAFA",
-                borderRadius: "8px",
-                px: "15px",
-                border: "1px solid #C8C8C8",
-                color: "#02981D",
-                "&:hover": {
-                  backgroundColor: "#FAFAFA",
-                },
-                fontWeight: "600",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              Go to profile
-            </Button>
+
+            <Link to={`/member/${withdrawalModalData?.user_id}`}>
+              <Button
+                sx={{
+                  background: "#FAFAFA",
+                  borderRadius: "8px",
+                  px: "15px",
+                  border: "1px solid #C8C8C8",
+                  color: "#02981D",
+                  "&:hover": {
+                    backgroundColor: "#FAFAFA",
+                  },
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                Go to profile
+              </Button>
+            </Link>
           </div>
 
           <div className="rounded-md w-full border-[1px] border-[#E3E3E3] p-2 flex flex-col items-start">
