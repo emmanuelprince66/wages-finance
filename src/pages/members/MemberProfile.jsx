@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import mSeven from "../../assets/member-profile/m-7.svg";
 import mOne from "../../assets/member-profile/m-1.svg";
@@ -48,10 +48,14 @@ import PersonalSavingsModal from "./PersonalSavingsModal";
 import InvestmentDetailsModal from "./InvestmentDetailsModal";
 import RefereeModal from "../transactions/RefereeModal";
 import MemberFullTransaction from "./MemberFullTransaction";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { AuthAxios } from "../../helpers/axiosInstance";
 
 const MemberProfile = ({ setShowComp }) => {
   const [openRefereeModal, setOpenRefreeModal] = useState(false);
   const { id: memberId } = useParams();
+  const [statusChanging, setStatusChanging] = useState(false);
 
   const closeRefereeModal = () => setOpenRefreeModal(false);
   const [filter, setFilter] = useState("all");
@@ -59,6 +63,8 @@ const MemberProfile = ({ setShowComp }) => {
   const [rowsPerPage, setRowsPerPage] = useState(100);
   const [openCorporateSavingsModal, setOpenCorporateSavingsModal] =
     useState(false);
+  const [isSwitchChecked, setIsSwitchChecked] = useState(null);
+
   const handleCloseCoModal = () => setOpenCorporateSavingsModal(false);
   const [showInvDetailsModal, setShowInvDetailsModal] = useState(false);
   const handleCloseInvDetailsModal = () => setShowInvDetailsModal(false);
@@ -75,6 +81,57 @@ const MemberProfile = ({ setShowComp }) => {
     useState(false);
 
   const refereeData = data || [];
+
+  const updateUserStatus = async ({ memberId, status }) => {
+    setStatusChanging(true);
+    try {
+      const response = await AuthAxios.post(`/admin/suspend/${memberId}`, {
+        status: status,
+      });
+
+      setStatusChanging(false);
+
+      if (response.status !== 201) {
+        throw new Error(response.data.message || "Failed to update status");
+      }
+
+      return response.data;
+    } catch (error) {
+      setStatusChanging(false);
+      throw new Error(error.response?.data?.message || "Network Error");
+    }
+  };
+
+  // const statusMutation = useMutation({
+  //   mutationFn: updateUserStatus,
+  //   onSuccess: (data) => {
+  //     // queryClient.invalidateQueries(['userStatus', userId]);
+  //     console.log("test", data);
+  //     setTimeout(() => {
+  //       notify(data?.message);
+  //     }, 500);
+  //   },
+  //   onError: (error) => {
+  //     console.error("Error updating user status:", error);
+  //     // Handle the error (e.g., show a notification or set an error state)
+  //   },
+  // });
+
+  const handleSwitchChange = (event) => {
+    setIsSwitchChecked(event.target.checked);
+    const status = event.target.checked;
+
+    // console.log(status)
+    // console.log(payload)
+
+    console.log(status);
+
+    updateUserStatus({ memberId, status });
+  };
+
+  useEffect(() => {
+    setIsSwitchChecked(data?.is_active);
+  }, data);
 
   return (
     <div className="flex items-start flex-col gap-3">
@@ -285,12 +342,12 @@ const MemberProfile = ({ setShowComp }) => {
                         </div>
                         <div className="flex gap-3 items-center">
                           <img src={mSix} alt="" />
-                          <div className="flex flex-col items-start gap-1">
+                          <di className="flex flex-col items-start gap-1">
                             <p className="text-primary_grey_2 text-[12px] ">
                               Date Cancelled
                             </p>
                             <p className="text-general text-[16px] ">-</p>
-                          </div>
+                          </di>
                         </div>
                         <div className="flex gap-3 items-center">
                           <img src={mEight} alt="" />
@@ -298,8 +355,58 @@ const MemberProfile = ({ setShowComp }) => {
                             <p className="text-primary_red text-[16px] ">
                               Disable Account
                             </p>
+                            <div className="flex items-center gap-3">
+                              <Switch
+                                checked={isSwitchChecked}
+                                onChange={handleSwitchChange}
+                                disabled={statusChanging}
+                                sx={{
+                                  "& .MuiSwitch-switchBase.Mui-checked": {
+                                    color: "#fff",
+                                    // "&:hover": {
+                                    //   backgroundColor: alpha(
+                                    //     pink[600],
+                                    //     theme.palette.action.hoverOpacity
+                                    //   ),
+                                    // },
+                                  },
+                                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                                    {
+                                      backgroundColor: "#E52929",
+                                    },
+                                }}
+                              />
 
-                            <Switch
+                              <CircularProgress
+                                sx={{
+                                  display: statusChanging ? "block" : "none",
+                                  color: "#E52929",
+                                  width: "10px !important",
+                                  height: "10px !important",
+                                }}
+                              />
+
+                              <Box
+                                className="p-1 items-center justify-center"
+                                sx={{
+                                  backgroundColor: isSwitchChecked
+                                    ? "#FEE2E2"
+                                    : "#E6F4EA", // Light red for "Disabled", light green for "Enabled"
+                                  color: isSwitchChecked
+                                    ? "#E52929"
+                                    : "#1B5E20", // Red text for "Disabled", Green text for "Enabled"
+                                  borderRadius: "8px",
+                                  padding: "8px 16px",
+                                  textAlign: "center",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <p>
+                                  {isSwitchChecked ? "Disabled" : "Enabled"}
+                                </p>
+                              </Box>
+                            </div>
+                            {/* <Switch
                               sx={{
                                 "& .MuiSwitch-switchBase.Mui-checked": {
                                   color: "#fff",
@@ -317,7 +424,7 @@ const MemberProfile = ({ setShowComp }) => {
                               }}
                               defaultChecked
                               color="default"
-                            />
+                            /> */}
                           </div>
                         </div>
                       </div>
