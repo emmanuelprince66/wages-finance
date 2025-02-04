@@ -389,10 +389,10 @@ const MemberProfile = ({ setShowComp }) => {
                               <Box
                                 className="p-1 items-center justify-center"
                                 sx={{
-                                  backgroundColor: isSwitchChecked
+                                  backgroundColor: !isSwitchChecked
                                     ? "#FEE2E2"
                                     : "#E6F4EA", // Light red for "Disabled", light green for "Enabled"
-                                  color: isSwitchChecked
+                                  color: !isSwitchChecked
                                     ? "#E52929"
                                     : "#1B5E20", // Red text for "Disabled", Green text for "Enabled"
                                   borderRadius: "8px",
@@ -402,7 +402,7 @@ const MemberProfile = ({ setShowComp }) => {
                                 }}
                               >
                                 <p>
-                                  {isSwitchChecked ? "Disabled" : "Enabled"}
+                                  {isSwitchChecked ? "Enabled" : "Disabled"}
                                 </p>
                               </Box>
                             </div>
