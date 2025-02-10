@@ -45,6 +45,7 @@ const Transactions = ({ memberId }) => {
   const status = watch("status", "Pending");
   const statusOptions = ["Pending", "Successfull", "Failed"];
   const [trxFilter, setTrxFilter] = useState("");
+  const [billsFilter, setBillsFilter] = useState("DATA");
   const [openWalletTrxModal, setOpenWalletTrxModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openWTrxModal, setWOpenTrxModal] = useState(false);
@@ -269,7 +270,7 @@ const Transactions = ({ memberId }) => {
               Export
             </Button>
           </div>
-          <div className="flex w-[90%] gap-3  items-center">
+          <div className="flex w-[100%] gap-3  items-center">
             <Button
               onClick={() => setTrxFilter("")}
               sx={{
@@ -312,29 +313,6 @@ const Transactions = ({ memberId }) => {
               Wallet Credit
             </Button>
             <Button
-              onClick={() => setTrxFilter("DATA_AND_AIRTIME")}
-              sx={{
-                background:
-                  trxFilter === "DATA_AND_AIRTIME" ? "#FAFAFA" : "#fff",
-                borderRadius: "8px",
-                width: "100%",
-                px: "15px",
-                border:
-                  trxFilter === "DATA_AND_AIRTIME"
-                    ? "1px solid #02981D"
-                    : "1px solid #5E5E5E",
-                color: trxFilter === "DATA_AND_AIRTIME" ? "#02981D" : "#5E5E5E",
-                "&:hover": {
-                  backgroundColor:
-                    trxFilter === "DATA_AND_AIRTIME" ? "#FAFAFA" : "#fff",
-                },
-                textTransform: "capitalize",
-                fontWeight: "400",
-              }}
-            >
-              Data Purchase
-            </Button>
-            <Button
               onClick={() => setTrxFilter("WITHDRAWAL")}
               sx={{
                 background: trxFilter === "WITHDRAWAL" ? "#FAFAFA" : "#fff",
@@ -357,6 +335,28 @@ const Transactions = ({ memberId }) => {
               Withdrawal
             </Button>
             <Button
+              onClick={() => setTrxFilter("BILLS")}
+              sx={{
+                background: trxFilter === "BILLS" ? "#FAFAFA" : "#fff",
+                borderRadius: "8px",
+                width: "100%",
+                px: "15px",
+                border:
+                  trxFilter === "BILLS"
+                    ? "1px solid #02981D"
+                    : "1px solid #5E5E5E",
+                color: trxFilter === "BILLS" ? "#02981D" : "#5E5E5E",
+                "&:hover": {
+                  backgroundColor: trxFilter === "BILLS" ? "#FAFAFA" : "#fff",
+                },
+                textTransform: "capitalize",
+                fontWeight: "400",
+              }}
+            >
+              Bills
+            </Button>
+
+            <Button
               onClick={() => setTrxFilter("referral")}
               sx={{
                 background: trxFilter === "referral" ? "#FAFAFA" : "#fff",
@@ -378,7 +378,122 @@ const Transactions = ({ memberId }) => {
             >
               Referral
             </Button>
+            <Button
+              onClick={() => setTrxFilter("COSUB")}
+              sx={{
+                background: trxFilter === "COSUB" ? "#FAFAFA" : "#fff",
+                borderRadius: "8px",
+                width: "100%",
+                px: "15px",
+                border:
+                  trxFilter === "COSUB"
+                    ? "1px solid #02981D"
+                    : "1px solid #5E5E5E",
+                color: trxFilter === "COSUB" ? "#02981D" : "#5E5E5E",
+                "&:hover": {
+                  backgroundColor: trxFilter === "COSUB" ? "#FAFAFA" : "#fff",
+                },
+                textTransform: "capitalize",
+                fontWeight: "400",
+              }}
+            >
+              Cooperative Subscription
+            </Button>
           </div>
+
+          {trxFilter === "BILLS" && (
+            <div className="flex w-1/2 items-center gap-4 mt-5">
+              <Button
+                onClick={() => setBillsFilter("DATA")}
+                sx={{
+                  background: billsFilter === "DATA" ? "#FAFAFA" : "#fff",
+                  borderRadius: "8px",
+                  width: "100%",
+                  px: "15px",
+                  border:
+                    billsFilter === "DATA"
+                      ? "1px solid #02981D"
+                      : "1px solid #5E5E5E",
+                  color: billsFilter === "DATA" ? "#02981D" : "#5E5E5E",
+                  "&:hover": {
+                    backgroundColor:
+                      billsFilter === "DATA" ? "#FAFAFA" : "#fff",
+                  },
+                  textTransform: "capitalize",
+                  fontWeight: "400",
+                }}
+              >
+                Data
+              </Button>
+              <Button
+                onClick={() => setBillsFilter("AIRTIME")}
+                sx={{
+                  background: billsFilter === "AIRTIME" ? "#FAFAFA" : "#fff",
+                  borderRadius: "8px",
+                  width: "100%",
+                  px: "15px",
+                  border:
+                    billsFilter === "AIRTIME"
+                      ? "1px solid #02981D"
+                      : "1px solid #5E5E5E",
+                  color: billsFilter === "AIRTIME" ? "#02981D" : "#5E5E5E",
+                  "&:hover": {
+                    backgroundColor:
+                      billsFilter === "AIRTIME" ? "#FAFAFA" : "#fff",
+                  },
+                  textTransform: "capitalize",
+                  fontWeight: "400",
+                }}
+              >
+                Airtime
+              </Button>
+              <Button
+                onClick={() => setBillsFilter("CABLE")}
+                sx={{
+                  background: billsFilter === "CABLE" ? "#FAFAFA" : "#fff",
+                  borderRadius: "8px",
+                  width: "100%",
+                  px: "15px",
+                  border:
+                    billsFilter === "CABLE"
+                      ? "1px solid #02981D"
+                      : "1px solid #5E5E5E",
+                  color: billsFilter === "CABLE" ? "#02981D" : "#5E5E5E",
+                  "&:hover": {
+                    backgroundColor:
+                      billsFilter === "CABLE" ? "#FAFAFA" : "#fff",
+                  },
+                  textTransform: "capitalize",
+                  fontWeight: "400",
+                }}
+              >
+                Cable
+              </Button>
+              <Button
+                onClick={() => setBillsFilter("ELECTRICITY")}
+                sx={{
+                  background:
+                    billsFilter === "ELECTRICITY" ? "#FAFAFA" : "#fff",
+                  borderRadius: "8px",
+                  width: "100%",
+                  px: "15px",
+                  border:
+                    billsFilter === "ELECTRICITY"
+                      ? "1px solid #02981D"
+                      : "1px solid #5E5E5E",
+                  color: billsFilter === "ELECTRICITY" ? "#02981D" : "#5E5E5E",
+                  "&:hover": {
+                    backgroundColor:
+                      billsFilter === "ELECTRICITY" ? "#FAFAFA" : "#fff",
+                  },
+                  textTransform: "capitalize",
+                  fontWeight: "400",
+                }}
+              >
+                Electricity
+              </Button>
+            </div>
+          )}
 
           {/*  */}
           {trxFilter !== "referral" && (
@@ -413,7 +528,7 @@ const Transactions = ({ memberId }) => {
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
 
-            <Link to={`/profile/${walletCreditModalData?.user_id}`}>
+            <Link to={`/member/${walletCreditModalData?.user_id}`}>
               <Button
                 sx={{
                   background: "#FAFAFA",
@@ -536,26 +651,27 @@ const Transactions = ({ memberId }) => {
           <div className="flex items-center justify-between w-full">
             <p className="text-general font-[500] text-[14px] ">USER DETAILS</p>
 
-            <Link to={`/member/${walletCreditModalData?.user_id}`}></Link>
-            <Button
-              sx={{
-                background: "#FAFAFA",
-                borderRadius: "8px",
-                px: "15px",
-                border: "1px solid #C8C8C8",
-                color: "#02981D",
-                "&:hover": {
-                  backgroundColor: "#FAFAFA",
-                },
-                fontWeight: "600",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              Go to profile
-            </Button>
+            <Link to={`/member/${walletCreditModalData?.user_id}`}>
+              <Button
+                sx={{
+                  background: "#FAFAFA",
+                  borderRadius: "8px",
+                  px: "15px",
+                  border: "1px solid #C8C8C8",
+                  color: "#02981D",
+                  "&:hover": {
+                    backgroundColor: "#FAFAFA",
+                  },
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                Go to profile
+              </Button>
+            </Link>
           </div>
 
           <div className="rounded-md w-full border-[1px] border-[#E3E3E3] p-2 flex flex-col items-start">
