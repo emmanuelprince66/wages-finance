@@ -14,9 +14,14 @@ import useFetchData from "../../hooks/useFetchData";
 import { loanStatisticsDataUrl } from "../../api/endpoint";
 import { Skeleton } from "@mui/material";
 
-const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
+const Statistics = ({
+  handleCloseShowStatatistics,
+  setStatTitle,
+  loanType,
+}) => {
   const apiUrl = loanStatisticsDataUrl();
   const queryKey = ["fetchLoanStatistics", apiUrl];
+
   // fetch loan statistics
 
   const { data, isLoading } = useFetchData(queryKey, apiUrl);
@@ -36,8 +41,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Total Approved Loan amount:"
               icon={bankNotes}
-              textTwo={data?.total_amount}
-              textThree={data?.total_amount_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.approved_request
+                  : data?.quick_loan_approved_request
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.approved_request_filter
+                  : data?.quick_loan_approved_filter
+              }
             />
           </CustomCard>
         )}
@@ -62,8 +75,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Interest From Loans:"
               icon={lFive}
-              textTwo={data?.approved_request}
-              textThree={data?.approved_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.loan_interest
+                  : data?.quick_loan_interest
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.loan_interest_filter
+                  : data?.quick_loan_interest_filter
+              }
             />
           </CustomCard>
         )}
@@ -74,8 +95,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Loan Beneficiaries:"
               icon={user}
-              textTwo={data?.loan_beneficiary}
-              textThree={data?.loan_beneficiary_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.loan_beneficiary
+                  : data?.quick_loan_beneficiary
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.loan_beneficiary_filter
+                  : data?.quick_loan_beneficiary_filter
+              }
             />
           </CustomCard>
         )}
@@ -95,8 +124,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Approved Request"
               icon={lSeven}
-              textTwo={data?.approved_request}
-              textThree={data?.approved_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.approved_request
+                  : data?.quick_loan_approved_request
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.approved_request_filter
+                  : data?.quick_loan_approved_request_filter
+              }
               status="approved"
               handleOpenRequest={handleOpenRequest}
             />
@@ -109,8 +146,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Pending Request"
               icon={lFour}
-              textTwo={data?.pending_request}
-              textThree={data?.pending_request_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.pending_request
+                  : data?.quick_loan_pending_request
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.pending_request_filter
+                  : data?.quick_loan_pending_request_filter
+              }
               status="pending"
               handleOpenRequest={handleOpenRequest}
             />
@@ -124,8 +169,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Declined Requests"
               icon={lSix}
-              textTwo={data?.rejected_request}
-              textThree={data?.rejected_request_filter}
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.rejected_request
+                  : data?.quick_loan_rejected_request
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.rejected_request_filter
+                  : data?.quick_loan_rejected_request_filter
+              }
               status="rejected"
               handleOpenRequest={handleOpenRequest}
             />
@@ -145,8 +198,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Total Repayment"
               icon={bankNotes}
-              textTwo="22,000"
-              textThree="300"
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.total_repayment
+                  : data?.quick_loan_total_repayment
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.total_repayment_filter
+                  : data?.quick_loan_total_repayment_filter
+              }
             />
           </CustomCard>
         )}
@@ -158,8 +219,16 @@ const Statistics = ({ handleCloseShowStatatistics, setStatTitle }) => {
             <LoanCustomCardContent
               textOne="Overdue Repayments"
               icon={lTwo}
-              textTwo="22,000"
-              textThree="300"
+              textTwo={
+                loanType === "cooperative"
+                  ? data?.overdued_request
+                  : data?.quick_loan_overdued_request
+              }
+              textThree={
+                loanType === "cooperative"
+                  ? data?.overdued_request_filter
+                  : data?.quick_loan_overdued_request_filter
+              }
               status="overdue"
               handleOpenRequest={handleOpenRequest}
             />

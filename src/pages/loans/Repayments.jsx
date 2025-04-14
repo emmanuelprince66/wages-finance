@@ -4,7 +4,7 @@ import LoanProfile from "./LoanProfile";
 import { loanRequestsDataUrl } from "../../api/endpoint";
 import useFetchData from "../../hooks/useFetchData";
 
-const Repayments = () => {
+const Repayments = ({ loanType }) => {
   const [showLoans, setShowLoans] = useState(true);
   const [memberLoanDetails, setMemberLoanDetails] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);

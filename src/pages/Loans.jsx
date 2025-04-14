@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import { useState } from "react";
 import MainIcon from "../assets/loan/MainIcon";
 import Lfour from "../assets/loan/Lfour";
@@ -13,10 +13,19 @@ import Overview from "./loans/Overview";
 import Repayments from "./loans/Repayments";
 import CustomCard from "../components/CustomCard";
 import FormattedPrice from "../utils/FormattedPrice";
+import useFetchData from "../hooks/useFetchData";
+import { loanStatisticsDataUrl } from "../api/endpoint";
 
 const Loans = () => {
   const [showOverview, setShowOverview] = useState(true);
   const [loanType, setLoanType] = useState("quick");
+
+  const apiUrl = loanStatisticsDataUrl();
+  const queryKey = ["fetchLoanStatistics", apiUrl];
+
+  // fetch loan statistics
+
+  const { data, isLoading } = useFetchData(queryKey, apiUrl);
 
   return (
     <div className="flex w-full items-start flex-col gap-3">
@@ -82,110 +91,162 @@ const Loans = () => {
         <p className="font-[600] text-[20px] text-general ">Overview</p>
 
         <div className="w-full flex items-center gap-5 justify-between">
-          <CustomCard color="#F6FFF8" style="w-full">
-            <div className="w-full flex-col items-start gap-3">
-              <div className="flex gap-3   items-center">
-                <img src={oOne} alt="0-1" />
-                <p className="text-general text-[14px] font-[500]">
-                  Total Loan Applied
-                </p>
-              </div>
+          {isLoading || !data ? (
+            <Skeleton variant="rounded" width="100%" height={210} />
+          ) : (
+            <CustomCard color="#F6FFF8" style="w-full">
+              <div className="w-full flex-col items-start gap-3">
+                <div className="flex gap-3   items-center">
+                  <img src={oOne} alt="0-1" />
+                  <p className="text-general text-[14px] font-[500]">
+                    Total Loan Applied
+                  </p>
+                </div>
 
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">All-time:</p>
-                <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={0} />
-                </p>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    <FormattedPrice
+                      amount={
+                        loanType === "cooperative"
+                          ? data?.total_amount
+                          : data?.quick_loan_total_amount
+                      }
+                    />
+                  </p>
+                </div>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    <FormattedPrice
+                      amount={
+                        loanType === "cooperative"
+                          ? data?.total_amount_filter
+                          : data?.quick_loan_total_amount_filter
+                      }
+                    />
+                  </p>
+                </div>
               </div>
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
-                <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={0} />
-                </p>
-              </div>
-            </div>
-          </CustomCard>
+            </CustomCard>
+          )}
 
-          <CustomCard color="#FCF5FF" style="w-full">
-            <div className="w-full flex-col items-start gap-3">
-              <div className="flex gap-3   items-center">
-                <img src={oTwo} alt="0-1" />
-                <p className="text-general text-[14px] font-[500]">
-                  Total Loan Approved
-                </p>
-              </div>
+          {isLoading || !data ? (
+            <Skeleton variant="rounded" width="100%" height={210} />
+          ) : (
+            <CustomCard color="#FCF5FF" style="w-full">
+              <div className="w-full flex-col items-start gap-3">
+                <div className="flex gap-3   items-center">
+                  <img src={oTwo} alt="0-1" />
+                  <p className="text-general text-[14px] font-[500]">
+                    Total Loan Approved
+                  </p>
+                </div>
 
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">All-time:</p>
-                <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={0} />
-                </p>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    <FormattedPrice
+                      amount={
+                        loanType === "cooperative"
+                          ? data?.approved_request
+                          : data?.quick_loan_approved_request
+                      }
+                    />
+                  </p>
+                </div>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    <FormattedPrice
+                      amount={
+                        loanType === "cooperative"
+                          ? data?.approved_request_filter
+                          : data?.quick_loan_approved_filter
+                      }
+                    />
+                  </p>
+                </div>
               </div>
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
-                <p className="text-[24px] font-[600] text-general">
-                  <FormattedPrice amount={0} />
-                </p>
-              </div>
-            </div>
-          </CustomCard>
-          <CustomCard color="#FFF7E8" style="w-full">
-            <div className="w-full flex-col items-start gap-3">
-              <div className="flex gap-3   items-center">
-                <img src={oThree} alt="0-1" />
-                <p className="text-general text-[14px] font-[500]">
-                  Total Interest From Loan
-                </p>
-              </div>
+            </CustomCard>
+          )}
+          {isLoading || !data ? (
+            <Skeleton variant="rounded" width="100%" height={210} />
+          ) : (
+            <CustomCard color="#FFF7E8" style="w-full">
+              <div className="w-full flex-col items-start gap-3">
+                <div className="flex gap-3   items-center">
+                  <img src={oThree} alt="0-1" />
+                  <p className="text-general text-[14px] font-[500]">
+                    Total Interest From Loan
+                  </p>
+                </div>
 
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">All-time:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    {loanType === "cooperative"
+                      ? data?.loan_interest
+                      : data?.quick_loan_interest}
+                  </p>
+                </div>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                  <p className="text-[24px] font-[600] text-general">
+                    {loanType === "cooperative"
+                      ? data?.loan_interest_filter
+                      : data?.quick_loan_interest_filter}
+                  </p>
+                </div>
               </div>
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
-              </div>
-            </div>
-          </CustomCard>
-          <CustomCard color="#FCF5FF" style="w-full">
-            <div className="w-full flex-col items-start gap-3">
-              <div className="flex gap-3   items-center">
-                <img src={oThree} alt="0-1" />
-                <p className="text-general text-[14px] font-[500]">
-                  Total Processing Fee From Loan
-                </p>
-              </div>
+            </CustomCard>
+          )}
+          {isLoading || !data ? (
+            <Skeleton variant="rounded" width="100%" height={210} />
+          ) : (
+            <CustomCard color="#FCF5FF" style="w-full">
+              <div className="w-full flex-col items-start gap-3">
+                <div className="flex gap-3   items-center">
+                  <img src={oThree} alt="0-1" />
+                  <p className="text-general text-[14px] font-[500]">
+                    Total Processing Fee From Loan
+                  </p>
+                </div>
 
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">All-time:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                  <p className="text-[24px] font-[600] text-general">{0}</p>
+                </div>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                  <p className="text-[24px] font-[600] text-general">{0}</p>
+                </div>
               </div>
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
-              </div>
-            </div>
-          </CustomCard>
-          <CustomCard color="#F6FFF8" style="w-full">
-            <div className="w-full flex-col items-start gap-3">
-              <div className="flex gap-3   items-center">
-                <img src={oThree} alt="0-1" />
-                <p className="text-general text-[14px] font-[500]">
-                  Total Loan Paid
-                </p>
-              </div>
+            </CustomCard>
+          )}
+          {isLoading || !data ? (
+            <Skeleton variant="rounded" width="100%" height={210} />
+          ) : (
+            <CustomCard color="#F6FFF8" style="w-full">
+              <div className="w-full flex-col items-start gap-3">
+                <div className="flex gap-3   items-center">
+                  <img src={oThree} alt="0-1" />
+                  <p className="text-general text-[14px] font-[500]">
+                    Total Loan Paid
+                  </p>
+                </div>
 
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">All-time:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">All-time:</p>
+                  <p className="text-[24px] font-[600] text-general">{0}</p>
+                </div>
+                <div className="flex-col flex items-start gap-2 mt-5">
+                  <p className="text-[14px] text-primary_grey_2">By Filter:</p>
+                  <p className="text-[24px] font-[600] text-general">{0}</p>
+                </div>
               </div>
-              <div className="flex-col flex items-start gap-2 mt-5">
-                <p className="text-[14px] text-primary_grey_2">By Filter:</p>
-                <p className="text-[24px] font-[600] text-general">{0}</p>
-              </div>
-            </div>
-          </CustomCard>
+            </CustomCard>
+          )}
         </div>
       </div>
 
@@ -240,8 +301,8 @@ const Loans = () => {
         </div>
       </div>
 
-      {showOverview && <Overview />}
-      {!showOverview && <Repayments />}
+      {showOverview && <Overview loanType={loanType} />}
+      {!showOverview && <Repayments loanType={loanType} />}
     </div>
   );
 };

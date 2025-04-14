@@ -4,7 +4,7 @@ import Statistics from "./Statistics";
 import Requests from "./Requests";
 import LoanProfile from "./LoanProfile";
 
-const Overview = () => {
+const Overview = ({ loanType }) => {
   const [showStatistics, setShowStatistics] = useState("statistics");
   const [memberLoanDetails, setMemberLoanDetails] = useState(null);
 
@@ -15,6 +15,7 @@ const Overview = () => {
     <>
       {showStatistics === "statistics" && (
         <Statistics
+          loanType={loanType}
           setStatTitle={setStatTitle}
           handleCloseShowStatatistics={handleCloseShowStatatistics}
         />
