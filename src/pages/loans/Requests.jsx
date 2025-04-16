@@ -32,8 +32,14 @@ import { loanRequestsDataUrl } from "../../api/endpoint";
 import CustomPagination from "../../components/CustomPagination";
 import FormattedPrice from "../../utils/FormattedPrice";
 import formattedDate from "../../utils/formattedDate";
+import { quickLoanRequestsDataUrl } from "../../api/endpoint";
 
-const Requests = ({ statTitle, setShowStatistics, setMemberLoanDetails }) => {
+const Requests = ({
+  statTitle,
+  setShowStatistics,
+  setMemberLoanDetails,
+  loanType,
+}) => {
   const [openExportModal, setOpenExportModal] = useState(false);
   const handleCloseExportModal = () => setOpenExportModal(false);
   const [exportFilter, setExportFilter] = useState("Current Page"); // Default value
@@ -47,13 +53,35 @@ const Requests = ({ statTitle, setShowStatistics, setMemberLoanDetails }) => {
   const [majorFilteredData, setMajorFilteredData] = useState(null);
 
   // fetch data
-  const apiUrl = loanRequestsDataUrl(
+  const corporateApiUrl = loanRequestsDataUrl(
     currentPage,
     rowsPerPage,
     searchValue,
     filterValue
   );
-  const queryKey = ["fetchLoanRequestFilterData", apiUrl];
+  const quickLoanApiUrl = quickLoanRequestsDataUrl(
+    currentPage,
+    rowsPerPage,
+    searchValue,
+    filterValue
+  );
+
+  const quickLoanQueryKey = [
+    "fetchQuickLoanRequestFilterData",
+    quickLoanApiUrl,
+  ];
+
+  const corporateLoanQueryKey = [
+    "fetchCorporateLoanRequestFilterData",
+    corporateApiUrl,
+  ];
+
+  console.log("loantype", loanType);
+
+  const apiUrl = loanType === "cooperative" ? corporateApiUrl : quickLoanApiUrl;
+  const queryKey =
+    loanType === "cooperative" ? corporateLoanQueryKey : quickLoanQueryKey;
+
   const { data, isLoading } = useFetchData(queryKey, apiUrl);
 
   const handleChange = (event) => {

@@ -26,6 +26,7 @@ const Overview = ({ loanType }) => {
           statTitle={statTitle}
           setShowStatistics={setShowStatistics}
           setMemberLoanDetails={setMemberLoanDetails}
+          loanType={loanType}
         />
       )}
 

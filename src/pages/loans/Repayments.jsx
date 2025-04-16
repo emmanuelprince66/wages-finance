@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import AllLoans from "./AllLoans";
 import LoanProfile from "./LoanProfile";
-import { loanRequestsDataUrl } from "../../api/endpoint";
+import {
+  loanRequestsDataUrl,
+  quickLoanRequestsDataUrl,
+} from "../../api/endpoint";
 import useFetchData from "../../hooks/useFetchData";
 
 const Repayments = ({ loanType }) => {
@@ -14,13 +17,35 @@ const Repayments = ({ loanType }) => {
   const [page, setPage] = useState(0);
 
   // fetch data
-  const apiUrl = loanRequestsDataUrl(
+  // fetch data
+  const corporateApiUrl = loanRequestsDataUrl(
     currentPage,
     rowsPerPage,
     searchValue,
     filterValue
   );
-  const queryKey = ["fetchLoanRequestData", apiUrl];
+  const quickLoanApiUrl = quickLoanRequestsDataUrl(
+    currentPage,
+    rowsPerPage,
+    searchValue,
+    filterValue
+  );
+
+  const quickLoanQueryKey = [
+    "fetchQuickLoanRequestFilterData",
+    quickLoanApiUrl,
+  ];
+
+  const corporateLoanQueryKey = [
+    "fetchCorporateLoanRequestFilterData",
+    corporateApiUrl,
+  ];
+
+  console.log("loantype", loanType);
+
+  const apiUrl = loanType === "cooperative" ? corporateApiUrl : quickLoanApiUrl;
+  const queryKey =
+    loanType === "cooperative" ? corporateLoanQueryKey : quickLoanQueryKey;
   const { data, isLoading } = useFetchData(queryKey, apiUrl);
 
   const totalPages = data?.pages;

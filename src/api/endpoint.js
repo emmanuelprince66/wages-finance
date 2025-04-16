@@ -44,6 +44,14 @@ export const loanRequestsDataUrl = (
 ) => {
   return `/admin/loan_overview/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&status=${filterValue}`;
 };
+export const quickLoanRequestsDataUrl = (
+  currentPage,
+  rowsPerPage,
+  searchValue,
+  filterValue
+) => {
+  return `/admin/quick_loan_overview/?page=${currentPage}&limit=${rowsPerPage}&search=${searchValue}&status=${filterValue}`;
+};
 export const transactionsDataUrl = (
   currentPage,
   rowsPerPage,
