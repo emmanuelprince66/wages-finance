@@ -78,6 +78,7 @@ const Repayments = ({ loanType }) => {
           showLoans={showLoans}
           setShowLoans={setShowLoans}
           memberLoanDetails={memberLoanDetails}
+          loanType={loanType}
         />
       )}
     </>

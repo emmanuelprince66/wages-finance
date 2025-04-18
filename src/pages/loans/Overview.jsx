@@ -33,6 +33,7 @@ const Overview = ({ loanType }) => {
       {showStatistics === "profile" && (
         <LoanProfile
           setShowStatistics={setShowStatistics}
+          loanType={loanType}
           memberLoanDetails={memberLoanDetails}
         />
       )}

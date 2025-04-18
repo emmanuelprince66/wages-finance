@@ -33,8 +33,14 @@ export const loanStatisticsDataUrl = () => {
 export const approveLoanUrl = (id) => {
   return `/admin/accept_loan/${id}`;
 };
+export const approveQuickLoanUrl = (id) => {
+  return `/admin/accept_quick_loan/${id}`;
+};
 export const declineLoanUrl = (id) => {
   return `/admin/reject_loan/${id}`;
+};
+export const declineQuickLoanUrl = (id) => {
+  return `/admin/reject_quick_loan/${id}`;
 };
 export const loanRequestsDataUrl = (
   currentPage,

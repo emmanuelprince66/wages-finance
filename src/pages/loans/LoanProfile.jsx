@@ -36,6 +36,7 @@ import {
   Card,
   Modal,
 } from "@mui/material";
+import { approveQuickLoanUrl } from "../../api/endpoint";
 
 import avatar from "../../assets/member-profile/avatar.png";
 import CustomModal from "../../components/CustomModal";
@@ -47,14 +48,17 @@ import useFetchData from "../../hooks/useFetchData";
 import { approveLoanUrl } from "../../api/endpoint";
 import { getCookie } from "../../utils/cookieAuth";
 import { useMutation } from "@tanstack/react-query";
+import { declineQuickLoanUrl } from "../../api/endpoint";
 import { notiSuccess, notiError } from "../../utils/noti";
 import { declineLoanUrl } from "../../api/endpoint";
 import axios from "axios";
+import { AuthAxios } from "../../helpers/axiosInstance";
 
 const LoanProfile = ({
   memberLoanDetails,
   setShowLoans,
   showLoans,
+  loanType,
   setShowStatistics,
 }) => {
   const {
@@ -143,6 +147,10 @@ const LoanProfile = ({
     }
   };
 
+  const url = loanType === "quick" ? approveQuickLoanUrl : approveLoanUrl;
+
+  console.log("loanType", loanType);
+
   const causeApprovalMutation = async (memberLoanDetails) => {
     try {
       setButtonLoading(true);
@@ -154,13 +162,18 @@ const LoanProfile = ({
         return; // Exit early if the ID is missing
       }
 
-      const response = await axios.get(approveLoanUrl(memberLoanDetails?.id));
+      const response = await AuthAxios.get(url(memberLoanDetails?.id));
+      console.log("res", response);
       openSuccess();
     } catch (error) {
     } finally {
       setButtonLoading(false);
     }
   };
+
+  const declineUrl =
+    loanType === "quick" ? declineQuickLoanUrl : declineLoanUrl;
+
   const causeDeclineMutation = async (memberLoanDetails) => {
     try {
       setButtonLoading(true);
@@ -173,7 +186,11 @@ const LoanProfile = ({
         return; // Exit early if the ID is missing
       }
 
-      const response = await axios.get(declineLoanUrl(memberLoanDetails?.id));
+      console.log("hell");
+
+      const response = await AuthAxios.get(declineUrl(memberLoanDetails?.id));
+
+      console.log("response", response);
 
       if (response?.status === 200) {
         openSuccess();
