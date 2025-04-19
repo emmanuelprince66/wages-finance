@@ -75,34 +75,6 @@ const LoanProfile = ({
   const closeDeclineModal = () => setOpenDeclineModal(false);
   const [openDeclineModal, setOpenDeclineModal] = useState(false);
 
-  const dummy = [
-    {
-      id: 1,
-      amt: 300000,
-      dd: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 2,
-      amt: 300000,
-      dd: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 3,
-      amt: 300000,
-      dd: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 4,
-      amt: 300000,
-      dd: "30th June, 2024 • 9:43 AM",
-    },
-    {
-      id: 5,
-      amt: 300000,
-      dd: "30th June, 2024 • 9:43 AM",
-    },
-  ];
-
   const capitalizeFirstLetter = (string) => {
     if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -534,7 +506,9 @@ const LoanProfile = ({
                     Total Repayment Amount:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={20000} />
+                    <FormattedPrice
+                      amount={memberLoanDetails?.total_repayment || 0}
+                    />
                   </p>{" "}
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -544,7 +518,7 @@ const LoanProfile = ({
                     Total Amount Repaid:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={20000} />
+                    <FormattedPrice amount={0} />
                   </p>
                 </div>
                 <Divider sx={{ color: "#E3E3E3", width: "100%", my: "8px" }} />
@@ -554,7 +528,7 @@ const LoanProfile = ({
                     Outstanding Balance:
                   </p>
                   <p className="text-[14px] text-general font-[500]">
-                    <FormattedPrice amount={20000} />
+                    <FormattedPrice amount={0} />
                   </p>
                 </div>
               </div>
@@ -574,7 +548,7 @@ const LoanProfile = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {!dummy ? (
+                      {!memberLoanDetails ? (
                         <CircularProgress
                           size="2.2rem"
                           sx={{
@@ -583,15 +557,17 @@ const LoanProfile = ({
                             padding: "1em",
                           }}
                         />
-                      ) : dummy && Array.isArray(dummy) && dummy?.length > 0 ? (
-                        dummy?.map((item, i) => (
+                      ) : memberLoanDetails?.repayment_details &&
+                        Array.isArray(memberLoanDetails?.repayment_details) &&
+                        memberLoanDetails?.repayment_details?.length > 0 ? (
+                        memberLoanDetails?.repayment_details?.map((item, i) => (
                           <TableRow key={i + 2}>
                             <TableCell>{page * rowsPerPage + i + 1}</TableCell>
 
                             <TableCell>
-                              <FormattedPrice amount={item?.amt} />
+                              <FormattedPrice amount={item?.amount} />
                             </TableCell>
-                            <TableCell>{item?.dd}</TableCell>
+                            <TableCell>{item?.date}</TableCell>
                           </TableRow>
                         ))
                       ) : (
